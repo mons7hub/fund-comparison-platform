@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.bun-cache/
+app.db
+*.log
+.env
+.env.*
+.DS_Store

@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&display=swap');
+@import "tailwindcss";
+@import "tailwindcss-safe-area";
+
+@theme {
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+  --text-4xl: 36px;
+  --text-4xl--line-height: 40px;
+  --text-5xl: 48px;
+  --text-5xl--line-height: 52px;
+}
+
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface2: #eef3fa;
+  --text: #17202b;
+  --dim: #5b6a7a;
+  --border: #d9e2ec;
+  --accent: #1d6fd1;
+  --accent-ink: #ffffff;
+  --rise: #c8402a;
+  --fall: #1d7a4f;
+  --amber: #b97f16;
+  --radius: 12px;
+  --space-surface: var(--surface);
+  --space-surface-alt: var(--surface2);
+  --space-muted: var(--dim);
+  --space-border: var(--border);
+  --space-accent: var(--accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e141c;
+    --surface: #182130;
+    --surface2: #212e42;
+    --text: #edf2f8;
+    --dim: #9dafc2;
+    --border: #2b3a4f;
+    --accent: #5ea2ec;
+    --accent-ink: #08182c;
+    --rise: #e0684f;
+    --fall: #3fae74;
+    --amber: #d29a35;
+  }
+}
+
+.font-display {
+  font-family: "Noto Serif SC", "Songti SC", serif;
+}
