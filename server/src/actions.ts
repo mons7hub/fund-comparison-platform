@@ -3,7 +3,7 @@
 // No number is fabricated: fields that cannot be fetched or parsed are
 // returned as null and rendered as 「暂无数据」 by the client.
 
-import { defineAction, z, type ActionsModule, type Ctx } from "@hatch/space-sdk";
+import { defineAction, z, type ActionsModule, type Ctx } from "@fund-platform/sdk";
 import { eq } from "drizzle-orm";
 import * as schema from "./schema";
 

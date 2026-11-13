@@ -1,8 +1,10 @@
 node_modules/
 dist/
 .bun-cache/
+data/
 app.db
 *.log
+*.tsbuildinfo
 .env
 .env.*
 .DS_Store

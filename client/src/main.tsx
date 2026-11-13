@@ -1,4 +1,4 @@
-import { spaceQueryClient } from "@hatch/space-sdk/client";
+import { spaceQueryClient } from "@fund-platform/sdk/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

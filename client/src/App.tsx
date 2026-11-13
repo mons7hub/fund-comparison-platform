@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SafeAreaTopScrim } from "@hatch/space-sdk/client";
+import { SafeAreaTopScrim } from "@fund-platform/sdk/client";
 import { api, type ApiResponse } from "./api";
 
 type FundDetail = ApiResponse<typeof api, "getFundDetail">["fund"];
@@ -13,7 +13,6 @@ type FundFactors = ApiResponse<typeof api, "getFundFactors">;
 type FundNewsData = ApiResponse<typeof api, "getFundNews">;
 type FundBenchmarks = ApiResponse<typeof api, "getFundBenchmarks">;
 type BenchItem = FundBenchmarks["benchmarks"][number];
-type BenchSeriesRow = FundBenchmarks["series"][number];
 
 // ---------------------------------------------------------------------------
 // user investment profile (optional, stored locally in the browser)

@@ -7,7 +7,7 @@
 // `verbatimModuleSyntax: true`, dropping `type` is a compile error.
 
 import type { Actions } from "../../server/src/actions";
-import { createActionClient } from "@hatch/space-sdk/client";
+import { createActionClient } from "@fund-platform/sdk/client";
 
 export const api = createActionClient<typeof Actions>();
 
@@ -16,5 +16,5 @@ export const api = createActionClient<typeof Actions>();
 //     import { api, type ApiResponse } from "./api";
 //     type Article = ApiResponse<typeof api, "listArticles">["articles"][number];
 //
-// They are also available directly from "@hatch/space-sdk/client".
-export type { ApiRequest, ApiResponse } from "@hatch/space-sdk/client";
+// They are also available directly from "@fund-platform/sdk/client".
+export type { ApiRequest, ApiResponse } from "@fund-platform/sdk/client";
