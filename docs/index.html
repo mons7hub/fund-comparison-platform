@@ -226,6 +226,15 @@ header.site .head-note{margin-left:0}
 .pf-opt[aria-pressed="true"]{border-color:var(--accent);background:var(--chip);font-weight:700}
 .pf-opt[aria-pressed="true"] small{color:var(--accent-ink)}
 
+/* ---------- 完整排名 ---------- */
+.pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.pager .pager-info{font-size:13.5px;color:var(--muted)}
+.full-search{width:100%;max-width:420px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:15px;font-family:inherit;margin:0 0 14px;outline:none}
+.full-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--chip)}
+.sect-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+.sect-head h3{margin:0;font-size:16.5px}
+.metric-hot{font-weight:800}
+
 /* ---------- footer ---------- */
 footer.site{border-top:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12.5px}
 footer.site .wrap{padding-top:16px;padding-bottom:26px}
@@ -288,6 +297,10 @@ footer.site p{margin:0 0 6px}
         <button class="pill" type="button" data-period="3n" aria-pressed="false">近 3 年</button>
         <button class="pill" type="button" data-period="tenure" aria-pressed="false">任期最佳</button>
       </div>
+      <div class="pills" style="margin-top:-4px">
+        <button class="btn ghost" type="button" id="mgrFullBtn">查看完整排名（全部基金经理）→</button>
+        <span class="company">上方为精选榜（前 30）；完整排名收录全部在册经理，可按任期最佳回报 / 从业年限 / 在管规模 / 在管基金数排序，并可搜姓名或公司</span>
+      </div>
       <div class="tablebox"><div class="table-scroll">
         <table>
           <thead><tr>
@@ -305,10 +318,14 @@ footer.site p{margin:0 0 6px}
   <!-- ============ 基金排行 ============ -->
   <section class="view" id="view-fundrank">
     <h2 class="sec">基金排行</h2>
-    <p class="sec-sub">全市场基金按所选区间收益排序（每类前 50 名）。点基金名进详情页，点经理名进经理主页；勾选「对比」加入底部对比栏（2–4 只）。</p>
+    <p class="sec-sub">全市场基金按所选区间收益排序（每类前 50 名）。点基金名进详情页，点经理名进经理主页；勾选「对比」加入底部对比栏（2–4 只）。想看前 50 名之外的全部名次，点下方「查看完整排名」，可按当前分类与区间逐页加载完整榜单。</p>
     <div class="pills" id="rankCatPills" role="group" aria-label="按分类筛选"></div>
     <div class="pills" id="rankScPills" role="group" aria-label="按区间排序">
       <span class="pills-label">区间</span>
+    </div>
+    <div class="pills" style="margin-top:-4px">
+      <button class="btn ghost" type="button" id="fundFullBtn">查看完整排名 →</button>
+      <span class="company" id="fundFullHint">按当前所选分类与区间打开完整榜单，可逐页加载全部名次</span>
     </div>
     <div id="matchSortBar" hidden style="margin:0 0 12px">
       <button class="pill" id="matchSortBtn" type="button" aria-pressed="false">按与我匹配度排序</button>
@@ -334,6 +351,60 @@ footer.site p{margin:0 0 6px}
     <div class="pills" id="catPills" role="group" aria-label="基金分类"></div>
     <p class="sec-sub" id="catDesc" style="margin-bottom:14px"></p>
     <div class="grid" id="catGrid"></div>
+    <div id="catRankWrap" style="margin-top:20px"></div>
+  </section>
+
+  <!-- ============ 经理完整排名 ============ -->
+  <section class="view" id="view-mgrfull">
+    <button class="backbtn" type="button" id="mgrFullBack">← 返回基金经理排行榜</button>
+    <h2 class="sec">基金经理完整排名</h2>
+    <p class="sec-sub" id="mgrFullSub">正在载入全部基金经理档案…</p>
+    <div class="pills" id="mgrFullPills" role="group" aria-label="完整排名排序指标">
+      <span class="pills-label">排序</span>
+      <button class="pill" type="button" data-mmetric="best" aria-pressed="true">任期最佳回报</button>
+      <button class="pill" type="button" data-mmetric="tenure" aria-pressed="false">从业年限</button>
+      <button class="pill" type="button" data-mmetric="scale" aria-pressed="false">在管规模</button>
+      <button class="pill" type="button" data-mmetric="funds" aria-pressed="false">在管基金数</button>
+    </div>
+    <input class="full-search" id="mgrFullSearch" type="search" placeholder="在完整排名中搜经理姓名或基金公司…" aria-label="在完整排名中搜索基金经理"/>
+    <div class="tablebox"><div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th style="width:52px">名次</th><th>基金经理</th><th class="hide-m">在管规模</th>
+          <th class="hide-m num">在管基金</th><th>代表基金</th><th class="num">任期最佳回报</th><th class="hide-m num">从业年限</th>
+        </tr></thead>
+        <tbody id="mgrFullBody"><tr><td colspan="7" class="loading-note">正在载入全部经理档案…</td></tr></tbody>
+      </table>
+    </div></div>
+    <div class="pager" id="mgrFullPager"></div>
+    <p class="legend" id="mgrFullNote"></p>
+  </section>
+
+  <!-- ============ 基金完整排名 ============ -->
+  <section class="view" id="view-fundfull">
+    <button class="backbtn" type="button" id="fundFullBack">← 返回</button>
+    <h2 class="sec" id="fundFullTitle">基金完整排名</h2>
+    <p class="sec-sub" id="fundFullSub">正在载入…</p>
+    <div class="pills" id="fundFullCatPills" role="group" aria-label="完整排名分类"></div>
+    <div class="pills" id="fundFullScPills" role="group" aria-label="完整排名区间">
+      <span class="pills-label">区间</span>
+    </div>
+    <div class="tablebox"><div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th style="width:52px">排名</th><th>基金</th><th class="hide-m">基金经理</th>
+          <th class="num" id="fundFullPeriodHead">近1年</th><th class="num hide-m">近3年</th><th class="num hide-m">单位净值</th>
+          <th class="num hide-m">净值日期</th><th style="width:86px">对比</th>
+        </tr></thead>
+        <tbody id="fundFullBody"><tr><td colspan="8" class="loading-note">正在载入完整排名…</td></tr></tbody>
+      </table>
+    </div></div>
+    <div class="pager">
+      <button class="btn" type="button" id="fundFullMore">加载更多</button>
+      <button class="btn ghost" type="button" id="fundFullAll">连续加载全部</button>
+      <span class="pager-info" id="fundFullStatus"></span>
+    </div>
+    <p class="legend" id="fundFullNote"></p>
   </section>
 
   <!-- ============ 基金详情 ============ -->
@@ -710,6 +781,7 @@ function liveLoadFundIndex(){
       LIVE.fundIndex=r.filter(function(x){return x&&x[0]&&x[2];}).map(function(x){return {code:x[0],name:x[2],type:x[3]||"",pinyin:x[4]||""};});
       rebuildFundIdx(LIVE.fundIndex);
       setLiveStatus("全市场基金索引已直连更新（"+nowTimeStr()+"，共 "+LIVE.fundIndex.length+" 只）");
+      if(typeof refreshSearchIfOpen==="function")refreshSearchIfOpen();
     }
   }).catch(function(){LIVE.fundIndexLoading=false;});
 }
@@ -964,7 +1036,7 @@ function renderCat(){
     var total=SNAP.rankings["all:1nzf"].total;
     $("catSummary").textContent="全市场共 "+total+" 只开放式基金在册（东方财富排行口径），下方为各类近 1 年收益前列的真实名单。点卡片进基金详情页看 K 线、持仓与指数对比。";
   }
-  if(!data){$("catGrid").innerHTML='<p class="loading-note">分类数据载入中…</p>';return;}
+  if(!data){$("catGrid").innerHTML='<p class="loading-note">分类数据载入中…</p>';renderCatRank();return;}
   $("catGrid").innerHTML=data.rows.slice(0,12).map(function(r){
     var d=getDetail(r.code);
     return '<article class="card"><h3><button class="manager-link" type="button" data-gofund="'+r.code+'" style="font-size:16.5px">'+esc(r.name)+'</button></h3>'
@@ -979,6 +1051,7 @@ function renderCat(){
   bindCmpChecks($("catGrid"));
   $("catGrid").querySelectorAll("[data-gofund]").forEach(function(b){b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});});
   $("catGrid").querySelectorAll("[data-gomgr]").forEach(function(b){b.addEventListener("click",function(){openManager(b.getAttribute("data-gomgr"));});});
+  renderCatRank();
 }
 </script>
 
@@ -1661,8 +1734,18 @@ function renderSearch(){
       if(m.name.indexOf(raw)>=0||m.company.indexOf(raw)>=0)mgrs.push(m);
     }
   }
+  var srPending=!FUND_INDEX.length||!MG_LIST.length;
+  if(srPending){
+    /* 索引还没到手时搜索主动触发载入，到手后会自动重搜，不用用户重新输入 */
+    if(typeof loadFundsIndex==="function")loadFundsIndex();
+    if(typeof loadManagersJson==="function")loadManagersJson();
+  }
   if(!funds.length&&!mgrs.length){
-    box.innerHTML='<div class="sr-empty">没有找到与「'+esc(raw)+'」相关的基金或基金经理。<br/>试试基金代码（如 270023）、基金名（如 广发全球精选）或经理姓名（如 李耀柱）。'+(FUND_INDEX.length?"":"<br/>全市场索引尚在载入，稍候再试。")+'</div>';
+    if(srPending){
+      box.innerHTML='<div class="sr-empty">正在载入全市场索引…<br/>结果出来会自动显示，不用重新输入。</div>';
+    }else{
+      box.innerHTML='<div class="sr-empty">没有找到与「'+esc(raw)+'」相关的基金或基金经理。<br/>试试基金代码（如 270023）、基金名（如 广发全球精选）或经理姓名（如 李耀柱）。</div>';
+    }
   }else{
     var h="";
     if(mgrs.length){
@@ -1684,6 +1767,7 @@ function renderSearch(){
           +'<button class="sr-add" type="button" data-sradd="'+f.code+'" aria-label="把'+esc(f.name)+'加入或移出对比">'+(on?"✓ 已加入":"加入对比")+'</button></div>';
       }).join("");
     }
+    if(srPending)h+='<div class="sr-group">'+(!MG_LIST.length?"基金经理索引还在载入，搜经理稍候片刻，结果会自动补齐。":"基金索引还在载入，更多结果会自动补齐。")+'</div>';
     h+='<div class="sr-foot" id="srFoot"></div>';
     box.innerHTML=h;
     box.querySelectorAll("[data-srmgr]").forEach(function(el){
@@ -1707,7 +1791,7 @@ function renderSearch(){
 (function(){
   var input=$("searchInput");
   input.addEventListener("input",renderSearch);
-  input.addEventListener("focus",function(){liveLoadFundIndex();if(input.value.trim())renderSearch();});
+  input.addEventListener("focus",function(){if(typeof loadFundsIndex==="function")loadFundsIndex();if(typeof loadManagersJson==="function")loadManagersJson();liveLoadFundIndex();if(input.value.trim())renderSearch();});
   input.addEventListener("keydown",function(e){
     var box=$("searchResults");
     if(e.key==="Escape"){closeSearch();return;}
@@ -2096,12 +2180,245 @@ function applyTheme(name){
   window.addEventListener("resize",function(){if(rzT)clearTimeout(rzT);rzT=setTimeout(function(){if(KL)drawKline();},160);});
 })();
 
+/* ==================== 完整排名：经理全量榜 / 基金全量榜 / 分类排名 ==================== */
+function parseScaleYi(s){if(!s)return null;var m=String(s).match(/([\d.]+)\s*亿元/);return m?parseFloat(m[1]):null;}
+function parsePctStr(s){if(!s)return null;var m=String(s).match(/(-?[\d.]+)%/);return m?parseFloat(m[1]):null;}
+
+/* ---------- 经理完整排名（基于全量经理档案 managers.json，共 4,390 位） ---------- */
+var mgrFull={metric:"best",q:"",page:1,pageSize:50};
+var MGR_FULL_METRICS={
+  best:{label:"任期最佳回报",fn:function(m){return parsePctStr(m.bestReturn);}},
+  tenure:{label:"从业年限",fn:function(m){return m.tenureDays||null;}},
+  scale:{label:"在管规模",fn:function(m){return parseScaleYi(m.scale);}},
+  funds:{label:"在管基金数",fn:function(m){return m.fundCodes.length;}}
+};
+function mgrFullList(){
+  var fn=MGR_FULL_METRICS[mgrFull.metric].fn;
+  var list=MG_LIST.slice();
+  list.sort(function(a,b){
+    var va=fn(a),vb=fn(b);
+    if(va===null&&vb===null)return 0;
+    if(va===null)return 1;
+    if(vb===null)return -1;
+    return vb-va;
+  });
+  if(mgrFull.q){
+    var q=mgrFull.q;
+    list=list.filter(function(m){return m.name.indexOf(q)>=0||m.company.indexOf(q)>=0;});
+  }
+  return list;
+}
+function openMgrFull(){
+  showView("mgrfull");
+  renderMgrFull();
+}
+function renderMgrFull(){
+  var body=$("mgrFullBody");
+  if(!MG_LIST.length){
+    $("mgrFullSub").textContent="正在载入全部基金经理档案，载入完成后自动显示完整排名…";
+    body.innerHTML='<tr><td colspan="7" class="loading-note">正在载入全部经理档案…</td></tr>';
+    $("mgrFullPager").innerHTML="";
+    loadManagersJson().then(function(){if($("view-mgrfull").classList.contains("active"))renderMgrFull();});
+    return;
+  }
+  var list=mgrFullList();
+  var totalPages=Math.max(1,Math.ceil(list.length/mgrFull.pageSize));
+  if(mgrFull.page>totalPages)mgrFull.page=totalPages;
+  if(mgrFull.page<1)mgrFull.page=1;
+  var start=(mgrFull.page-1)*mgrFull.pageSize;
+  var rows=list.slice(start,start+mgrFull.pageSize);
+  $("mgrFullSub").textContent="全部 "+MG_LIST.length+" 位在册基金经理，按「"+MGR_FULL_METRICS[mgrFull.metric].label+"」从高到低排序"
+    +(mgrFull.q?(" · 已按「"+mgrFull.q+"」筛选出 "+list.length+" 位"):"")+"。点任意一行进经理主页。指标缺失的经理排在末尾并显示「—」。";
+  body.innerHTML=rows.length?rows.map(function(m,i){
+    var rank=start+i+1;
+    var best=parsePctStr(m.bestReturn);
+    return '<tr class="clickable" data-mgrfull="'+m.id+'" tabindex="0" role="button" aria-label="查看'+esc(m.name)+'主页">'
+      +'<td><span class="rankno'+(rank<=3?" top":"")+'">'+rank+'</span></td>'
+      +'<td><span style="font-weight:700">'+esc(m.name)+'</span><div class="company">'+esc(m.company)+'</div></td>'
+      +'<td class="hide-m'+(mgrFull.metric==="scale"?" metric-hot":"")+'">'+esc(m.scale||"—")+'</td>'
+      +'<td class="hide-m num'+(mgrFull.metric==="funds"?" metric-hot":"")+'">'+m.fundCodes.length+' 只</td>'
+      +'<td><button class="manager-link" type="button" data-gofund="'+esc(m.repCode)+'">'+esc(m.repName)+'</button><div class="company">'+esc(m.repCode)+'</div></td>'
+      +'<td class="num '+(best===null?"":pctClass(best))+(mgrFull.metric==="best"?" metric-hot":"")+'">'+(best===null?"—":fmtPct(best))+'</td>'
+      +'<td class="num hide-m'+(mgrFull.metric==="tenure"?" metric-hot":"")+'">'+tenureYears(m.tenureDays)+'</td></tr>';
+  }).join(""):'<tr><td colspan="7" class="loading-note">没有找到符合筛选条件的经理，换个关键词试试。</td></tr>';
+  body.querySelectorAll("tr[data-mgrfull]").forEach(function(tr){
+    tr.addEventListener("click",function(e){
+      if(e.target&&e.target.hasAttribute&&e.target.hasAttribute("data-gofund"))return;
+      openManager(tr.getAttribute("data-mgrfull"));
+    });
+    tr.addEventListener("keydown",function(e){if(e.key==="Enter")openManager(tr.getAttribute("data-mgrfull"));});
+  });
+  body.querySelectorAll("[data-gofund]").forEach(function(b){
+    b.addEventListener("click",function(e){e.stopPropagation();openFund(b.getAttribute("data-gofund"));});
+  });
+  $("mgrFullPager").innerHTML='<button class="btn ghost" type="button" id="mgrFullPrev" '+(mgrFull.page<=1?"disabled":"")+'>← 上一页</button>'
+    +'<span class="pager-info">第 '+mgrFull.page+" / "+totalPages+" 页 · 共 "+list.length+" 位经理（每页 "+mgrFull.pageSize+" 位）</span>"
+    +'<button class="btn ghost" type="button" id="mgrFullNext" '+(mgrFull.page>=totalPages?"disabled":"")+'>下一页 →</button>';
+  var pv=$("mgrFullPrev"),nx=$("mgrFullNext");
+  if(pv)pv.addEventListener("click",function(){mgrFull.page--;renderMgrFull();window.scrollTo({top:0,behavior:"smooth"});});
+  if(nx)nx.addEventListener("click",function(){mgrFull.page++;renderMgrFull();window.scrollTo({top:0,behavior:"smooth"});});
+  $("mgrFullNote").textContent="数据口径：完整排名基于东方财富 / 天天基金基金经理全量档案（共 "+MG_LIST.length+" 位在册经理），任期最佳回报、从业年限、在管规模、在管基金数均为档案公开字段，本页按所选指标实排，未收录或指标缺失者不做估算填充。与排行榜页的精选榜区别：精选榜（近 1 年 / 近 3 年）是按「全市场收益前 100 只基金归因到现任经理」的口径聚合的前 30 名，任期最佳口径与此处完整排名的默认排序一致。过往收益不代表未来表现。";
+}
+document.querySelectorAll("#mgrFullPills .pill").forEach(function(b){
+  b.addEventListener("click",function(){
+    mgrFull.metric=b.getAttribute("data-mmetric");mgrFull.page=1;
+    document.querySelectorAll("#mgrFullPills .pill").forEach(function(p){p.setAttribute("aria-pressed",p===b?"true":"false");});
+    renderMgrFull();
+  });
+});
+$("mgrFullSearch").addEventListener("input",function(){
+  mgrFull.q=this.value.trim();mgrFull.page=1;renderMgrFull();
+});
+$("mgrFullBtn").addEventListener("click",openMgrFull);
+$("mgrFullBack").addEventListener("click",function(){
+  $("mgrDetailWrap").hidden=true;$("mgrListWrap").hidden=false;showView("managers");
+});
+
+/* ---------- 基金完整排名（按分类 + 区间逐页直连加载全部名次） ---------- */
+var fundFull={ft:"all",sc:"1nzf",from:"fundrank",rows:[],total:0,nextPage:2,loading:false,exhausted:false,err:false};
+function fundFullCatLabel(){for(var i=0;i<RANK_CATS.length;i++)if(RANK_CATS[i].ft===fundFull.ft)return RANK_CATS[i].label;return "全部";}
+function openFundFull(ft,sc,from){
+  fundFull.ft=ft||"all";
+  fundFull.sc=sc||"1nzf";
+  fundFull.from=from||(lastTab==="category"?"category":"fundrank");
+  resetFundFull();
+  showView("fundfull");
+}
+function resetFundFull(){
+  var data=getRank(fundFull.ft,fundFull.sc);
+  fundFull.rows=data?data.rows.slice():[];
+  fundFull.total=data?data.total:0;
+  fundFull.nextPage=2;fundFull.exhausted=false;fundFull.err=false;fundFull.loading=false;
+  renderFundFull();
+  if(!data)loadFundFullPage(1);
+  else if(data.total&&data.rows.length>=data.total)fundFull.exhausted=true;
+}
+function loadFundFullPage(pi){
+  if(fundFull.loading)return Promise.resolve();
+  fundFull.loading=true;fundFull.err=false;renderFundFull();
+  var ft=fundFull.ft,sc=fundFull.sc;
+  return loadScript("https://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft="+ft+"&sc="+sc+"&st=desc&sd=&ed=&pi="+pi+"&pn=50&dx=1",20000).then(function(){
+    if(fundFull.ft!==ft||fundFull.sc!==sc)return; /* user switched meanwhile */
+    var parsed=parseRankData();
+    if(!parsed||!parsed.rows.length)throw new Error("empty page");
+    if(pi===1)fundFull.rows=parsed.rows.slice();
+    else fundFull.rows=fundFull.rows.concat(parsed.rows);
+    fundFull.total=parsed.total||fundFull.total;
+    fundFull.nextPage=pi+1;
+    if(parsed.rows.length<50||(fundFull.total&&fundFull.rows.length>=fundFull.total))fundFull.exhausted=true;
+    setLiveStatus("完整排名已直连更新（"+nowTimeStr()+"，已加载 "+fundFull.rows.length+" 只）");
+  }).catch(function(){
+    if(fundFull.ft===ft&&fundFull.sc===sc)fundFull.err=true;
+  }).then(function(){
+    fundFull.loading=false;renderFundFull();
+  });
+}
+function renderFundFull(){
+  var f=rankFieldFor(fundFull.sc);
+  $("fundFullTitle").textContent="基金完整排名 · "+fundFullCatLabel()+"（"+f.label+"）";
+  $("fundFullPeriodHead").textContent=f.label;
+  /* pills */
+  var cp=$("fundFullCatPills");cp.innerHTML="";
+  RANK_CATS.forEach(function(c){
+    var b=document.createElement("button");b.className="pill";b.type="button";b.textContent=c.label;
+    b.setAttribute("aria-pressed",c.ft===fundFull.ft?"true":"false");
+    b.addEventListener("click",function(){fundFull.ft=c.ft;resetFundFull();});
+    cp.appendChild(b);
+  });
+  var sp=$("fundFullScPills");sp.innerHTML='<span class="pills-label">区间</span>';
+  RANK_SCS.forEach(function(s){
+    var b=document.createElement("button");b.className="pill";b.type="button";b.textContent=s.label;
+    b.setAttribute("aria-pressed",s.sc===fundFull.sc?"true":"false");
+    b.addEventListener("click",function(){fundFull.sc=s.sc;resetFundFull();});
+    sp.appendChild(b);
+  });
+  var body=$("fundFullBody");
+  if(!fundFull.rows.length){
+    body.innerHTML='<tr><td colspan="8" class="loading-note">'+(fundFull.loading?"该口径完整排名正在直连拉取…":(fundFull.err?"直连东方财富排行接口未成功，暂时无法载入该口径的完整排名；可切换到「近1年」查看内置快照，或稍后点「加载更多」重试。":"暂无数据"))+'</td></tr>';
+  }else{
+    body.innerHTML=fundFull.rows.map(function(r,i){
+      return '<tr><td><span class="rankno'+(i<3?" top":"")+'">'+(i+1)+'</span></td>'
+        +'<td><button class="manager-link" type="button" data-gofund="'+r.code+'"><b>'+esc(r.name)+'</b></button>'
+        +'<div class="company">'+r.code+' · '+esc(r.type||"")+(r.inception?' · 成立 '+esc(r.inception):"")+'</div></td>'
+        +'<td class="hide-m">'+(r.managerName?'<button class="manager-link" type="button" data-gomgr="'+r.managerId+'">'+esc(r.managerName)+'</button>':'—')+'</td>'
+        +'<td class="num '+pctClass(r[f.field])+'">'+fmtPct(r[f.field])+'</td>'
+        +'<td class="num hide-m '+pctClass(r.y3)+'">'+fmtPct(r.y3)+'</td>'
+        +'<td class="num hide-m">'+(r.nav!==null&&r.nav!==undefined?fmtNum(r.nav,4):"—")+'</td>'
+        +'<td class="num hide-m">'+esc(r.date||"")+'</td>'
+        +'<td>'+fundRowCmp(r.code)+'</td></tr>';
+    }).join("");
+    bindCmpChecks(body);
+    body.querySelectorAll("[data-gofund]").forEach(function(b){b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});});
+    body.querySelectorAll("[data-gomgr]").forEach(function(b){b.addEventListener("click",function(){openManager(b.getAttribute("data-gomgr"));});});
+  }
+  var shown=fundFull.rows.length,total=fundFull.total||shown;
+  $("fundFullSub").textContent=fundFullCatLabel()+" · 按"+f.label+"收益排序 · 共 "+total+" 只基金，本页已加载 "+shown+" 只"
+    +(fundFull.exhausted&&shown>0?"，已全部加载完毕":"")+"。点基金名进详情页，点经理名进经理主页；勾选「对比」加入底部对比栏。";
+  $("fundFullStatus").textContent=fundFull.loading?("正在加载第 "+fundFull.nextPage+" 页… 已显示 "+shown+" / "+total+" 只")
+    :(fundFull.exhausted?("已显示全部 "+shown+" 只"):("已显示 "+shown+" / "+total+" 只"+(fundFull.err?" · 上次加载未成功，可重试":"")));
+  $("fundFullMore").disabled=fundFull.loading||fundFull.exhausted;
+  $("fundFullMore").textContent=fundFull.err?"重试加载更多":"加载更多（下一页 50 只）";
+  $("fundFullAll").disabled=fundFull.loading||fundFull.exhausted;
+  $("fundFullNote").innerHTML=(fundFull.rows.length&&fundFull.nextPage>2||fundFull.exhausted?'<span class="live-dot"></span>超出快照前 50 名的部分由你的浏览器直连东方财富排行接口逐页拉取（每页 50 只），与排行榜同源同口径。':'<span class="snap-dot"></span>前 50 名来自内置快照（打包时点见页首横幅）；点「加载更多」后，后续名次由你的浏览器直连东方财富排行接口逐页拉取，与排行榜同源同口径。直连失败时会停留在已加载部分，不会用估算数据补位。')
+    +" 收益为正显示红色、为负显示绿色（红涨绿跌）。过往收益不代表未来表现。";
+}
+function rankFieldFor(sc){for(var i=0;i<RANK_SCS.length;i++)if(RANK_SCS[i].sc===sc)return RANK_SCS[i];return RANK_SCS[0];}
+$("fundFullBtn").addEventListener("click",function(){openFundFull(rankFt,rankSc,"fundrank");});
+$("fundFullBack").addEventListener("click",function(){showView(fundFull.from==="category"?"category":"fundrank");});
+$("fundFullMore").addEventListener("click",function(){loadFundFullPage(fundFull.nextPage);});
+$("fundFullAll").addEventListener("click",function(){
+  var guard=0;
+  function step(){
+    if(fundFull.exhausted||fundFull.err||guard>=80)return;
+    guard++;
+    loadFundFullPage(fundFull.nextPage).then(step);
+  }
+  step();
+});
+
+/* ---------- 分类页：所选分类对应的基金排名（近 1 年） ---------- */
+function renderCatRank(){
+  var wrap=$("catRankWrap");if(!wrap)return;
+  var data=getRank(curCat,"1nzf");
+  var info=CAT_INFO[curCat];
+  if(!data||!data.rows.length){wrap.innerHTML="";return;}
+  var top=data.rows.slice(0,20);
+  wrap.innerHTML='<div class="sect-head"><h3>'+esc(info.label)+' · 基金排名（近 1 年收益）</h3>'
+    +'<button class="btn ghost small" type="button" id="catFullBtn">查看「'+esc(info.label)+'」完整排名 →</button></div>'
+    +'<div class="tablebox"><div class="table-scroll"><table><thead><tr>'
+    +'<th style="width:52px">排名</th><th>基金</th><th class="hide-m">基金经理</th>'
+    +'<th class="num">近1年</th><th class="num hide-m">近3年</th><th class="num hide-m">单位净值</th><th style="width:86px">对比</th>'
+    +'</tr></thead><tbody>'
+    +top.map(function(r,i){
+      return '<tr><td><span class="rankno'+(i<3?" top":"")+'">'+(i+1)+'</span></td>'
+        +'<td><button class="manager-link" type="button" data-gofund="'+r.code+'"><b>'+esc(r.name)+'</b></button>'
+        +'<div class="company">'+r.code+' · '+esc(r.type||"")+(r.inception?' · 成立 '+esc(r.inception):"")+'</div></td>'
+        +'<td class="hide-m">'+(r.managerName?'<button class="manager-link" type="button" data-gomgr="'+r.managerId+'">'+esc(r.managerName)+'</button>':'—')+'</td>'
+        +'<td class="num '+pctClass(r.y1)+'">'+fmtPct(r.y1)+'</td>'
+        +'<td class="num hide-m '+pctClass(r.y3)+'">'+fmtPct(r.y3)+'</td>'
+        +'<td class="num hide-m">'+(r.nav!==null&&r.nav!==undefined?fmtNum(r.nav,4):"—")+'</td>'
+        +'<td>'+fundRowCmp(r.code)+'</td></tr>';
+    }).join("")
+    +'</tbody></table></div></div>'
+    +'<p class="legend">该分类共 '+(data.total||data.rows.length)+' 只基金在册，此处显示近 1 年收益前 20 名；点上方「查看完整排名」可逐页加载该分类的全部名次。净值日期 '+(data.rows[0]?data.rows[0].date:"")+'。收益为正显示红色、为负显示绿色（红涨绿跌）。过往收益不代表未来表现。</p>';
+  bindCmpChecks(wrap);
+  wrap.querySelectorAll("[data-gofund]").forEach(function(b){b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});});
+  wrap.querySelectorAll("[data-gomgr]").forEach(function(b){b.addEventListener("click",function(){openManager(b.getAttribute("data-gomgr"));});});
+  $("catFullBtn").addEventListener("click",function(){openFundFull(curCat,"1nzf","category");});
+}
+
 /* ==================== 启动：载入快照 → 渲染 → 直连刷新 ==================== */
 function loadJsonAsset(name){
-  return fetch("assets/"+name,{cache:"no-store"}).then(function(r){
+  /* 不用 no-store：走浏览器 HTTP 缓存，重复打开不再每次全量重下数 MB 快照 */
+  return fetch("assets/"+name).then(function(r){
     if(!r.ok)throw new Error(name+" "+r.status);
     return r.json();
   });
+}
+/* 搜索框里已有关键词时，数据到达后自动重搜一次，用户不用删掉重打 */
+function refreshSearchIfOpen(){
+  var inp=$("searchInput"),box=$("searchResults");
+  if(inp&&box&&inp.value.trim()&&!box.hidden&&typeof renderSearch==="function")renderSearch();
 }
 var managersJsonPromise=null;
 function loadManagersJson(){
@@ -2118,30 +2435,56 @@ function loadManagersJson(){
     });
     LIVE.managersLoaded=true;
     renderFundRank();
+    renderCatRank();
+    if($("view-mgrfull").classList.contains("active"))renderMgrFull();
+    if($("view-fundfull").classList.contains("active"))renderFundFull();
+    refreshSearchIfOpen();
   }).catch(function(){managersJsonPromise=null;});
   return managersJsonPromise;
 }
+/* 全市场基金索引（约 2.8 MB）单独按需载入：首屏不阻塞，搜索时也会主动触发 */
+var fundIndexReady=false,fundsIndexPromise=null;
+function loadFundsIndex(){
+  if(fundIndexReady)return Promise.resolve();
+  if(fundsIndexPromise)return fundsIndexPromise;
+  fundsIndexPromise=loadJsonAsset("funds-index.json").then(function(rows){
+    fundIndexReady=true;
+    if(!LIVE.fundIndex){
+      var fi=(rows||[]).map(function(a){return {code:a[0],name:a[1],type:a[2],pinyin:a[3]||""};});
+      rebuildFundIdx(fi);
+    }
+    refreshSearchIfOpen();
+  }).catch(function(){fundsIndexPromise=null;});
+  return fundsIndexPromise;
+}
 function boot(){
+  /* 第一阶段：首屏只需快照元数据 + 排行榜（约 140 KB），到手立刻渲染，
+     不再等 details / funds-index 等数 MB 大文件全部下完才显示内容 */
   Promise.all([
     loadJsonAsset("snapshot.json"),
-    loadJsonAsset("rankings.json"),
-    loadJsonAsset("details.json"),
-    loadJsonAsset("indices.json"),
-    loadJsonAsset("funds-index.json")
+    loadJsonAsset("rankings.json")
   ]).then(function(res){
     SNAP.meta=res[0];
     SNAP.rankings=res[1];
-    SNAP.details=res[2]||{};
-    SNAP.indices=res[3]||{};
-    var fi=(res[4]||[]).map(function(a){return {code:a[0],name:a[1],type:a[2],pinyin:a[3]||""};});
-    rebuildFundIdx(fi);
     snapshotBanner();
     renderMgrRank();
     renderFundRank();
     renderCat();
     syncCompareUI();
-    /* lazy: full manager index for search + manager pages */
+    /* 第二阶段：大文件转入后台载入，各自到手后只局部刷新用到的地方 */
+    loadFundsIndex();
     loadManagersJson();
+    loadJsonAsset("details.json").then(function(d){
+      SNAP.details=d||{};
+      renderFundRank();
+      renderCat();
+      if(currentFundCode)renderFundDetail(currentFundCode,false);
+      refreshSearchIfOpen();
+    }).catch(function(){/* 详情缺失时各页有直连兜底 */});
+    loadJsonAsset("indices.json").then(function(ix){
+      SNAP.indices=ix||{};
+      if(currentFundCode)renderFundDetail(currentFundCode,false);
+    }).catch(function(){/* 指数缺失时详情页会直连刷新 */});
     /* live refresh in background */
     liveLoadRank("all","1nzf");
     liveLoadIndices();
