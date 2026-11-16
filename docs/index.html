@@ -199,6 +199,23 @@ td.best{background:var(--gold-bg);font-weight:800}
 #trayHint{font-size:12px;color:#8fa9bd;width:100%}
 @media(min-width:681px){#trayHint{width:auto}}
 
+/* ---------- 经理对比栏（与基金对比栏同处底部托盘，第二行） ---------- */
+#mtrayRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%;border-top:1px solid #2c4f6b;padding-top:10px;margin-top:2px}
+#mtrayRow[hidden]{display:none}
+#mtrayGo{margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-weight:800}
+#mtrayGo:disabled{opacity:.4}
+#mtrayClear{background:none;border:1px solid #2c4f6b;color:#b9cbda;border-radius:9px;padding:8px 12px}
+#mtrayHint{font-size:12px;color:#8fa9bd;width:100%}
+@media(min-width:681px){#mtrayHint{width:auto}}
+
+/* ---------- 经理对比页 ---------- */
+table.mcmp td{vertical-align:top}
+.mcmp-fund{padding:7px 0;border-top:1px dashed var(--line)}
+.mcmp-fund:first-child{padding-top:0;border-top:none}
+.mcmp-fund:last-child{padding-bottom:0}
+.mcmp-rets{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.mcmp-rets b{font-weight:700}
+
 /* ---------- 投资风格画像 ---------- */
 #profileEntry{border:1px solid var(--accent);background:var(--chip);color:var(--accent-ink);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700;white-space:nowrap}
 #profileEntry.set{background:var(--accent);color:#fff}
@@ -235,6 +252,40 @@ header.site .head-note{margin-left:0}
 .sect-head h3{margin:0;font-size:16.5px}
 .metric-hot{font-weight:800}
 
+/* ---------- 我的效用曲线（第 3 步） ---------- */
+.uc-entry{background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin:0 0 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.uc-entry .uc-entry-main{flex:1;min-width:240px}
+.uc-entry h3{margin:0 0 4px;font-size:17px}
+.uc-entry p{margin:0;color:var(--muted);font-size:13.5px}
+.uc-context{background:var(--gold-bg);border:1px solid var(--warn-line);border-radius:12px;padding:11px 14px;font-size:14px;margin:0 0 16px;display:flex;gap:8px 18px;flex-wrap:wrap}
+.uc-context b{white-space:nowrap}
+.uc-progress{display:flex;gap:5px;margin:0 0 14px;flex-wrap:wrap}
+.uc-dot{width:30px;height:6px;border-radius:99px;background:var(--surface2);border:1px solid var(--line)}
+.uc-dot.done{background:var(--accent);border-color:var(--accent)}
+.uc-dot.now{background:var(--gold);border-color:var(--gold)}
+.uc-qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 6px}
+.uc-versus{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:640px){.uc-versus{grid-template-columns:1fr}}
+.uc-choice{appearance:none;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;color:var(--ink);width:100%}
+.uc-choice:hover{border-color:var(--accent)}
+.uc-choice .uc-choice-tag{font-size:12px;font-weight:800;letter-spacing:.05em;color:var(--accent-ink);margin:0 0 6px}
+.uc-choice .uc-big{font-size:24px;font-weight:800;line-height:1.3;margin:0 0 6px;font-variant-numeric:tabular-nums}
+.uc-choice .uc-sub{color:var(--muted);font-size:13.5px;margin:0}
+.uc-gamble-row{display:flex;justify-content:space-between;gap:10px;background:var(--surface2);border-radius:10px;padding:9px 12px;margin:6px 0;font-variant-numeric:tabular-nums}
+.uc-gamble-row b{font-size:16px}
+.uc-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.uc-stats div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.uc-stats .k{font-size:12px;color:var(--muted)}
+.uc-stats .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.uc-stats .v.small{font-size:15px;padding-top:3px}
+.uc-note-small{font-size:12px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:12px;margin-top:18px}
+.uc-warn{background:var(--gold-bg);border:1px solid var(--warn-line);border-radius:12px;padding:16px 18px;margin:0 0 14px}
+.uc-chart-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:14px;overflow:hidden}
+.uc-chart-wrap svg{width:100%;height:auto;display:block}
+.uc-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:8px 0 4px}
+.uc-legend .bl{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.uc-legend .sw{width:18px;height:4px;border-radius:2px;display:inline-block}
+
 /* ---------- footer ---------- */
 footer.site{border-top:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12.5px}
 footer.site .wrap{padding-top:16px;padding-bottom:26px}
@@ -268,7 +319,7 @@ footer.site p{margin:0 0 6px}
       <button id="searchClear" type="button" hidden aria-label="清除搜索">×</button>
       <div id="searchResults" hidden role="listbox" aria-label="搜索结果"></div>
     </div>
-    <p class="search-hint">全市场搜索：可搜基金名称 / 代码 / 拼音，或基金经理姓名（如「李耀柱」）。点基金进详情页（净值 K 线、持仓、指数对比），点按钮加入对比；点经理进经理主页。</p>
+    <p class="search-hint">全市场搜索：可搜基金名称 / 代码 / 拼音，或基金经理姓名（如「李耀柱」）。点基金进详情页（净值 K 线、持仓、指数对比），点按钮加入对比；点经理进经理主页，经理行上的按钮可把该经理加入经理对比栏。</p>
   </div>
 </header>
 
@@ -282,6 +333,8 @@ footer.site p{margin:0 0 6px}
     <button class="tab" role="tab" data-view="fundrank" aria-selected="false">基金排行</button>
     <button class="tab" role="tab" data-view="category" aria-selected="false">基金分类</button>
     <button class="tab" role="tab" data-view="compare" aria-selected="false">基金对比<span class="badge" id="cmpBadge" hidden>0</span></button>
+    <button class="tab" role="tab" data-view="mgrcompare" aria-selected="false">基金经理对比<span class="badge" id="mcmpBadge" hidden>0</span></button>
+    <button class="tab" role="tab" data-view="utility" aria-selected="false">我的效用曲线</button>
   </div>
 </nav>
 
@@ -290,6 +343,13 @@ footer.site p{margin:0 0 6px}
   <!-- ============ 经理排行榜 ============ -->
   <section class="view active" id="view-managers">
     <div id="mgrListWrap">
+      <div class="uc-entry">
+        <div class="uc-entry-main">
+          <h3>第 3 步 · 我的效用曲线</h3>
+          <p>做 10 道二选一（约 2–3 分钟），用两个不同波动的赌局互相交叉验证，测出你的确定性等价与风险厌恶系数 A，画出专属于你的无差异曲线。结果会保存下来，供第 5 步与有效前沿相切时调用。</p>
+        </div>
+        <button class="btn" type="button" id="ucEntryBtn">开始测评 →</button>
+      </div>
       <h2 class="sec">基金经理排行榜</h2>
       <p class="sec-sub" id="mgrMethod">正在载入…</p>
       <div class="pills" id="leaderPills" role="group" aria-label="排行榜口径">
@@ -300,6 +360,10 @@ footer.site p{margin:0 0 6px}
       <div class="pills" style="margin-top:-4px">
         <button class="btn ghost" type="button" id="mgrFullBtn">查看完整排名（全部基金经理）→</button>
         <span class="company">上方为精选榜（前 30）；完整排名收录全部在册经理，可按任期最佳回报 / 从业年限 / 在管规模 / 在管基金数排序，并可搜姓名或公司</span>
+      </div>
+      <div class="pills" style="margin-top:-4px">
+        <button class="btn ghost" type="button" id="mgrCmpEntryBtn">基金经理对比 →</button>
+        <span class="company">把 2–4 位经理并排对比从业年限、任期最佳回报、在管规模、风格标签与在管基金收益；在完整排名、经理主页或顶部搜索里点「加入对比」即可选人</span>
       </div>
       <div class="tablebox"><div class="table-scroll">
         <table>
@@ -371,9 +435,9 @@ footer.site p{margin:0 0 6px}
       <table>
         <thead><tr>
           <th style="width:52px">名次</th><th>基金经理</th><th class="hide-m">在管规模</th>
-          <th class="hide-m num">在管基金</th><th>代表基金</th><th class="num">任期最佳回报</th><th class="hide-m num">从业年限</th>
+          <th class="hide-m num">在管基金</th><th>代表基金</th><th class="num">任期最佳回报</th><th class="hide-m num">从业年限</th><th style="width:96px">经理对比</th>
         </tr></thead>
-        <tbody id="mgrFullBody"><tr><td colspan="7" class="loading-note">正在载入全部经理档案…</td></tr></tbody>
+        <tbody id="mgrFullBody"><tr><td colspan="8" class="loading-note">正在载入全部经理档案…</td></tr></tbody>
       </table>
     </div></div>
     <div class="pager" id="mgrFullPager"></div>
@@ -419,6 +483,23 @@ footer.site p{margin:0 0 6px}
     <div id="compareArea"></div>
   </section>
 
+  <!-- ============ 基金经理对比 ============ -->
+  <section class="view" id="view-mgrcompare">
+    <h2 class="sec">基金经理对比</h2>
+    <p class="sec-sub">把 2–4 位基金经理并排成列对比：所属公司、从业年限、任期最佳回报、在管规模、风格标签，以及各自在管基金的近 1 年 / 近 3 年收益。数据全部取自平台现有经理档案与基金详情，缺失的如实标注「暂无数据」。选人方式：在完整排名、经理主页或顶部搜索里点「加入对比」，经理会进入底部经理对比栏。</p>
+    <div id="mgrCompareArea"></div>
+  </section>
+
+  <!-- ============ 我的效用曲线（第 3 步） ============ -->
+  <section class="view" id="view-utility">
+    <h2 class="sec">我的效用曲线</h2>
+    <p class="sec-sub">均值-方差效用 U = E(r) − ½Aσ²。先测出你对两个赌局的确定性等价（CE），反推风险厌恶系数 A，再画出你的无差异曲线族。</p>
+    <div class="uc-context" role="note">
+      <span>固定情境：<b>本金 ¥20,000</b></span><span><b>持有 1 年</b></span><span>只看 <b>1 年后到手金额</b></span><span><b>不计手续费与税</b></span>
+    </div>
+    <div id="ucArea"></div>
+  </section>
+
 </main>
 
 <!-- 投资风格设置面板 -->
@@ -444,6 +525,13 @@ footer.site p{margin:0 0 6px}
     <button id="trayClear" type="button">清空</button>
     <button id="trayGo" type="button">开始对比 →</button>
     <span id="trayHint">已选 0 只 · 选择 2–4 只后可开始对比</span>
+    <div id="mtrayRow" hidden>
+      <span class="tray-title">经理对比栏</span>
+      <span id="mtrayChips"></span>
+      <button id="mtrayClear" type="button">清空</button>
+      <button id="mtrayGo" type="button">开始对比 →</button>
+      <span id="mtrayHint">已选 0 位 · 选择 2–4 位后可开始对比</span>
+    </div>
   </div>
 </div>
 
@@ -637,6 +725,7 @@ function liveLoadDetail(code){
     setLiveStatus("基金 "+code+" 已直连更新（"+nowTimeStr()+"）");
     if(currentFundCode===code&&$("view-fund").classList.contains("active"))renderFundDetail(code,false);
     if($("view-compare").classList.contains("active"))renderCompare();
+    if($("view-mgrcompare").classList.contains("active"))renderMgrCompare();
     liveLoadHoldings(code);
   }).catch(function(){
     detailState[code]={status:"snap",err:true};
@@ -815,6 +904,7 @@ function showView(name){
   document.querySelectorAll("section.view").forEach(function(s){s.classList.remove("active");});
   $("view-"+name).classList.add("active");
   if(name==="compare")renderCompare();
+  if(name==="mgrcompare")renderMgrCompare();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 tabs.forEach(function(t){t.addEventListener("click",function(){
@@ -913,7 +1003,8 @@ function openManager(mgrId){
     '<button class="backbtn" id="mgrBack" type="button">← 返回排行榜</button>'
     +'<div class="mhead"><div class="avatar" aria-hidden="true">'+esc(m.name.charAt(0))+'</div>'
     +'<div><h2>'+esc(m.name)+'</h2><div class="mmeta">'+esc(m.company)+' · 任职 '+tenureYears(m.tenureDays)+'（'+m.tenureDays+' 天） · 在管规模 '+esc(m.scale||"—")+'</div>'
-    +'<div style="margin-top:6px"><span class="tag">在管 '+m.fundCodes.length+' 只基金</span>'+(m.bestReturn?'<span class="tag">任期最佳回报 '+esc(m.bestReturn)+'</span>':"")+'</div></div></div>'
+    +'<div style="margin-top:6px"><span class="tag">在管 '+m.fundCodes.length+' 只基金</span>'+(m.bestReturn?'<span class="tag">任期最佳回报 '+esc(m.bestReturn)+'</span>':"")+'</div>'
+    +'<div style="margin-top:10px"><button class="btn'+(mgrCompareSet.indexOf(m.id)>=0?" ghost":"")+'" type="button" data-mgrtoggle="'+m.id+'">'+(mgrCompareSet.indexOf(m.id)>=0?"✓ 已加入经理对比（点击移除）":"加入经理对比")+'</button> <span class="company">与另外 1–3 位经理并排对比（底部经理对比栏）</span></div></div></div>'
     +'<div class="stats4">'
     +'<div><div class="k">从业年限</div><div class="v">'+tenureYears(m.tenureDays)+'</div></div>'
     +'<div><div class="k">在管规模</div><div class="v small">'+esc(m.scale||"—")+'</div></div>'
@@ -930,6 +1021,8 @@ function openManager(mgrId){
     +'<div class="panel"><h3>全部在管基金（'+m.fundCodes.length+' 只）</h3><div class="table-scroll"><table><thead><tr><th>基金</th><th class="num">最新净值</th><th class="num hide-m">近1年</th><th>加入对比</th></tr></thead><tbody>'+fundRows+'</tbody></table></div>'
     +'<p class="legend">净值与近 1 年收益仅对已载入详情的基金显示，其余点基金名进详情页直连查看。</p></div>';
   $("mgrBack").addEventListener("click",backToMgrList);
+  var mctg=$("mgrDetailWrap").querySelector("[data-mgrtoggle]");
+  if(mctg)mctg.addEventListener("click",function(){toggleMgrCompare(mctg.getAttribute("data-mgrtoggle"));});
   bindCmpChecks($("mgrDetailWrap"));
   $("mgrDetailWrap").querySelectorAll("[data-gofund]").forEach(function(b){
     b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});
@@ -1667,7 +1760,7 @@ function syncCompareUI(){
     inp.checked=compareSet.indexOf(inp.getAttribute("data-cmp"))>=0;
   });
   var tray=$("tray");
-  tray.hidden=compareSet.length===0;
+  tray.hidden=compareSet.length===0&&(typeof mgrCompareSet==="undefined"||mgrCompareSet.length===0);
   $("trayChips").innerHTML=compareSet.map(function(code){
     return '<span class="tray-chip">'+esc(fundNameOf(code))+'<button type="button" data-rm="'+code+'" aria-label="移除">×</button></span>';
   }).join("");
@@ -1695,6 +1788,143 @@ function toggleCompare(code){
   syncCompareUI();
 }
 
+/* ==================== 基金经理对比 ====================
+   与基金对比同一套交互：mgrCompareSet 存经理 id（上限 4），
+   底部托盘第二行是经理对比栏；选人入口有三处——全局搜索的经理行、
+   基金经理完整排名列表、经理主页。数据全部取自 managers.json 档案
+   与已载入的基金详情，不估算填充，缺失标「暂无数据」。 */
+var mgrCompareSet=[];
+function mgrNameOfId(id){var m=MG_BY_ID[id];return m?m.name:id;}
+function flashMgrHint(msg){var h=$("mtrayHint");if(!h)return;h.textContent=msg;h.style.color="#f0c453";setTimeout(function(){h.style.color="";syncMgrTrayText();},2600);}
+function syncMgrTrayText(){
+  var n=mgrCompareSet.length,h=$("mtrayHint");if(!h)return;
+  h.textContent=n<2?("已选 "+n+" 位 · 选择 2–4 位后可开始对比"):("已选 "+n+" 位 · 可以开始对比了");
+  $("mtrayGo").disabled=n<2;
+}
+function syncMgrCompareUI(){
+  document.querySelectorAll("[data-mgradd]").forEach(function(b){
+    var on=mgrCompareSet.indexOf(b.getAttribute("data-mgradd"))>=0;
+    b.textContent=on?"✓ 已加入":"加入对比";
+    b.classList.toggle("ghost",on);
+  });
+  var tg=document.querySelector("[data-mgrtoggle]");
+  if(tg){
+    var ton=mgrCompareSet.indexOf(tg.getAttribute("data-mgrtoggle"))>=0;
+    tg.textContent=ton?"✓ 已加入经理对比（点击移除）":"加入经理对比";
+    tg.classList.toggle("ghost",ton);
+  }
+  var tray=$("tray");
+  tray.hidden=compareSet.length===0&&mgrCompareSet.length===0;
+  $("mtrayRow").hidden=mgrCompareSet.length===0;
+  $("mtrayChips").innerHTML=mgrCompareSet.map(function(id){
+    return '<span class="tray-chip">'+esc(mgrNameOfId(id))+'<button type="button" data-mrm="'+id+'" aria-label="移除'+esc(mgrNameOfId(id))+'">×</button></span>';
+  }).join("");
+  $("mtrayChips").querySelectorAll("[data-mrm]").forEach(function(b){
+    b.addEventListener("click",function(){
+      mgrCompareSet=mgrCompareSet.filter(function(x){return x!==b.getAttribute("data-mrm");});
+      syncMgrCompareUI();
+    });
+  });
+  var badge=$("mcmpBadge");
+  badge.hidden=mgrCompareSet.length===0;badge.textContent=mgrCompareSet.length;
+  syncMgrTrayText();
+  if(typeof refreshSearchStates==="function")refreshSearchStates();
+  if($("view-mgrcompare").classList.contains("active"))renderMgrCompare();
+}
+function toggleMgrCompare(id){
+  if(mgrCompareSet.indexOf(id)>=0){mgrCompareSet=mgrCompareSet.filter(function(x){return x!==id;});}
+  else{
+    if(mgrCompareSet.length>=4){flashMgrHint("最多同时对比 4 位经理，先移除一位再添加。");syncMgrCompareUI();return;}
+    mgrCompareSet.push(id);
+  }
+  syncMgrCompareUI();
+}
+$("mtrayClear").addEventListener("click",function(){mgrCompareSet=[];syncMgrCompareUI();});
+$("mtrayGo").addEventListener("click",function(){showView("mgrcompare");});
+$("mgrCmpEntryBtn").addEventListener("click",function(){showView("mgrcompare");});
+
+/* 风格标签：与完整版同一口径，由代表基金已载入详情的实算指标生成
+   （年化波动 / 股票仓位 / 前十大重仓集中度）；代表基金详情未载入时返回空数组 */
+function mgrStyleTags(m){
+  var d=getDetail(m.repCode);
+  if(!d)return [];
+  var tags=[];
+  if(d.volatility!==null&&d.volatility!==undefined)tags.push(d.volatility>=26?"进攻性强":(d.volatility>=14?"攻守相对均衡":"风格偏稳健"));
+  if(d.stockPosition!==null&&d.stockPosition!==undefined)tags.push(d.stockPosition>=80?"高仓位运作":"仓位有调整空间");
+  if(d.concentration!==null&&d.concentration!==undefined)tags.push(d.concentration>=50?"持仓集中":"持仓较分散");
+  return tags;
+}
+function renderMgrCompare(){
+  var area=$("mgrCompareArea");if(!area)return;
+  if(!MG_LIST.length){
+    area.innerHTML='<div class="compare-empty"><p style="font-size:16px;margin:0 0 6px"><b>经理档案载入中</b></p>'
+      +'<p style="margin:0">全部基金经理档案正在后台载入，载入完成后这里会自动显示已选经理的对比。</p></div>';
+    loadManagersJson().then(function(){if($("view-mgrcompare").classList.contains("active"))renderMgrCompare();});
+    return;
+  }
+  var list=mgrCompareSet.map(function(id){return MG_BY_ID[id];}).filter(Boolean);
+  if(list.length<2){
+    area.innerHTML='<div class="compare-empty"><p style="font-size:16px;margin:0 0 6px"><b>还没有选够基金经理</b></p>'
+      +'<p style="margin:0 0 14px">先选满 2 位再看对比（当前已选 '+list.length+' 位，最多 4 位）。在「基金经理完整排名」、任意一位经理的主页，或顶部搜索里点「加入对比」即可选人，选中的经理会进入底部经理对比栏。</p>'
+      +'<button class="btn" type="button" id="goPickMgr">去完整排名挑选经理</button></div>';
+    var g=$("goPickMgr");if(g)g.addEventListener("click",function(){openMgrFull();});
+    return;
+  }
+  /* 代表基金详情未载入时直连补齐（风格标签与代表基金口径依赖它），到手后本页自动刷新 */
+  list.forEach(function(m){if(!getDetail(m.repCode)&&detailState[m.repCode]==null)liveLoadDetail(m.repCode);});
+  function bestFlags(fn){
+    var vals=list.map(fn).filter(function(v){return v!==null&&v!==undefined&&isFinite(v);});
+    if(!vals.length)return list.map(function(){return false;});
+    var best=Math.max.apply(null,vals);
+    return list.map(function(m){return fn(m)===best;});
+  }
+  var head='<tr><th style="min-width:104px">对比项</th>'+list.map(function(m,i){
+    return '<th><span style="color:'+CMP_COLORS[i]+'">●</span> '+esc(m.name)+'<div class="company">'+esc(m.company)+'</div></th>';
+  }).join("")+'</tr>';
+  function row(label,cells){return '<tr><td style="font-weight:600;white-space:nowrap">'+label+'</td>'+cells+'</tr>';}
+  function numRow(label,fn,fmt){
+    var flags=bestFlags(fn);
+    return row(label,list.map(function(m,i){
+      var v=fn(m);
+      if(v===null||v===undefined||!isFinite(v))return '<td>暂无数据</td>';
+      return '<td class="'+(flags[i]?"best":"")+'">'+fmt(v)+'</td>';
+    }).join(""));
+  }
+  var companyRow=row("所属基金公司",list.map(function(m){return '<td>'+esc(m.company||"暂无数据")+'</td>';}).join(""));
+  var tenureRow=numRow("从业年限",function(m){return m.tenureDays||null;},function(v){return tenureYears(v);});
+  var bestRow=numRow("任期最佳回报",function(m){return parsePctStr(m.bestReturn);},function(v){return '<span class="'+pctClass(v)+'">'+fmtPct(v)+'</span>';});
+  var scaleRow=numRow("在管总规模",function(m){return parseScaleYi(m.scale);},function(v){return fmtNum(v,2)+" 亿元";});
+  var countRow=row("在管基金数量",list.map(function(m){return '<td>'+m.fundCodes.length+' 只</td>';}).join(""));
+  var styleRow=row("风格标签",list.map(function(m){
+    var tags=mgrStyleTags(m);
+    if(!tags.length)return '<td>暂无数据</td>';
+    return '<td>'+tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("")+'</td>';
+  }).join(""));
+  var fundsRow=row("在管基金",list.map(function(m){
+    if(!m.fundCodes.length)return '<td>暂无数据</td>';
+    return '<td>'+m.fundCodes.map(function(code,i){
+      var fd=cmpFundData(code);
+      var r1=(fd.syl1y===null||fd.syl1y===undefined)?null:fd.syl1y;
+      var r3=(fd._r3===null||fd._r3===undefined)?null:fd._r3;
+      return '<div class="mcmp-fund"><button class="manager-link" type="button" data-gofund="'+code+'"><b>'+esc(fd.name||m.fundNames[i]||code)+'</b></button>'
+        +'<div class="company">'+code+'</div>'
+        +'<div class="mcmp-rets"><span>近 1 年 <b class="'+(r1===null?"":pctClass(r1))+'">'+fmtPct(r1)+'</b></span>'
+        +'<span>近 3 年 <b class="'+(r3===null?"":pctClass(r3))+'">'+fmtPct(r3)+'</b></span></div></div>';
+    }).join("")+'</td>';
+  }).join(""));
+  var footRow=row("",list.map(function(m){
+    return '<td><button class="btn small" type="button" data-gomgr="'+m.id+'">查看经理主页 →</button> '
+      +'<button class="btn small ghost" type="button" data-mgrrm="'+m.id+'">移出对比</button></td>';
+  }).join(""));
+  area.innerHTML='<div class="tablebox"><div class="table-scroll"><table class="mcmp"><thead>'+head+'</thead><tbody>'
+    +companyRow+tenureRow+bestRow+scaleRow+countRow+styleRow+fundsRow+footRow
+    +'</tbody></table></div></div>'
+    +'<p class="legend">金色底 = 该行最优值。从业年限、任期最佳回报、在管规模与在管基金数来自东方财富 / 天天基金经理档案；在管基金的近 1 年 / 近 3 年收益取已载入的基金详情（净值实算）或排行口径，未载入详情的基金显示「暂无数据」，点基金名进详情页可直连查看。风格标签由代表基金的实算指标生成（年化波动 / 股票仓位 / 前十大重仓集中度），代表基金详情载入后自动补齐。过往收益不代表未来表现。</p>';
+  area.querySelectorAll("[data-gofund]").forEach(function(b){b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});});
+  area.querySelectorAll("[data-gomgr]").forEach(function(b){b.addEventListener("click",function(){openManager(b.getAttribute("data-gomgr"));});});
+  area.querySelectorAll("[data-mgrrm]").forEach(function(b){b.addEventListener("click",function(){toggleMgrCompare(b.getAttribute("data-mgrrm"));});});
+}
+
 /* ==================== 搜索（全市场） ==================== */
 function hlText(text,q){
   var t=String(text);if(!q)return esc(t);
@@ -1708,8 +1938,13 @@ function refreshSearchStates(){
     btn.textContent=on?"✓ 已加入":"加入对比";
     var row=btn.closest(".sr-item");if(row)row.classList.toggle("selected",on);
   });
+  document.querySelectorAll("[data-srmgradd]").forEach(function(btn){
+    var on=mgrCompareSet.indexOf(btn.getAttribute("data-srmgradd"))>=0;
+    btn.textContent=on?"✓ 已加入":"加入对比";
+    var row=btn.closest(".sr-item");if(row)row.classList.toggle("selected",on);
+  });
   var foot=$("srFoot");
-  if(foot)foot.textContent="已选 "+compareSet.length+" / 4 只 · 点基金行进详情页，点经理行查看经理主页";
+  if(foot)foot.textContent="基金已选 "+compareSet.length+" / 4 只 · 经理已选 "+mgrCompareSet.length+" / 4 位 · 点基金行进详情页，点经理行查看经理主页";
 }
 var srActive=-1;
 function closeSearch(){$("searchResults").hidden=true;$("searchInput").setAttribute("aria-expanded","false");srActive=-1;}
@@ -1750,10 +1985,12 @@ function renderSearch(){
     var h="";
     if(mgrs.length){
       h+='<div class="sr-group">基金经理（共 '+MG_LIST.length+' 位在册）</div>'+mgrs.map(function(m){
-        return '<div class="sr-item" role="option" data-srmgr="'+m.id+'">'
+        var mon=mgrCompareSet.indexOf(m.id)>=0;
+        return '<div class="sr-item'+(mon?" selected":"")+'" role="option" data-srmgr="'+m.id+'">'
           +'<span class="avatar sr-avatar" aria-hidden="true">'+esc(m.name.charAt(0))+'</span>'
           +'<span class="sr-main"><span class="sr-name">'+hlText(m.name,q)+' <span class="company">'+esc(m.company)+'</span></span>'
           +'<span class="sr-sub" style="display:block">在管 '+m.fundCodes.length+' 只基金 · 规模 '+esc(m.scale||"—")+' · 代表作 '+esc(m.repName)+'</span></span>'
+          +'<button class="sr-add" type="button" data-srmgradd="'+m.id+'" aria-label="把'+esc(m.name)+'加入或移出经理对比">'+(mon?"✓ 已加入":"加入对比")+'</button>'
           +'<span class="sr-go">看主页 →</span></div>';
       }).join("");
     }
@@ -1771,7 +2008,13 @@ function renderSearch(){
     h+='<div class="sr-foot" id="srFoot"></div>';
     box.innerHTML=h;
     box.querySelectorAll("[data-srmgr]").forEach(function(el){
-      el.addEventListener("click",function(){closeSearch();openManager(el.getAttribute("data-srmgr"));});
+      el.addEventListener("click",function(e){
+        if(e.target&&e.target.hasAttribute&&e.target.hasAttribute("data-srmgradd"))return;
+        closeSearch();openManager(el.getAttribute("data-srmgr"));
+      });
+    });
+    box.querySelectorAll("[data-srmgradd]").forEach(function(btn){
+      btn.addEventListener("click",function(e){e.stopPropagation();toggleMgrCompare(btn.getAttribute("data-srmgradd"));refreshSearchStates();});
     });
     box.querySelectorAll("[data-srfund]").forEach(function(el){
       el.addEventListener("click",function(e){
@@ -2216,7 +2459,7 @@ function renderMgrFull(){
   var body=$("mgrFullBody");
   if(!MG_LIST.length){
     $("mgrFullSub").textContent="正在载入全部基金经理档案，载入完成后自动显示完整排名…";
-    body.innerHTML='<tr><td colspan="7" class="loading-note">正在载入全部经理档案…</td></tr>';
+    body.innerHTML='<tr><td colspan="8" class="loading-note">正在载入全部经理档案…</td></tr>';
     $("mgrFullPager").innerHTML="";
     loadManagersJson().then(function(){if($("view-mgrfull").classList.contains("active"))renderMgrFull();});
     return;
@@ -2228,10 +2471,11 @@ function renderMgrFull(){
   var start=(mgrFull.page-1)*mgrFull.pageSize;
   var rows=list.slice(start,start+mgrFull.pageSize);
   $("mgrFullSub").textContent="全部 "+MG_LIST.length+" 位在册基金经理，按「"+MGR_FULL_METRICS[mgrFull.metric].label+"」从高到低排序"
-    +(mgrFull.q?(" · 已按「"+mgrFull.q+"」筛选出 "+list.length+" 位"):"")+"。点任意一行进经理主页。指标缺失的经理排在末尾并显示「—」。";
+    +(mgrFull.q?(" · 已按「"+mgrFull.q+"」筛选出 "+list.length+" 位"):"")+"。点任意一行进经理主页，点行末「加入对比」可把该经理加入经理对比栏（2–4 位）。指标缺失的经理排在末尾并显示「—」。";
   body.innerHTML=rows.length?rows.map(function(m,i){
     var rank=start+i+1;
     var best=parsePctStr(m.bestReturn);
+    var mon=mgrCompareSet.indexOf(m.id)>=0;
     return '<tr class="clickable" data-mgrfull="'+m.id+'" tabindex="0" role="button" aria-label="查看'+esc(m.name)+'主页">'
       +'<td><span class="rankno'+(rank<=3?" top":"")+'">'+rank+'</span></td>'
       +'<td><span style="font-weight:700">'+esc(m.name)+'</span><div class="company">'+esc(m.company)+'</div></td>'
@@ -2239,14 +2483,18 @@ function renderMgrFull(){
       +'<td class="hide-m num'+(mgrFull.metric==="funds"?" metric-hot":"")+'">'+m.fundCodes.length+' 只</td>'
       +'<td><button class="manager-link" type="button" data-gofund="'+esc(m.repCode)+'">'+esc(m.repName)+'</button><div class="company">'+esc(m.repCode)+'</div></td>'
       +'<td class="num '+(best===null?"":pctClass(best))+(mgrFull.metric==="best"?" metric-hot":"")+'">'+(best===null?"—":fmtPct(best))+'</td>'
-      +'<td class="num hide-m'+(mgrFull.metric==="tenure"?" metric-hot":"")+'">'+tenureYears(m.tenureDays)+'</td></tr>';
-  }).join(""):'<tr><td colspan="7" class="loading-note">没有找到符合筛选条件的经理，换个关键词试试。</td></tr>';
+      +'<td class="num hide-m'+(mgrFull.metric==="tenure"?" metric-hot":"")+'">'+tenureYears(m.tenureDays)+'</td>'
+      +'<td><button class="btn small'+(mon?" ghost":"")+'" type="button" data-mgradd="'+m.id+'" aria-label="把'+esc(m.name)+'加入或移出经理对比">'+(mon?"✓ 已加入":"加入对比")+'</button></td></tr>';
+  }).join(""):'<tr><td colspan="8" class="loading-note">没有找到符合筛选条件的经理，换个关键词试试。</td></tr>';
   body.querySelectorAll("tr[data-mgrfull]").forEach(function(tr){
     tr.addEventListener("click",function(e){
-      if(e.target&&e.target.hasAttribute&&e.target.hasAttribute("data-gofund"))return;
+      if(e.target&&e.target.hasAttribute&&(e.target.hasAttribute("data-gofund")||e.target.hasAttribute("data-mgradd")))return;
       openManager(tr.getAttribute("data-mgrfull"));
     });
     tr.addEventListener("keydown",function(e){if(e.key==="Enter")openManager(tr.getAttribute("data-mgrfull"));});
+  });
+  body.querySelectorAll("[data-mgradd]").forEach(function(b){
+    b.addEventListener("click",function(e){e.stopPropagation();toggleMgrCompare(b.getAttribute("data-mgradd"));});
   });
   body.querySelectorAll("[data-gofund]").forEach(function(b){
     b.addEventListener("click",function(e){e.stopPropagation();openFund(b.getAttribute("data-gofund"));});
@@ -2493,6 +2741,279 @@ function boot(){
   });
 }
 boot();
+</script>
+<script>
+/* ==================== 第 3 步：我的效用曲线 ====================
+   情境：本金 ¥20,000，持有 1 年，只看 1 年后到手金额，不计手续费与税。
+   G1：50% ¥24,000(+20%) / 50% ¥18,000(-10%)，EV ¥21,000(+5%)，σ=15%，σ²=0.0225
+   G2：50% ¥28,000(+40%) / 50% ¥16,000(-20%)，EV ¥22,000(+10%)，σ=30%，σ²=0.09
+   二分：G1 共 5 题，首步 ¥500 逐轮折半（500/250/125/62.5，末轮调整 31.25），
+         CE1 为最终区间中点，区间宽 62.5；
+         G2 共 4 题，首步 ¥1,000 逐轮折半（1000/500/250，末轮调整 125），
+         CE2 为最终区间中点，区间宽 250。
+   A1 = 2×(5% − CE1收益率)/0.0225；A2 = 2×(10% − CE2收益率)/0.09。
+   验算锚点：CE1=¥20,400 → A1=2.67；CE2=¥19,600 → A2=2.67。
+===================================================================== */
+var UC_KEY="jj-utility-curve-v1";
+var UC_PRINCIPAL=20000;
+var uc={mode:"home",qIndex:0,answers:[],q10Attempts:0,doubtful:false,result:null,saved:null};
+try{var ucSavedRaw=window.localStorage.getItem(UC_KEY);if(ucSavedRaw){uc.saved=JSON.parse(ucSavedRaw);}}catch(e){}
+function fmtMoney(v){
+  if(v===null||v===undefined||!isFinite(v))return "—";
+  var isInt=Math.abs(v-Math.round(v))<0.001;
+  return "¥"+Number(v).toLocaleString("zh-CN",{minimumFractionDigits:isInt?0:2,maximumFractionDigits:2});
+}
+function fmtA(v){return (v===null||v===undefined||!isFinite(v))?"—":Number(v).toFixed(2);}
+function ucOffers(answers){
+  var offers=[];offers[0]=20000;
+  var t1=[500,250,125,62.5];
+  for(var i=0;i<4;i++){if(answers[i])offers[i+1]=offers[i]+(answers[i]==="gamble"?t1[i]:-t1[i]);}
+  offers[5]=20000;
+  var t2=[1000,500,250];
+  for(var j=0;j<3;j++){if(answers[5+j])offers[6+j]=offers[5+j]+(answers[5+j]==="gamble"?t2[j]:-t2[j]);}
+  offers[9]=20000;
+  return offers;
+}
+function ucCompute(answers){
+  var offers=ucOffers(answers);
+  var last1=offers[4],a5=answers[4];
+  var ce1=a5?(last1+(a5==="gamble"?31.25:-31.25)):null;
+  var last2=offers[8],a9=answers[8];
+  var ce2=a9?(last2+(a9==="gamble"?125:-125)):null;
+  if(ce1===null||ce2===null)return null;
+  var r1=ce1/UC_PRINCIPAL-1, r2=ce2/UC_PRINCIPAL-1;
+  var A1=2*(0.05-r1)/0.0225;
+  var A2=2*(0.10-r2)/0.09;
+  var diff=Math.abs(A1-A2);
+  var consistent=diff<=1.0;
+  var A=consistent?(A1+A2)/2:null;
+  var aAvg=(A1+A2)/2;
+  /* CE 区间对应的 A 区间：G1 宽 62.5 → A 宽约 0.28；G2 宽 250 → A 宽约 0.28 */
+  var A1lo=2*(0.05-((ce1+31.25)/UC_PRINCIPAL-1))/0.0225, A1hi=2*(0.05-((ce1-31.25)/UC_PRINCIPAL-1))/0.0225;
+  var A2lo=2*(0.10-((ce2+125)/UC_PRINCIPAL-1))/0.09, A2hi=2*(0.10-((ce2-125)/UC_PRINCIPAL-1))/0.09;
+  return {ce1:ce1,ce2:ce2,ce1Lo:ce1-31.25,ce1Hi:ce1+31.25,ce2Lo:ce2-125,ce2Hi:ce2+125,
+    r1:r1,r2:r2,A1:A1,A2:A2,diff:diff,consistent:consistent,A:A,aAvg:aAvg,
+    A1lo:Math.min(A1lo,A1hi),A1hi:Math.max(A1lo,A1hi),A2lo:Math.min(A2lo,A2hi),A2hi:Math.max(A2lo,A2hi),
+    offers:offers};
+}
+function ucPersist(res){
+  try{
+    var payload={A:res.A,A1:res.A1,A2:res.A2,aAvg:res.aAvg,ce1:res.ce1,ce2:res.ce2,
+      consistent:res.consistent,doubtful:uc.doubtful,answers:uc.answers.slice(),
+      savedAt:new Date().toISOString()};
+    window.localStorage.setItem(UC_KEY,JSON.stringify(payload));
+    uc.saved=payload;
+  }catch(e){}
+}
+function ucRiskLabel(A){
+  if(A===null||A===undefined)return "两次测得不一致，见下方区间";
+  if(A<=0)return "风险中性 / 风险偏好（A ≤ 0）";
+  if(A<=2)return "相对能承受波动（0 < A ≤ 2）";
+  if(A<=4)return "典型的风险厌恶（2 < A ≤ 4）";
+  return "风险厌恶较强（A > 4）";
+}
+function ucOpen(){showView("utility");if(uc.mode==="home")renderUc();}
+function renderUc(){
+  var area=$("ucArea");if(!area)return;
+  if(uc.mode==="quiz")return renderUcQuiz(area);
+  if(uc.mode==="warn")return renderUcWarn(area);
+  if(uc.mode==="result"&&uc.result)return renderUcResult(area,uc.result);
+  /* home */
+  var savedHtml="";
+  if(uc.saved){
+    var s=uc.saved;
+    savedHtml='<div class="panel"><h3>已保存的测评结果</h3>'
+      +'<p style="margin:0 0 6px">上次测得：<b>'+(s.consistent&&s.A!==null&&s.A!==undefined?("A = "+fmtA(s.A)):("A 在 "+fmtA(Math.min(s.A1,s.A2))+" – "+fmtA(Math.max(s.A1,s.A2))+" 之间"))+'</b>'
+      +'（A1 = '+fmtA(s.A1)+'，A2 = '+fmtA(s.A2)+'；CE1 = '+fmtMoney(s.ce1)+'，CE2 = '+fmtMoney(s.ce2)+')'
+      +(s.doubtful?' · <b>区间存疑</b>（第 10 题与前 9 题不一致）':"")
+      +(s.consistent?"":' · 两次测得不太一致')+'</p>'
+      +'<p class="company" style="margin:0 0 12px">保存时间：'+esc(String(s.savedAt||"").replace("T"," ").slice(0,16))+'。这份 A 与曲线已保存，供第 5 步与有效前沿相切时调用（本步只存不用）。</p>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="ucViewSaved">查看我的曲线</button><button class="btn ghost" type="button" id="ucRestart2">重新测评</button></div></div>';
+  }
+  area.innerHTML='<div class="panel" style="margin-top:0"><h3>怎么测：10 道题，两个赌局交叉验证</h3>'
+    +'<p>每题二选一：左边是<b>稳拿一笔确定的钱</b>，右边是一个 <b>50% / 50% 的赌局</b>。没有「不知道」，每题必选一个；选错了可以点「返回上一题」改，改后后面的题目会按新答案重新出。</p>'
+    +'<p><b>第 1–5 题（赌局 G1）</b>：50% 拿 ¥24,000（+20%），50% 拿 ¥18,000（−10%），期望 ¥21,000（+5%），波动 σ = 15%。稳拿金额从 ¥20,000 起，按你的选择逐轮二分逼近，5 题后把你的确定性等价 CE1 压到约 ¥62.5 宽的区间。</p>'
+    +'<p><b>第 6–9 题（赌局 G2）</b>：50% 拿 ¥28,000（+40%），50% 拿 ¥16,000（−20%），期望 ¥22,000（+10%），波动 σ = 30%。同样二分 4 题，CE2 区间宽约 ¥250。两个赌局波动差一倍，却应该反推出同一个 A——对得上，才算交叉验证通过。</p>'
+    +'<p><b>第 10 题（一致性校验）</b>：稳拿 ¥20,000 对 50% 拿 ¥22,000 / 50% 拿 ¥18,000（期望也是 ¥20,000），用来核对你前面的回答是否自洽。</p>'
+    +'<p class="company">按你平时真实的取舍选，不要按「应该选哪个」选——选得越真实，曲线越贴合你。</p>'
+    +'<button class="btn" type="button" id="ucStart">开始第 1 题 →</button></div>'
+    +savedHtml;
+  $("ucStart").addEventListener("click",ucStartQuiz);
+  var vs=$("ucViewSaved");if(vs)vs.addEventListener("click",function(){
+    var savedAns=(uc.saved.answers&&uc.saved.answers.length>=9)?uc.saved.answers:null;
+    var res=savedAns?ucCompute(savedAns):null;
+    /* 若旧答案不完整，直接用保存的数值构造结果对象 */
+    if(!res){
+      res={ce1:uc.saved.ce1,ce2:uc.saved.ce2,ce1Lo:uc.saved.ce1-31.25,ce1Hi:uc.saved.ce1+31.25,ce2Lo:uc.saved.ce2-125,ce2Hi:uc.saved.ce2+125,
+        r1:uc.saved.ce1/UC_PRINCIPAL-1,r2:uc.saved.ce2/UC_PRINCIPAL-1,A1:uc.saved.A1,A2:uc.saved.A2,
+        diff:Math.abs(uc.saved.A1-uc.saved.A2),consistent:uc.saved.consistent,A:uc.saved.A,aAvg:uc.saved.aAvg,
+        A1lo:uc.saved.A1-0.14,A1hi:uc.saved.A1+0.14,A2lo:uc.saved.A2-0.14,A2hi:uc.saved.A2+0.14,offers:[]};
+    }
+    uc.result=res;uc.doubtful=!!uc.saved.doubtful;uc.mode="result";renderUc();
+  });
+  var rs=$("ucRestart2");if(rs)rs.addEventListener("click",ucStartQuiz);
+}
+function ucStartQuiz(){
+  uc.mode="quiz";uc.qIndex=0;uc.answers=[];uc.q10Attempts=0;uc.doubtful=false;uc.result=null;
+  renderUc();window.scrollTo({top:0,behavior:"smooth"});
+}
+function ucGambleInfo(qi){
+  if(qi<=4)return {label:"第一组 · 赌局 G1（共 5 题测 CE1）",hi:24000,hiPct:"+20%",lo:18000,loPct:"−10%",ev:"期望 ¥21,000（+5%）· σ = 15%"};
+  if(qi<=8)return {label:"第二组 · 赌局 G2（共 4 题测 CE2）",hi:28000,hiPct:"+40%",lo:16000,loPct:"−20%",ev:"期望 ¥22,000（+10%）· σ = 30%"};
+  return {label:"第 10 题 · 一致性校验",hi:22000,hiPct:"+10%",lo:18000,loPct:"−10%",ev:"期望 ¥20,000（+0%），与稳拿金额期望相同"};
+}
+function renderUcQuiz(area){
+  area=area||$("ucArea");
+  var qi=uc.qIndex, offers=ucOffers(uc.answers), sure=offers[qi], g=ucGambleInfo(qi);
+  var dots="";
+  for(var i=0;i<10;i++)dots+='<span class="uc-dot'+(i<uc.answers.length?" done":(i===qi?" now":""))+'"></span>';
+  area.innerHTML='<div class="uc-progress" aria-hidden="true">'+dots+'</div>'
+    +'<div class="uc-qhead"><h3 style="margin:0;font-size:17px">第 '+(qi+1)+' / 10 题 · '+esc(g.label)+'</h3><span class="company">本金 ¥20,000 · 持有 1 年</span></div>'
+    +'<p style="margin:0">1 年后，你选哪一个？只能选一个，没有「不知道」。</p>'
+    +'<div class="uc-versus">'
+    +'<button class="uc-choice" type="button" id="ucPickSure"><p class="uc-choice-tag">左 · 稳拿（确定）</p><p class="uc-big">稳拿 '+fmtMoney(sure)+'</p><p class="uc-sub">100% 确定，1 年后就拿这么多，不多也不少。'+(sure>=20000?("比本金多 "+fmtMoney(sure-20000)):("比本金少 "+fmtMoney(20000-sure)))+'</p></button>'
+    +'<button class="uc-choice" type="button" id="ucPickGamble"><p class="uc-choice-tag">右 · 赌局（50% / 50%）</p>'
+    +'<span class="uc-gamble-row"><span>50% 概率拿</span><b>'+fmtMoney(g.hi)+'（'+g.hiPct+'）</b></span>'
+    +'<span class="uc-gamble-row"><span>50% 概率拿</span><b>'+fmtMoney(g.lo)+'（'+g.loPct+'）</b></span>'
+    +'<p class="uc-sub">'+esc(g.ev)+'</p></button>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">'
+    +(qi>0?'<button class="btn ghost" type="button" id="ucBack">← 返回上一题（改后重算后续）</button>':"")
+    +'<button class="btn ghost" type="button" id="ucQuit">退出测评</button></div>';
+  $("ucPickSure").addEventListener("click",function(){ucAnswer("sure");});
+  $("ucPickGamble").addEventListener("click",function(){ucAnswer("gamble");});
+  var bk=$("ucBack");if(bk)bk.addEventListener("click",function(){
+    uc.qIndex=Math.max(0,uc.qIndex-1);uc.answers=uc.answers.slice(0,uc.qIndex);renderUc();
+  });
+  $("ucQuit").addEventListener("click",function(){uc.mode="home";renderUc();});
+}
+function ucAnswer(choice){
+  uc.answers[uc.qIndex]=choice;
+  uc.answers=uc.answers.slice(0,uc.qIndex+1);
+  if(uc.qIndex<9){uc.qIndex++;renderUc();window.scrollTo({top:0,behavior:"smooth"});return;}
+  /* 第 10 题：一致性校验 */
+  var res=ucCompute(uc.answers);
+  uc.result=res;
+  var aEff=res.consistent?res.A:res.aAvg;
+  if(aEff>0&&choice==="gamble"&&!uc.doubtful){
+    if(uc.q10Attempts===0){uc.q10Attempts=1;uc.mode="warn";renderUc();window.scrollTo({top:0,behavior:"smooth"});return;}
+    uc.doubtful=true;
+  }
+  uc.mode="result";ucPersist(res);renderUc();window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderUcWarn(area){
+  area=area||$("ucArea");
+  var res=uc.result;
+  area.innerHTML='<div class="uc-warn"><h3 style="margin:0 0 6px">两次回答不一致</h3>'
+    +'<p style="margin:0 0 6px">前 9 题算出你的风险厌恶系数为正（A1 = '+fmtA(res.A1)+'，A2 = '+fmtA(res.A2)+'），按这个 A，第 10 题里那个期望与本金持平的赌局效用为负，理应选稳拿 ¥20,000；但你刚刚选了赌局。可能是手滑，也可能是你在这道题上的真实取舍不同。</p>'
+    +'<p style="margin:0">请重做第 10 题，或重做一组题目。若重做后仍选赌局，结果会如实把 A 标为「区间存疑」，同时展示 A1、A2，不会替你改答案。</p></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="btn" type="button" id="ucRedo10">重做第 10 题</button>'
+    +'<button class="btn ghost" type="button" id="ucRedoG2">重做第二组（第 6–9 题）</button>'
+    +'<button class="btn ghost" type="button" id="ucRedoAll">全部重做</button>'
+    +'<button class="btn ghost" type="button" id="ucForceResult">就按这个答案出结果（标为存疑）</button></div>';
+  $("ucRedo10").addEventListener("click",function(){uc.qIndex=9;uc.answers=uc.answers.slice(0,9);uc.mode="quiz";renderUc();});
+  $("ucRedoG2").addEventListener("click",function(){uc.qIndex=5;uc.answers=uc.answers.slice(0,5);uc.q10Attempts=0;uc.mode="quiz";renderUc();});
+  $("ucRedoAll").addEventListener("click",ucStartQuiz);
+  $("ucForceResult").addEventListener("click",function(){uc.doubtful=true;uc.mode="result";ucPersist(uc.result);renderUc();});
+}
+/* ---------- 无差异曲线图（SVG 手绘） ---------- */
+function ucChartSvg(res){
+  var W=720,H=400,L=58,R=14,T=14,B=38,PW=W-L-R,PH=H-T-B;
+  function X(s){return L+s/0.40*PW;}
+  function Y(e){return T+(0.30-e)/0.40*PH;}
+  var dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var grid=dark?"#2a3b4b":"#e3e9ef", axisTxt=dark?"#9db0c0":"#5c6b7a";
+  var accent=cssVar("--accent")||"#2563eb";
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="无差异曲线图：横轴波动率 sigma，纵轴期望收益">';
+  /* grid */
+  [0,0.1,0.2,0.3,0.4].forEach(function(sv){s+='<line x1="'+X(sv)+'" y1="'+T+'" x2="'+X(sv)+'" y2="'+(T+PH)+'" stroke="'+grid+'"/><text x="'+X(sv)+'" y="'+(H-20)+'" font-size="11" fill="'+axisTxt+'" text-anchor="middle">'+Math.round(sv*100)+'%</text>';});
+  [-0.1,0,0.1,0.2,0.3].forEach(function(ev){s+='<line x1="'+L+'" y1="'+Y(ev)+'" x2="'+(L+PW)+'" y2="'+Y(ev)+'" stroke="'+grid+'"/><text x="'+(L-6)+'" y="'+(Y(ev)+4)+'" font-size="11" fill="'+axisTxt+'" text-anchor="end">'+(ev>0?"+":"")+Math.round(ev*100)+'%</text>';});
+  s+='<text x="'+(L+PW/2)+'" y="'+(H-4)+'" font-size="12" fill="'+axisTxt+'" text-anchor="middle">波动率 σ</text>';
+  s+='<text x="14" y="'+(T+PH/2)+'" font-size="12" fill="'+axisTxt+'" text-anchor="middle" transform="rotate(-90 14 '+(T+PH/2)+')">期望收益 E(r)</text>';
+  function curvePath(A,U){
+    if(A===null||A===undefined||!isFinite(A))return "";
+    var pts=[];
+    for(var sv=0;sv<=0.4001;sv+=0.01){
+      var e=U+0.5*A*sv*sv;
+      if(e<-0.10||e>0.30)continue;
+      pts.push((pts.length?"L":"M")+X(sv).toFixed(1)+" "+Y(e).toFixed(1));
+    }
+    return pts.length>1?('<path d="'+pts.join(" ")+'" fill="none" stroke-width="2.2" stroke="COLOR"/>'):"";
+  }
+  function bandPath(Alo,Ahi,Ulo,Uhi){
+    var top=[],bot=[];
+    for(var sv=0;sv<=0.4001;sv+=0.01){
+      var e1=Ulo+0.5*Alo*sv*sv, e2=Uhi+0.5*Ahi*sv*sv;
+      var lo=Math.min(e1,e2),hi=Math.max(e1,e2);
+      if(hi<-0.10||lo>0.30)continue;
+      hi=Math.min(hi,0.30);lo=Math.max(lo,-0.10);
+      top.push(X(sv).toFixed(1)+" "+Y(hi).toFixed(1));bot.unshift(X(sv).toFixed(1)+" "+Y(lo).toFixed(1));
+    }
+    if(top.length<2)return "";
+    return '<path d="M'+top.join(" L")+' L'+bot.join(" L")+' Z" fill="'+accent+'" opacity="0.16" stroke="none"/>';
+  }
+  var Aeff=res.consistent?res.A:res.aAvg;
+  var Ug1=0.05-0.5*Aeff*0.0225, Ug2=0.10-0.5*Aeff*0.09;
+  if(!res.consistent){
+    /* 带状：以过 G1 点的曲线为带，两条边界分别用 A1、A2（各自仍过 G1 点） */
+    var Ug1a=0.05-0.5*res.A1*0.0225, Ug1b=0.05-0.5*res.A2*0.0225;
+    s+=bandPath(res.A1,res.A2,Ug1a,Ug1b);
+    s+=curvePath(res.A1,Ug1a).replace("COLOR",accent);
+    s+=curvePath(res.A2,Ug1b).replace("COLOR",accent);
+    s+=curvePath(Aeff,0).replace("COLOR","#0f766e");
+  }else{
+    s+=curvePath(Aeff,Ug1).replace("COLOR",accent);
+    s+=curvePath(Aeff,Ug2).replace("COLOR","#b98a1e");
+    s+=curvePath(Aeff,0).replace("COLOR","#0f766e");
+  }
+  /* G1 / G2 points */
+  s+='<circle cx="'+X(0.15)+'" cy="'+Y(0.05)+'" r="5.5" fill="'+accent+'" stroke="#fff" stroke-width="1.6"/><text x="'+(X(0.15)+10)+'" y="'+(Y(0.05)-8)+'" font-size="12.5" font-weight="700" fill="'+(dark?"#e8eef3":"#14202b")+'">G1（σ 15%，+5%）</text>';
+  s+='<circle cx="'+X(0.30)+'" cy="'+Y(0.10)+'" r="5.5" fill="#b98a1e" stroke="#fff" stroke-width="1.6"/><text x="'+(X(0.30)-118)+'" y="'+(Y(0.10)-8)+'" font-size="12.5" font-weight="700" fill="'+(dark?"#e8eef3":"#14202b")+'">G2（σ 30%，+10%）</text>';
+  s+='</svg>';
+  return s;
+}
+function renderUcResult(area,res){
+  area=area||$("ucArea");
+  var Aeff=res.consistent?res.A:res.aAvg;
+  var Ug1=0.05-0.5*Aeff*0.0225, Ug2=0.10-0.5*Aeff*0.09;
+  var headA=res.consistent?("A = "+fmtA(res.A)):("A 在 "+fmtA(Math.min(res.A1,res.A2))+" – "+fmtA(Math.max(res.A1,res.A2))+" 之间");
+  var html='<div class="panel" style="margin-top:0"><h3>测评结果'+(uc.doubtful?' · <span style="color:var(--red)">区间存疑</span>':"")+'</h3>'
+    +'<div class="uc-stats">'
+    +'<div><div class="k">CE1（对 G1 的确定性等价）</div><div class="v">'+fmtMoney(res.ce1)+'</div><div class="company">区间 '+fmtMoney(res.ce1Lo)+' – '+fmtMoney(res.ce1Hi)+'（宽 ¥62.5）· 收益率 '+(res.r1>=0?"+":"")+ (res.r1*100).toFixed(2)+'%</div></div>'
+    +'<div><div class="k">CE2（对 G2 的确定性等价）</div><div class="v">'+fmtMoney(res.ce2)+'</div><div class="company">区间 '+fmtMoney(res.ce2Lo)+' – '+fmtMoney(res.ce2Hi)+'（宽 ¥250）· 收益率 '+(res.r2>=0?"+":"")+(res.r2*100).toFixed(2)+'%</div></div>'
+    +'<div><div class="k">A1（由 G1 反推）</div><div class="v">'+fmtA(res.A1)+'</div><div class="company">区间 '+fmtA(res.A1lo)+' – '+fmtA(res.A1hi)+'</div></div>'
+    +'<div><div class="k">A2（由 G2 反推）</div><div class="v">'+fmtA(res.A2)+'</div><div class="company">区间 '+fmtA(res.A2lo)+' – '+fmtA(res.A2hi)+'</div></div>'
+    +'<div><div class="k">综合风险厌恶系数</div><div class="v small">'+esc(headA)+'</div><div class="company">'+esc(ucRiskLabel(res.consistent?res.A:null))+'</div></div>'
+    +'</div>';
+  if(res.consistent){
+    html+='<p style="margin:0 0 6px">|A1 − A2| = '+fmtA(res.diff)+' ≤ 1.0，交叉验证通过，取平均 <b>A = '+fmtA(res.A)+'</b>，A 的区间为 '+fmtA(Math.min(res.A1,res.A2))+' – '+fmtA(Math.max(res.A1,res.A2))+'。</p>';
+  }else{
+    html+='<p style="margin:0 0 6px"><b>两次测得的风险态度不太一致</b>：|A1 − A2| = '+fmtA(res.diff)+' &gt; 1.0，不强行合并成一个数——<b>A 在 '+fmtA(Math.min(res.A1,res.A2))+' – '+fmtA(Math.max(res.A1,res.A2))+' 之间</b>，下方曲线因此画成带状（两条边界）。基于这份结果的组合建议仅供参考。</p>';
+  }
+  if(uc.doubtful)html+='<p style="margin:0 0 6px"><b>区间存疑：</b>第 10 题的选择与前 9 题算出的 A &gt; 0 不一致（已按你的最终答案如实保留），A1、A2 如上同时展示，请谨慎使用这份结果，或重新测评。</p>';
+  if(Aeff<=0)html+='<p style="margin:0 0 6px"><b>关于 A ≤ 0：</b>你在这组题里表现为风险中性或风险偏好，无差异曲线向下倾斜。第 5 步求最优组合时，最优解可能落在有效前沿的边界上（例如最高收益端点），而不是曲线与前沿相切的内点，本页不硬凑一个内点切点。</p>';
+  html+='<p class="company" style="margin:0">公式：U = E(r) − ½Aσ²；A1 = 2×(5% − CE1 收益率) / 0.0225；A2 = 2×(10% − CE2 收益率) / 0.09。这份 A 与曲线已保存到这台设备的浏览器本地，供第 5 步与有效前沿相切时调用（本步只存不用）。</p></div>';
+  html+='<div class="uc-chart-wrap"><h3 style="margin:0 0 4px;font-size:16.5px">你的无差异曲线族</h3>'
+    +'<p class="company" style="margin:0">按 E(r) = U + ½Aσ² 绘制：曲线越靠左上，效用越高；同一条曲线上，波动每增大一点，你要求更高的期望收益作补偿。</p>'
+    +'<div class="uc-legend">'
+    +(res.consistent
+      ?'<span class="bl"><span class="sw" style="background:'+(cssVar("--accent")||"#2563eb")+'"></span>过 G1 点（U = '+Ug1.toFixed(4)+')</span><span class="bl"><span class="sw" style="background:#b98a1e"></span>过 G2 点（U = '+Ug2.toFixed(4)+')</span><span class="bl"><span class="sw" style="background:#0f766e"></span>U = 0</span>'
+      :'<span class="bl"><span class="sw" style="background:'+(cssVar("--accent")||"#2563eb")+'"></span>带状曲线：两条边界分别为 A1、A2 下过 G1 点的曲线</span><span class="bl"><span class="sw" style="background:#0f766e"></span>U = 0（按 A 均值）</span>')
+    +'</div>'
+    +ucChartSvg(res)
+    +'<p class="legend" style="margin:6px 0 0">横轴 σ 0–40%，纵轴期望收益 −10% – +30%。G1（σ 15%，期望 +5%）与 G2（σ 30%，期望 +10%）两个赌局点已标在图上。</p></div>';
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn" type="button" id="ucAgain">重新测评</button><button class="btn ghost" type="button" id="ucToHome">回主页</button></div>';
+  html+='<p class="uc-note-small">说明：「准确」指 CE 测到约 ¥62–250 的区间、A 误差约 ±0.14，不是绝对精确的数，结果同时给 A 的区间；只测均值-方差下的风险厌恶，没测损失厌恶与概率加权；题目是假设性的钱，真实下单时态度可能不同；单期 1 年、不含费税；曲线只用于后续与有效前沿相切，不构成投资建议。</p>';
+  area.innerHTML=html;
+  $("ucAgain").addEventListener("click",ucStartQuiz);
+  $("ucToHome").addEventListener("click",function(){uc.mode="home";showView("managers");});
+}
+var ucEntryBtn=$("ucEntryBtn");if(ucEntryBtn)ucEntryBtn.addEventListener("click",ucOpen);
+document.querySelectorAll(".tab").forEach(function(t){
+  if(t.getAttribute("data-view")==="utility")t.addEventListener("click",function(){if(uc.mode==="home")renderUc();});
+});
+renderUc();
 </script>
 </body>
 </html>
