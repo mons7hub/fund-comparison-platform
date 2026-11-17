@@ -286,6 +286,37 @@ header.site .head-note{margin-left:0}
 .uc-legend .bl{display:inline-flex;align-items:center;gap:6px;font-weight:600}
 .uc-legend .sw{width:18px;height:4px;border-radius:2px;display:inline-block}
 
+/* ---------- 构建有效前沿（第 4 步） ---------- */
+.ef-selrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.ef-selrow:first-child{border-top:none;padding-top:2px}
+.ef-selrow .ef-selmain{flex:1;min-width:0}
+.ef-selrow .ef-selname{font-weight:700;font-size:14.5px;line-height:1.35}
+.ef-selrow .ef-selsub{color:var(--muted);font-size:12.5px}
+.ef-remove{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;padding:4px 11px;font-size:12.5px;font-weight:700}
+.ef-remove:hover{color:var(--red);border-color:var(--red)}
+#efSearchResults{margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:6px;background:var(--surface)}
+#efSearchResults[hidden]{display:none}
+.ef-rf-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 4px}
+.ef-rf-row input{width:110px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:16px;font-family:inherit;outline:none;font-variant-numeric:tabular-nums}
+.ef-rf-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--chip)}
+.ef-excl{background:var(--gold-bg);border:1px solid var(--warn-line);border-radius:12px;padding:12px 14px;margin:0 0 14px;font-size:14px}
+.ef-excl p{margin:0 0 4px}
+.ef-note{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-top:14px;font-size:14.5px}
+.ef-note h3{margin:0 0 8px;font-size:16.5px}
+.ef-note p{margin:0 0 8px;line-height:1.75}
+.ef-note p:last-child{margin-bottom:0}
+.ef-pt{cursor:pointer}
+.ef-pt:hover{stroke-width:3}
+.ef-wrow{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:13.5px}
+.ef-wrow .ef-wlabel{width:200px;flex:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){.ef-wrow .ef-wlabel{width:130px}}
+.ef-wrow .ef-wval{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---------- 最优组合（第 5 步） ---------- */
+.op-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+@media(max-width:860px){.op-grid{grid-template-columns:1fr}}
+.op-case .uc-chart-wrap{margin-top:10px}
+
 /* ---------- footer ---------- */
 footer.site{border-top:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12.5px}
 footer.site .wrap{padding-top:16px;padding-bottom:26px}
@@ -335,6 +366,8 @@ footer.site p{margin:0 0 6px}
     <button class="tab" role="tab" data-view="compare" aria-selected="false">基金对比<span class="badge" id="cmpBadge" hidden>0</span></button>
     <button class="tab" role="tab" data-view="mgrcompare" aria-selected="false">基金经理对比<span class="badge" id="mcmpBadge" hidden>0</span></button>
     <button class="tab" role="tab" data-view="utility" aria-selected="false">我的效用曲线</button>
+    <button class="tab" role="tab" data-view="frontier" aria-selected="false">构建有效前沿</button>
+    <button class="tab" role="tab" data-view="optimal" aria-selected="false">最优组合</button>
   </div>
 </nav>
 
@@ -349,6 +382,20 @@ footer.site p{margin:0 0 6px}
           <p>做 10 道二选一（约 2–3 分钟），用两个不同波动的赌局互相交叉验证，测出你的确定性等价与风险厌恶系数 A，画出专属于你的无差异曲线。结果会保存下来，供第 5 步与有效前沿相切时调用。</p>
         </div>
         <button class="btn" type="button" id="ucEntryBtn">开始测评 →</button>
+      </div>
+      <div class="uc-entry">
+        <div class="uc-entry-main">
+          <h3>第 4 步 · 构建有效前沿</h3>
+          <p>自己选 2–10 只基金（已预选你的 5 只持仓，可增删），用近 1 年周净值实算每只基金的年化期望收益、波动率与协方差矩阵，在只做多、权重和为 1 的约束下逐点求最小方差，画出这组基金的有效前沿与最小方差组合。结果会保存下来，供第 5 步与效用曲线相切时调用。</p>
+        </div>
+        <button class="btn" type="button" id="efEntryBtn">去选基金 →</button>
+      </div>
+      <div class="uc-entry">
+        <div class="uc-entry-main">
+          <h3>第 5 步 · 最优组合（效用曲线 × 有效前沿）</h3>
+          <p>把第 3 步的 A 和第 4 步保存的有效前沿放在同一张图上，在已计算的前沿点中找效用 U = E(r) − ½Aσ² 最大的点，给出最适合你的基金组合权重。需要先完成第 3 步测评并在第 4 步算过一次前沿。</p>
+        </div>
+        <button class="btn" type="button" id="opEntryBtn">求最优组合 →</button>
       </div>
       <h2 class="sec">基金经理排行榜</h2>
       <p class="sec-sub" id="mgrMethod">正在载入…</p>
@@ -498,6 +545,50 @@ footer.site p{margin:0 0 6px}
       <span>固定情境：<b>本金 ¥20,000</b></span><span><b>持有 1 年</b></span><span>只看 <b>1 年后到手金额</b></span><span><b>不计手续费与税</b></span>
     </div>
     <div id="ucArea"></div>
+  </section>
+
+  <!-- ============ 构建有效前沿（第 4 步） ============ -->
+  <section class="view" id="view-frontier">
+    <h2 class="sec">构建有效前沿</h2>
+    <p class="sec-sub">选一组基金，用它们近 1 年的真实周净值算出各自的年化期望收益 E(r)、年化波动 σ 与两两协方差，再在「只做多（权重 ≥ 0）、权重和 = 1」的约束下，对每个目标收益逐点求最小方差，得到这组基金的有效前沿。本步只算前沿并保存结果；与效用曲线相切定最优组合是第 5 步，本页不做。</p>
+
+    <div class="panel" style="margin-top:0">
+      <h3>1 · 选择基金（2–10 只）</h3>
+      <p class="company" style="margin:0 0 8px">已默认勾选你的 5 只持仓基金，可逐只移除，也可在下方搜索任意基金添加。上限 10 只，是为了保证协方差估计与前沿计算的质量——基金再多，周收益样本（约 51 个）撑不起更大的协方差矩阵，算出来的前沿会失真。</p>
+      <div id="efSelectedList"></div>
+      <p style="margin:10px 0 0"><span id="efCount" style="font-weight:700"></span>
+        <button class="btn ghost small" type="button" id="efResetDefault" style="margin-left:8px">恢复默认 5 只持仓</button></p>
+      <div style="margin-top:14px">
+        <label for="efSearchInput" style="font-weight:700;font-size:14px">搜索添加基金</label>
+        <input class="full-search" id="efSearchInput" type="search" placeholder="搜基金名称 / 代码 / 拼音（与顶部全局搜索同一全市场索引）…" aria-label="搜索要添加的基金" style="margin:6px 0 0"/>
+        <div id="efSearchResults" hidden></div>
+        <p class="company" style="margin:6px 0 0">也可以先在顶部全局搜索、基金排行或分类页里看基金详情，再回到这里按代码添加。</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>2 · 无风险利率</h3>
+      <p style="margin:0">口径：1 年期国债收益率。来源：中债国债收益率曲线（中央国债登记结算有限责任公司发布），2026-11-13 收于 <b>1.1742%</b>（工商银行《人民币利率市场每日概览》转引，<a href="https://www.sohu.com/a/1102245000_122014422" target="_blank" rel="noopener">原文</a>），2026-11-16 约 1.17%。</p>
+      <div class="ef-rf-row">
+        <label for="efRf" style="font-weight:700">无风险利率 rf</label>
+        <input id="efRf" type="number" step="0.01" min="-1" max="10" value="1.17" aria-label="无风险利率（百分数）"/>
+        <span style="font-weight:700">%</span>
+        <span class="company">默认 1.17% 是 2026-11-17 建页时的参考值，<b>不是实时行情</b>；如已变化，改成最新公布值再计算。rf 本身不改变前沿形状，会随结果一并保存，供第 5 步相切时使用。</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:16px 0">
+      <button class="btn" type="button" id="efCalc">计算有效前沿</button>
+      <span id="efStatus" class="company" role="status"></span>
+    </div>
+    <div id="efResult"></div>
+  </section>
+
+  <!-- ============ 最优组合（第 5 步） ============ -->
+  <section class="view" id="view-optimal">
+    <h2 class="sec">最优组合 · 效用曲线与有效前沿相切</h2>
+    <p class="sec-sub">第 5 步（最后一步）：读取第 3 步保存的风险厌恶系数 A 与第 4 步保存的有效前沿，在同一张（σ, E(r)）图上叠画前沿与你的无差异曲线族 U = E(r) − ½Aσ²，在已计算的前沿点中取效用最大的那个点作为最优组合。本页只读已保存的结果，不重算前沿、不改动 A。</p>
+    <div id="opArea"></div>
   </section>
 
 </main>
@@ -2862,6 +2953,24 @@ function ucGambleInfo(qi){
   if(qi<=8)return {label:"第二组 · 赌局 G2（共 4 题测 CE2）",hi:28000,hiPct:"+40%",lo:16000,loPct:"−20%",ev:"期望 ¥22,000（+10%）· σ = 30%"};
   return {label:"第 10 题 · 一致性校验",hi:22000,hiPct:"+10%",lo:18000,loPct:"−10%",ev:"期望 ¥20,000（+0%），与稳拿金额期望相同"};
 }
+/* 答题内切题时锚定题目区：不回页面顶部。
+   题目区顶部还在视口内（桌面端常见）→ 什么都不做，滚动位置原样保留，新题原地出现；
+   题目区顶部已被滑出视口上方（手机端选项上下排布，需下滑点第二个选项）→ 只把题目区
+   拉回到吸顶导航下方，让新题从题头开始可见，而不是弹回整页顶部。 */
+function ucAnchorQuiz(){
+  var area=$("ucArea");if(!area)return;
+  var nav=document.querySelector("nav.tabs");
+  var navH=nav?nav.offsetHeight:0;
+  var rect=area.getBoundingClientRect();
+  if(rect.top>=navH-2&&rect.top<=window.innerHeight*0.75)return;
+  var y=window.pageYOffset+rect.top-navH-8;
+  if(y<0)y=0;
+  var htmlEl=document.documentElement;
+  var prevBehavior=htmlEl.style.scrollBehavior;
+  htmlEl.style.scrollBehavior="auto";
+  window.scrollTo(0,y);
+  htmlEl.style.scrollBehavior=prevBehavior;
+}
 function renderUcQuiz(area){
   area=area||$("ucArea");
   var qi=uc.qIndex, offers=ucOffers(uc.answers), sure=offers[qi], g=ucGambleInfo(qi);
@@ -2886,11 +2995,12 @@ function renderUcQuiz(area){
     uc.qIndex=Math.max(0,uc.qIndex-1);uc.answers=uc.answers.slice(0,uc.qIndex);renderUc();
   });
   $("ucQuit").addEventListener("click",function(){uc.mode="home";renderUc();});
+  ucAnchorQuiz();
 }
 function ucAnswer(choice){
   uc.answers[uc.qIndex]=choice;
   uc.answers=uc.answers.slice(0,uc.qIndex+1);
-  if(uc.qIndex<9){uc.qIndex++;renderUc();window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(uc.qIndex<9){uc.qIndex++;renderUc();return;}
   /* 第 10 题：一致性校验 */
   var res=ucCompute(uc.answers);
   uc.result=res;
@@ -3014,6 +3124,740 @@ document.querySelectorAll(".tab").forEach(function(t){
   if(t.getAttribute("data-view")==="utility")t.addEventListener("click",function(){if(uc.mode==="home")renderUc();});
 });
 renderUc();
+</script>
+<script>
+/* ==================== 第 4 步：构建有效前沿 ====================
+   口径：近 1 年累计净值 → 每周最后一个净值日 → 各基金按共同周对齐
+   （QDII 等净值日期滞后时以共同可得的周为准）→ 周收益序列实算
+   年化期望收益（周均值×52）、年化波动（周标准差×√52）、年化协方差矩阵（×52）。
+   前沿：在 w≥0、Σw=1 约束下，对每个目标收益逐点求最小方差。
+   求解方法：子集枚举 + KKT 线性方程组精确求解每个候选活跃集
+   （w 对目标收益是仿射的，每个子集只解两次方程组），取可行解中方差最小者，
+   不是样本云凸包。最小方差组合用同一枚举单独求解。
+   结果存 localStorage（jj-efficient-frontier-v1），供第 5 步相切调用，本步只存不用。
+===================================================================== */
+var EF_KEY="jj-efficient-frontier-v1";
+var EF_DEFAULT=[
+  {code:"006373",name:"国富全球科技互联混合(QDII)A"},
+  {code:"270023",name:"广发全球精选股票(QDII)A"},
+  {code:"485119",name:"工银信用纯债A"},
+  {code:"007520",name:"富安达富利纯债A"},
+  {code:"016527",name:"招商鑫诚短债C"}
+];
+var EF_MAX=10, EF_MIN_POINTS=30;
+var ef={selected:EF_DEFAULT.map(function(f){return f.code;}),result:null,saved:null,pointSel:-2,computing:false};
+try{var efSavedRaw=window.localStorage.getItem(EF_KEY);if(efSavedRaw){ef.saved=JSON.parse(efSavedRaw);}}catch(e){}
+function efPct(v,d){if(v===null||v===undefined||!isFinite(v))return "—";if(d===undefined)d=2;return (v>0?"+":"")+ (v*100).toFixed(d)+"%";}
+function efPctPlain(v,d){if(v===null||v===undefined||!isFinite(v))return "—";return (v*100).toFixed(d===undefined?2:d)+"%";}
+function efName(code){
+  var d=getDetail(code);if(d&&d.name)return d.name;
+  var ix=FUND_BY_CODE_IDX[code];if(ix&&ix.name)return ix.name;
+  for(var i=0;i<EF_DEFAULT.length;i++)if(EF_DEFAULT[i].code===code)return EF_DEFAULT[i].name;
+  return fundNameOf(code)||code;
+}
+function efShortName(code){
+  var n=efName(code).replace(/人民币/g,"").replace(/（/g,"(");
+  var cut=n.indexOf("(");if(cut>4)n=n.slice(0,cut);
+  return n.length>9?n.slice(0,9):n;
+}
+function efType(code){
+  var d=getDetail(code);if(d&&d.type)return d.type;
+  var ix=FUND_BY_CODE_IDX[code];return ix?ix.type:"";
+}
+/* ---------- 选基 UI ---------- */
+function renderEf(){
+  var list=$("efSelectedList");if(!list)return;
+  if(!ef.selected.length){
+    list.innerHTML='<p class="company" style="margin:4px 0">还没有选择基金。用下方搜索添加，或点「恢复默认 5 只持仓」。</p>';
+  }else{
+    list.innerHTML=ef.selected.map(function(code){
+      return '<div class="ef-selrow"><div class="ef-selmain"><div class="ef-selname">'+esc(efName(code))+'</div>'
+        +'<div class="ef-selsub">'+esc(code)+(efType(code)?" · "+esc(efType(code)):"")+'</div></div>'
+        +'<button class="ef-remove" type="button" data-efremove="'+esc(code)+'">移除</button></div>';
+    }).join("");
+    list.querySelectorAll("[data-efremove]").forEach(function(b){
+      b.addEventListener("click",function(){
+        ef.selected=ef.selected.filter(function(c){return c!==b.getAttribute("data-efremove");});
+        renderEf();renderEfSearch();
+      });
+    });
+  }
+  var cnt=$("efCount");
+  if(cnt)cnt.textContent="已选 "+ef.selected.length+" / "+EF_MAX+" 只"+(ef.selected.length<2?" · 至少选 2 只才能计算":"");
+  var res=$("efResult");
+  if(res&&!ef.result&&ef.saved&&!res.innerHTML){
+    res.innerHTML='<div class="panel"><h3>已保存的上次计算结果</h3>'
+      +'<p style="margin:0 0 10px">保存时间：'+esc(String(ef.saved.savedAt||"").replace("T"," ").slice(0,16))+' · '+(ef.saved.funds?ef.saved.funds.length:0)+' 只基金参与计算 · 无风险利率 '+(ef.saved.riskFreeRate!==undefined?efPctPlain(ef.saved.riskFreeRate):"—")+'。这份结果已存好，供第 5 步与效用无差异曲线相切时调用。</p>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="efViewSaved">查看上次结果</button><button class="btn ghost" type="button" id="efClearSaved">清除保存</button></div></div>';
+    $("efViewSaved").addEventListener("click",function(){renderEfResult(ef.saved,true);});
+    $("efClearSaved").addEventListener("click",function(){try{window.localStorage.removeItem(EF_KEY);}catch(e){}ef.saved=null;ef.result=null;$("efResult").innerHTML="";renderEf();});
+  }
+}
+function renderEfSearch(){
+  var input=$("efSearchInput"),box=$("efSearchResults");if(!input||!box)return;
+  var q=input.value.trim().toLowerCase();
+  if(!q){box.hidden=true;box.innerHTML="";return;}
+  if(!FUND_INDEX.length){
+    box.hidden=false;box.innerHTML='<div class="sr-empty">全市场基金索引正在载入，稍候会自动刷新…</div>';
+    loadFundsIndex().then(function(){renderEfSearch();});
+    return;
+  }
+  var hits=[];
+  for(var i=0;i<FUND_INDEX.length&&hits.length<8;i++){
+    var f=FUND_INDEX[i];
+    if(f.name.toLowerCase().indexOf(q)>=0||f.code.indexOf(q)>=0||(f.pinyin&&f.pinyin.toLowerCase().indexOf(q)>=0))hits.push(f);
+  }
+  if(!hits.length){box.hidden=false;box.innerHTML='<div class="sr-empty">没有找到匹配的基金，换个名称或代码试试。</div>';return;}
+  box.hidden=false;
+  box.innerHTML=hits.map(function(f){
+    var on=ef.selected.indexOf(f.code)>=0, full=ef.selected.length>=EF_MAX;
+    return '<div class="sr-item"><div class="sr-main"><div class="sr-name">'+esc(f.name)+'</div><div class="sr-sub">'+esc(f.code)+' · '+esc(f.type||"")+'</div></div>'
+      +'<button class="sr-add" type="button" data-efadd="'+esc(f.code)+'" '+((on||full)?"disabled style=\"opacity:.45\"":"")+'>'+(on?"已添加":(full?"已达上限":"添加"))+'</button></div>';
+  }).join("");
+  box.querySelectorAll("[data-efadd]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var code=b.getAttribute("data-efadd");
+      if(ef.selected.indexOf(code)<0&&ef.selected.length<EF_MAX)ef.selected.push(code);
+      renderEf();renderEfSearch();
+    });
+  });
+}
+/* ---------- 净值数据准备 ---------- */
+function efEnsureDetail(code){
+  function has(){var d=getDetail(code);return !!(d&&d.ac&&d.ac.length>10);}
+  if(has())return Promise.resolve(true);
+  var kicked=false;
+  return new Promise(function(resolve){
+    var t0=Date.now();
+    var iv=setInterval(function(){
+      if(has()){clearInterval(iv);resolve(true);return;}
+      if(!kicked&&Date.now()-t0>1500){kicked=true;liveLoadDetail(code);}
+      if(Date.now()-t0>12000){clearInterval(iv);resolve(has());}
+    },250);
+  });
+}
+function efWeekly(code){
+  var d=getDetail(code);if(!d||!d.ac||d.ac.length<2)return null;
+  var pts=acToPoints(d.ac);if(pts.length<2)return null;
+  var first=pts[0],last=pts[pts.length-1];
+  var cutoff=last.x-365*86400000;
+  var byWeek={},order=[];
+  pts.forEach(function(p){
+    if(p.x<cutoff)return;
+    var key=periodKeyOf(cstDateStr(p.x),"week");
+    if(!(key in byWeek))order.push(key);
+    byWeek[key]={date:cstDateStr(p.x),y:p.y};
+  });
+  return {spanDays:(last.x-first.x)/86400000,firstDate:cstDateStr(first.x),lastDate:cstDateStr(last.x),
+    weeks:order.map(function(k){return {key:k,date:byWeek[k].date,y:byWeek[k].y};})};
+}
+/* ---------- 线性代数：高斯消元解线性方程组 ---------- */
+function efSolveLin(A,b){
+  var n=b.length,i,j,k;
+  var M=A.map(function(r,ri){return r.concat([b[ri]]);});
+  for(var col=0,row=0;col<n&&row<n;col++,row++){
+    var piv=row;
+    for(i=row+1;i<n;i++)if(Math.abs(M[i][col])>Math.abs(M[piv][col]))piv=i;
+    if(Math.abs(M[piv][col])<1e-11)return null;
+    var tmp=M[row];M[row]=M[piv];M[piv]=tmp;
+    var dv=M[row][col];
+    for(j=col;j<=n;j++)M[row][j]/=dv;
+    for(k=0;k<n;k++){
+      if(k!==row&&M[k][col]!==0){var f=M[k][col];for(j=col;j<=n;j++)M[k][j]-=f*M[row][j];}
+    }
+  }
+  var x=[];for(i=0;i<n;i++)x.push(M[i][n]);
+  return x;
+}
+/* 子集枚举：对每个候选子集预解 KKT 方程组。
+   目标收益 t 下 w(t)=wa+t·wb（仿射）；最小方差（仅 Σw=1）解 wg 一并预解。 */
+function efPrepare(mu,cov){
+  var n=mu.length,subsets=[],mask,i,j;
+  function quad(w){var s=0;for(var a=0;a<n;a++)for(var b=0;b<n;b++)s+=w[a]*cov[a][b]*w[b];return s;}
+  for(mask=1;mask<(1<<n);mask++){
+    var S=[];for(i=0;i<n;i++)if((mask>>i)&1)S.push(i);
+    var m=S.length;
+    /* GMV（仅权重和约束） */
+    var gmvW=null,gmvVar=null;
+    if(m===1){gmvW=[0];gmvW=new Array(n).fill(0);gmvW[S[0]]=1;gmvVar=quad(gmvW);}
+    else{
+      var sz=m+1,K=[],rhs=[];
+      for(i=0;i<m;i++){var row=[];for(j=0;j<m;j++)row.push(2*cov[S[i]][S[j]]);row.push(1);K.push(row);rhs.push(0);}
+      var brow=[];for(j=0;j<m;j++)brow.push(1);brow.push(0);K.push(brow);rhs.push(1);
+      var xg=efSolveLin(K,rhs);
+      if(xg){var w=new Array(n).fill(0),ok=true;for(i=0;i<m;i++){w[S[i]]=xg[i];if(xg[i]<-1e-9)ok=false;}
+        if(ok){gmvW=w;gmvVar=quad(w);}}
+    }
+    if(m===1){subsets.push({S:S,single:true,gmvW:gmvW,gmvVar:gmvVar});continue;}
+    /* 目标收益约束的 KKT（m+2 阶） */
+    var sz2=m+2,K2=[],bA=[],bB=[];
+    for(i=0;i<m;i++){var r2=[];for(j=0;j<m;j++)r2.push(2*cov[S[i]][S[j]]);r2.push(1);r2.push(mu[S[i]]);K2.push(r2);bA.push(0);bB.push(0);}
+    var sr=[];for(j=0;j<m;j++)sr.push(1);sr.push(0);sr.push(0);K2.push(sr);bA.push(1);bB.push(0);
+    var mr=[];for(j=0;j<m;j++)mr.push(mu[S[j]]);mr.push(0);mr.push(0);K2.push(mr);bA.push(0);bB.push(1);
+    var xa=efSolveLin(K2,bA),xb=efSolveLin(K2,bB);
+    if(!xa||!xb){subsets.push({S:S,dead:true,gmvW:gmvW,gmvVar:gmvVar});continue;}
+    subsets.push({S:S,wa:xa.slice(0,m),wb:xb.slice(0,m),gmvW:gmvW,gmvVar:gmvVar});
+  }
+  /* 全局最小方差组合 */
+  var best=null;
+  subsets.forEach(function(ss){if(ss.gmvW&&ss.gmvVar!==null&&(best===null||ss.gmvVar<best.v))best={v:ss.gmvVar,w:ss.gmvW};});
+  var gmv=null;
+  if(best){
+    var ret=0;for(i=0;i<n;i++)ret+=best.w[i]*mu[i];
+    gmv={weights:best.w,ret:ret,sigma:Math.sqrt(Math.max(0,best.v))};
+  }
+  return {subsets:subsets,gmv:gmv,quad:quad};
+}
+function efMinVarAt(prep,mu,cov,target){
+  var n=mu.length,best=null;
+  prep.subsets.forEach(function(ss){
+    var w,i;
+    if(ss.single){
+      if(Math.abs(mu[ss.S[0]]-target)>1e-7)return;
+      w=new Array(n).fill(0);w[ss.S[0]]=1;
+    }else{
+      if(ss.dead||!ss.wa)return;
+      w=new Array(n).fill(0);
+      for(i=0;i<ss.S.length;i++){
+        var v=ss.wa[i]+target*ss.wb[i];
+        if(v<-1e-9)return;
+        w[ss.S[i]]=Math.max(0,v);
+      }
+    }
+    var v2=prep.quad(w);
+    if(best===null||v2<best.v)best={v:v2,w:w};
+  });
+  if(!best)return null;
+  var ret=0;for(var i=0;i<n;i++)ret+=best.w[i]*mu[i];
+  return {weights:best.w,ret:ret,sigma:Math.sqrt(Math.max(0,best.v))};
+}
+/* ---------- 计算主流程 ---------- */
+function efRfValue(){
+  var v=parseFloat($("efRf").value);
+  if(!isFinite(v)||v<-1||v>10)v=1.17;
+  return v/100;
+}
+function efCompute(){
+  if(ef.computing)return;
+  var codes=ef.selected.slice();
+  var status=$("efStatus"),resBox=$("efResult");
+  if(codes.length<2){status.textContent="至少选 2 只基金才能计算。";return;}
+  ef.computing=true;
+  status.textContent="正在载入所选基金净值并计算…";
+  Promise.all(codes.map(efEnsureDetail)).then(function(){
+    try{
+      var exclusions=[],fundsData=[];
+      codes.forEach(function(code){
+        var wk=efWeekly(code);
+        if(!wk){exclusions.push({code:code,name:efName(code),reason:"净值数据未能载入（快照无此基金且直连失败），已剔除"});return;}
+        if(wk.spanDays<350){exclusions.push({code:code,name:efName(code),reason:"净值历史不足 1 年（仅约 "+Math.round(wk.spanDays)+" 天），已剔除"});return;}
+        var map={};wk.weeks.forEach(function(w){map[w.key]=w;});
+        fundsData.push({code:code,name:efName(code),map:map,weekCount:wk.weeks.length,firstDate:wk.firstDate});
+      });
+      function commonKeys(list){
+        if(!list.length)return [];
+        var keys=Object.keys(list[0].map);
+        return keys.filter(function(k){return list.every(function(f){return k in f.map;});}).sort();
+      }
+      var keys=commonKeys(fundsData);
+      /* 共同样本不足时，逐只剔除周点最少的基金并注明原因，直到样本够或只剩 2 只 */
+      while(keys.length-1<EF_MIN_POINTS&&fundsData.length>2){
+        var worst=null;
+        fundsData.forEach(function(f){if(!worst||f.weekCount<worst.weekCount)worst=f;});
+        exclusions.push({code:worst.code,name:worst.name,reason:"其近 1 年周净值点最少（"+worst.weekCount+" 个），导致共同区间收益样本不足 "+EF_MIN_POINTS+" 个，已剔除"});
+        fundsData=fundsData.filter(function(f){return f!==worst;});
+        keys=commonKeys(fundsData);
+      }
+      if(fundsData.length<2)throw new Error("可参与计算的基金不足 2 只，请调整选择后重试。");
+      if(keys.length-1<EF_MIN_POINTS)throw new Error("所选基金共同区间仅 "+Math.max(0,keys.length-1)+" 个周收益样本，少于 "+EF_MIN_POINTS+" 个，不用短样本硬凑——请换一组历史更齐的基金。");
+      /* 周收益矩阵（行=基金，列=共同周收益） */
+      var T=keys.length-1,n=fundsData.length;
+      var R=fundsData.map(function(f){
+        var vals=keys.map(function(k){return f.map[k].y;});
+        var r=[];for(var i=1;i<vals.length;i++)r.push(vals[i]/vals[i-1]-1);
+        return r;
+      });
+      var mu=[],cov=[];
+      for(var a=0;a<n;a++){
+        var mean=0;for(var t=0;t<T;t++)mean+=R[a][t];mean/=T;mu.push(mean*52);
+      }
+      for(a=0;a<n;a++){
+        cov.push([]);
+        for(var b=0;b<n;b++){
+          var ma=mu[a]/52,mb=mu[b]/52,s=0;
+          for(t=0;t<T;t++)s+=(R[a][t]-ma)*(R[b][t]-mb);
+          cov[a].push(s/(T-1)*52);
+        }
+      }
+      var funds=fundsData.map(function(f,i){return {code:f.code,name:f.name,mu:mu[i],sigma:Math.sqrt(Math.max(0,cov[i][i])),weeks:keys.length};});
+      /* 前沿求解 */
+      var prep=efPrepare(mu,cov);
+      if(!prep.gmv)throw new Error("最小方差组合求解失败（协方差矩阵异常），请调整所选基金后重试。");
+      var maxMu=Math.max.apply(null,mu);
+      var frontier=[{weights:prep.gmv.weights,ret:prep.gmv.ret,sigma:prep.gmv.sigma}];
+      var STEPS=25;
+      for(var si=1;si<=STEPS;si++){
+        var target=prep.gmv.ret+(maxMu-prep.gmv.ret)*si/STEPS;
+        var pt=efMinVarAt(prep,mu,cov,target);
+        if(pt&&pt.ret>frontier[frontier.length-1].ret+1e-9)frontier.push(pt);
+      }
+      var firstDates=fundsData.map(function(f){return f.map[keys[0]].date;}).sort();
+      var lastDates=fundsData.map(function(f){return f.map[keys[keys.length-1]].date;}).sort();
+      var result={
+        savedAt:new Date().toISOString(),
+        riskFreeRate:efRfValue(),
+        funds:funds,covariance:cov,frontier:frontier,
+        gmv:{weights:prep.gmv.weights,ret:prep.gmv.ret,sigma:prep.gmv.sigma},
+        range:{from:firstDates[0],to:lastDates[lastDates.length-1],points:keys.length,returns:T},
+        exclusions:exclusions
+      };
+      ef.result=result;efPersist(result);
+      ef.computing=false;status.textContent="计算完成，结果已保存。";
+      renderEfResult(result,false);
+    }catch(err){
+      ef.computing=false;status.textContent="";
+      resBox.innerHTML='<div class="ef-excl"><p><b>这次没算成：</b>'+esc(err&&err.message||err)+'</p></div>';
+    }
+  });
+}
+function efPersist(result){
+  try{window.localStorage.setItem(EF_KEY,JSON.stringify(result));ef.saved=result;}catch(e){}
+  window.EF_RESULT=result;
+}
+/* ---------- 样本组合云（随机 Dirichlet 权重，仅作可行集示意） ---------- */
+function efMakeCloud(res){
+  var n=res.funds.length,pts=[],i,k;
+  function quadW(w){var s=0;for(var a=0;a<n;a++)for(var b=0;b<n;b++)s+=w[a]*res.covariance[a][b]*w[b];return s;}
+  for(i=0;i<650;i++){
+    var w=[],sum=0;
+    for(k=0;k<n;k++){var e=-Math.log(1-Math.random());w.push(e);sum+=e;}
+    var ret=0;for(k=0;k<n;k++){w[k]/=sum;ret+=w[k]*res.funds[k].mu;}
+    pts.push({sigma:Math.sqrt(Math.max(0,quadW(w))),ret:ret});
+  }
+  return pts;
+}
+/* ---------- 图表（SVG 手绘） ---------- */
+function efChartSvg(res,cloud){
+  var W=720,H=420,L=58,R=14,T=16,B=38,PW=W-L-R,PH=H-T-B;
+  var sigVals=res.funds.map(function(f){return f.sigma;}).concat(res.frontier.map(function(p){return p.sigma;}));
+  var retVals=res.funds.map(function(f){return f.mu;}).concat(res.frontier.map(function(p){return p.ret;}));
+  var sigMax=Math.max.apply(null,sigVals)*1.12||0.1;
+  var retMax=Math.max.apply(null,retVals),retMin=Math.min(0,Math.min.apply(null,retVals));
+  var pad=(retMax-retMin)*0.12||0.02;retMax+=pad;retMin-=pad*0.6;
+  if(res.riskFreeRate>retMin&&res.riskFreeRate<retMax){/* rf 线在图内时才画 */}
+  function X(s){return L+s/sigMax*PW;}
+  function Y(e){return T+(retMax-e)/(retMax-retMin)*PH;}
+  var dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var grid=dark?"#2a3b4b":"#e3e9ef",axisTxt=dark?"#9db0c0":"#5c6b7a",ink=dark?"#e8eef3":"#14202b";
+  var accent=cssVar("--accent")||"#2563eb";
+  function tickPct(v){var p=v*100;return (p>0?"+":"")+(Math.abs(p)>=10?p.toFixed(0):p.toFixed(1))+"%";}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="有效前沿图：横轴年化波动，纵轴年化期望收益">';
+  for(var gi=0;gi<=4;gi++){
+    var sv=sigMax*gi/4;s+='<line x1="'+X(sv)+'" y1="'+T+'" x2="'+X(sv)+'" y2="'+(T+PH)+'" stroke="'+grid+'"/><text x="'+X(sv)+'" y="'+(H-20)+'" font-size="11" fill="'+axisTxt+'" text-anchor="middle">'+(sv*100).toFixed(sv*100>=10?0:1)+'%</text>';
+    var ev=retMin+(retMax-retMin)*gi/4;s+='<line x1="'+L+'" y1="'+Y(ev)+'" x2="'+(L+PW)+'" y2="'+Y(ev)+'" stroke="'+grid+'"/><text x="'+(L-6)+'" y="'+(Y(ev)+4)+'" font-size="11" fill="'+axisTxt+'" text-anchor="end">'+tickPct(ev)+'</text>';
+  }
+  s+='<text x="'+(L+PW/2)+'" y="'+(H-4)+'" font-size="12" fill="'+axisTxt+'" text-anchor="middle">年化波动 σ</text>';
+  s+='<text x="14" y="'+(T+PH/2)+'" font-size="12" fill="'+axisTxt+'" text-anchor="middle" transform="rotate(-90 14 '+(T+PH/2)+')">年化期望收益 E(r)</text>';
+  /* 无风险利率水平线（仅示意水平，供第 5 步相切时用） */
+  if(res.riskFreeRate>retMin&&res.riskFreeRate<retMax){
+    s+='<line x1="'+L+'" y1="'+Y(res.riskFreeRate)+'" x2="'+(L+PW)+'" y2="'+Y(res.riskFreeRate)+'" stroke="'+axisTxt+'" stroke-dasharray="5 4" opacity="0.7"/><text x="'+(L+PW-4)+'" y="'+(Y(res.riskFreeRate)-5)+'" font-size="11" fill="'+axisTxt+'" text-anchor="end">无风险利率 rf = '+efPctPlain(res.riskFreeRate)+'</text>';
+  }
+  /* 样本组合云 */
+  cloud.forEach(function(p){
+    if(p.sigma>sigMax||p.ret>retMax||p.ret<retMin)return;
+    s+='<circle cx="'+X(p.sigma).toFixed(1)+'" cy="'+Y(p.ret).toFixed(1)+'" r="2.1" fill="'+accent+'" opacity="0.16"/>';
+  });
+  /* 前沿曲线 */
+  var path=res.frontier.map(function(p,i){return (i?"L":"M")+X(p.sigma).toFixed(1)+" "+Y(p.ret).toFixed(1);}).join(" ");
+  s+='<path d="'+path+'" fill="none" stroke="'+accent+'" stroke-width="2.6"/>';
+  /* 单只基金点 */
+  res.funds.forEach(function(f){
+    s+='<circle cx="'+X(f.sigma)+'" cy="'+Y(f.mu)+'" r="5" fill="#b98a1e" stroke="#fff" stroke-width="1.5"><title>'+esc(f.name)+'（'+esc(f.code)+'）：E(r) '+efPct(f.mu)+'，σ '+efPctPlain(f.sigma)+'</title></circle>';
+    var anchor=X(f.sigma)>L+PW*0.72?"end":"start",tx=X(f.sigma)+(anchor==="end"?-9:9);
+    s+='<text x="'+tx+'" y="'+(Y(f.mu)-8)+'" font-size="12" font-weight="700" fill="'+ink+'" text-anchor="'+anchor+'">'+esc(efShortName(f.code))+'</text>';
+  });
+  /* 前沿点（可点） */
+  res.frontier.forEach(function(p,i){
+    s+='<circle class="ef-pt" data-efpt="'+i+'" cx="'+X(p.sigma)+'" cy="'+Y(p.ret)+'" r="'+(ef.pointSel===i?6.5:4.6)+'" fill="'+(ef.pointSel===i?accent:"#fff")+'" stroke="'+accent+'" stroke-width="2"><title>前沿组合：E(r) '+efPct(p.ret)+'，σ '+efPctPlain(p.sigma)+'（点击看权重）</title></circle>';
+  });
+  /* 最小方差组合 */
+  var g=res.gmv;
+  s+='<path class="ef-pt" data-efgmv="1" d="M'+X(g.sigma)+' '+(Y(g.ret)-8)+' L'+(X(g.sigma)+8)+' '+Y(g.ret)+' L'+X(g.sigma)+' '+(Y(g.ret)+8)+' L'+(X(g.sigma)-8)+' '+Y(g.ret)+' Z" fill="#0f766e" stroke="#fff" stroke-width="1.4"><title>最小方差组合：E(r) '+efPct(g.ret)+'，σ '+efPctPlain(g.sigma)+'（点击看权重）</title></path>';
+  s+='<text x="'+(X(g.sigma)+12)+'" y="'+(Y(g.ret)+16)+'" font-size="12" font-weight="700" fill="#0f766e">最小方差组合</text>';
+  s+='</svg>';
+  return s;
+}
+function efWeightsHtml(res,pt){
+  var rows=res.funds.map(function(f,i){return {name:f.name,code:f.code,w:pt.weights[i]||0};})
+    .filter(function(r){return r.w>0.0005;}).sort(function(a,b){return b.w-a.w;});
+  if(!rows.length)return '<p class="company">该点权重为空。</p>';
+  return rows.map(function(r){
+    return '<div class="ef-wrow"><span class="ef-wlabel">'+esc(r.name)+'</span><span class="holdbar" style="flex:1"><i style="width:'+(r.w*100).toFixed(1)+'%"></i></span><span class="ef-wval">'+(r.w*100).toFixed(1)+'%</span></div>';
+  }).join("");
+}
+function efShowPoint(res,kind,idx){
+  var box=$("efPointDetail");if(!box)return;
+  var key=kind+":"+idx;
+  if(ef._shownKey===key)return;
+  ef._shownKey=key;
+  var pt,label;
+  if(kind==="gmv"){pt=res.gmv;label="最小方差组合";ef.pointSel=-1;}
+  else{pt=res.frontier[idx];label="前沿组合（目标收益档 "+(idx+1)+" / "+res.frontier.length+"）";ef.pointSel=idx;}
+  box.innerHTML='<h3 style="margin:0 0 4px;font-size:16px">'+label+'</h3>'
+    +'<p style="margin:0 0 8px">E(r) = <b>'+efPct(pt.ret)+'</b> · σ = <b>'+efPctPlain(pt.sigma)+'</b> · 权重如下（只做多、和为 100%，小于 0.05% 的不列）：</p>'
+    +efWeightsHtml(res,pt);
+  /* 只更新圆点高亮，不重绘整图（避免悬停时反复重建元素） */
+  var svgBox=$("efChartBox");
+  if(svgBox){
+    var accent=cssVar("--accent")||"#2563eb";
+    svgBox.querySelectorAll("[data-efpt]").forEach(function(c){
+      var on=Number(c.getAttribute("data-efpt"))===ef.pointSel;
+      c.setAttribute("fill",on?accent:"#fff");c.setAttribute("r",on?"6.5":"4.6");
+    });
+  }
+}
+function efBindChart(res){
+  var box=$("efChartBox");if(!box)return;
+  box.querySelectorAll("[data-efpt]").forEach(function(c){
+    var idx=Number(c.getAttribute("data-efpt"));
+    c.addEventListener("click",function(){efShowPoint(res,"pt",idx);});
+    c.addEventListener("mouseenter",function(){efShowPoint(res,"pt",idx);});
+  });
+  var gm=box.querySelector("[data-efgmv]");
+  if(gm){gm.addEventListener("click",function(){efShowPoint(res,"gmv",-1);});gm.addEventListener("mouseenter",function(){efShowPoint(res,"gmv",-1);});}
+}
+/* ---------- 图下说明（全部由当次实算数字生成，不写死） ---------- */
+function efNoteWeightText(res,weights){
+  var rows=res.funds.map(function(f,i){return {name:f.name,code:f.code,w:weights[i]||0};})
+    .filter(function(r){return r.w>0.0005;}).sort(function(a,b){return b.w-a.w;});
+  if(!rows.length)return "（无非零权重）";
+  return rows.map(function(r){return esc(r.name)+"（"+esc(r.code)+"）"+(r.w*100).toFixed(1)+"%";}).join("、");
+}
+function efNotePp(v){
+  var pp=Math.abs(v)*100;
+  return (pp>=0.1?pp.toFixed(2):pp.toFixed(3))+" 个百分点";
+}
+function efFrontierNoteHtml(res){
+  if(!res||!res.funds||!res.frontier||!res.frontier.length||!res.gmv)return "";
+  var funds=res.funds,frontier=res.frontier,gmv=res.gmv,EPS=0.0005;
+  /* --- GMV 构成 --- */
+  var gmvRows=funds.map(function(f,i){return {idx:i,name:f.name,code:f.code,w:gmv.weights[i]||0,sigma:f.sigma};})
+    .filter(function(r){return r.w>EPS;}).sort(function(a,b){return b.w-a.w;});
+  var isSingle=gmvRows.length===1&&gmvRows[0].w>0.999;
+  /* GMV 是否为「单只极低波动基金」：σ<1% 且不到入选基金 σ 中位数的四分之一（或绝对值极低） */
+  var sigSorted=funds.map(function(f){return f.sigma;}).sort(function(a,b){return a-b;});
+  var medianSig=sigSorted.length?sigSorted[Math.floor(sigSorted.length/2)]:0;
+  var isQuasi=isSingle&&(gmv.sigma<0.005||(gmv.sigma<0.01&&medianSig>0&&gmv.sigma<medianSig*0.25));
+  var p1='<p><b>最小方差组合（GMV）：</b>本次 GMV 由 '+efNoteWeightText(res,gmv.weights)
+    +' 构成，σ = <b>'+efPctPlain(gmv.sigma)+'</b>，E(r) = <b>'+efPct(gmv.ret)+'</b>。'
+    +(isSingle?'也就是说，波动最低的那个组合就是这一只基金单只 100%，没有靠分散再压低。':'')
+    +'</p>';
+  /* --- 与 GMV→最高收益端点连线的偏离 --- */
+  var end=frontier[frontier.length-1];
+  var p2="";
+  var isNearLine=false,maxDev=0,relDev=0;
+  if(frontier.length>=2&&end.ret>gmv.ret+1e-12){
+    var maxPt=null,maxLine=0;
+    frontier.forEach(function(pt){
+      var t=(pt.ret-gmv.ret)/(end.ret-gmv.ret);
+      var lineSigma=gmv.sigma+t*(end.sigma-gmv.sigma);
+      var dev=Math.abs(pt.sigma-lineSigma);
+      if(dev>maxDev){maxDev=dev;maxPt=pt;maxLine=lineSigma;}
+    });
+    var range=Math.abs(end.sigma-gmv.sigma);
+    relDev=range>1e-12?maxDev/range:0;
+    isNearLine=relDev<=0.05;
+    p2='<p><b>和直线的偏离（实测）：</b>把全部 '+frontier.length+' 个前沿点与「GMV 点到最高收益端点的连线」逐点比——最高收益端点为 '
+      +efNoteWeightText(res,end.weights)+'，E(r) = '+efPct(end.ret)+'、σ = '+efPctPlain(end.sigma)
+      +'；在同一 E(r) 下比较 σ，各点与这条连线最大的差是 <b>'+efNotePp(maxDev)+'</b>'
+      +(maxPt?'（出现在 E(r) ≈ '+efPct(maxPt.ret)+' 的点：该点 σ = '+efPctPlain(maxPt.sigma)+'，连线上对应 σ = '+efPctPlain(maxLine)+'）':'')
+      +'，相当于本次 σ 全程跨度 '+efNotePp(range)+' 的 '+(relDev*100).toFixed(1)+'%。</p>';
+    if(isNearLine&&isQuasi){
+      p2+='<p>偏离这么小，图上看起来接近一条直线<b>是这次算出来的结果，不是画错</b>：GMV 那只基金（'
+        +esc(gmvRows[0].name)+'）自身的 σ 只有 '+efPctPlain(gmvRows[0].sigma)
+        +'，在组合里近似一只无风险资产；从它出发往高收益走，最优组合近似「这只低波动基金 + 高收益基金」的线性混合，前沿因此接近从 GMV 点出发的资本配置线（CAL）形态。真正弯曲的那一小段被压缩在 σ 很低的区间里，在当前横轴尺度下肉眼很难看出来。</p>';
+    }else if(isNearLine){
+      p2+='<p>偏离很小，本次前沿点本身就接近上面这条连线，图上近似直线是点位本身接近共线的结果。但本次 GMV 不是一只 σ 极低的基金单只构成，不能简单套用「准无风险资产」的解释，具体以 GMV 构成与下面的权重摘要为准。</p>';
+    }else{
+      p2+='<p>这个偏离不算小，说明本次前沿本身有明显弯曲，上面的连线只是用来量偏离的参照——不要把本次前沿理解成直线或资本配置线，图上的弧度就是求解结果本身。</p>';
+    }
+  }else if(frontier.length<2){
+    p2='<p>本次只有一个互不相同的前沿点（各基金期望收益与 GMV 太接近），没有可比的连线偏离；下面只报 GMV 与权重构成事实。</p>';
+  }
+  if(isQuasi&&!(frontier.length>=2&&end.ret>gmv.ret+1e-12)){
+    /* 偏离段未输出时，准无风险事实仍单独说明一句（不硬套直线结论） */
+    p2+='<p>其中 GMV 那只基金（'+esc(gmvRows[0].name)+'）自身的 σ 只有 '+efPctPlain(gmvRows[0].sigma)+'，在组合里近似无风险资产。</p>';
+  }
+  /* --- 权重构成摘要 --- */
+  var perFund=funds.map(function(f,i){
+    var cnt=0,mx=0;
+    frontier.forEach(function(pt){var w=pt.weights[i]||0;if(w>EPS)cnt++;if(w>mx)mx=w;});
+    return {name:f.name,code:f.code,count:cnt,maxW:mx};
+  });
+  var used=perFund.filter(function(r){return r.count>0;}).sort(function(a,b){return b.count-a.count||b.maxW-a.maxW;});
+  var never=perFund.filter(function(r){return r.count===0;});
+  var perPoint=frontier.map(function(pt){return pt.weights.filter(function(w){return w>EPS;}).length;});
+  var minHold=Math.min.apply(null,perPoint),maxHold=Math.max.apply(null,perPoint);
+  var avgHold=perPoint.reduce(function(a,b){return a+b;},0)/perPoint.length;
+  var p3='<p><b>权重构成核对：</b>全部 '+frontier.length+' 个前沿点实际用到 '+used.length+' 只基金：'
+    +used.map(function(r){return esc(r.name)+"（"+esc(r.code)+"）在 "+r.count+"/"+frontier.length+" 个点非零、最高权重 "+(r.maxW*100).toFixed(1)+"%";}).join("；")
+    +'。每个前沿点由 '+minHold+"–"+maxHold+' 只基金构成，平均 '+avgHold.toFixed(1)+' 只。</p>';
+  if(frontier.length>2){
+    var middle=frontier.slice(1,frontier.length-1);
+    var midUsed=funds.map(function(f,i){
+      var on=middle.some(function(pt){return (pt.weights[i]||0)>EPS;});
+      return on?esc(f.name)+"（"+esc(f.code)+"）":null;
+    }).filter(Boolean);
+    p3+='<p>中间点（去掉 GMV 与最高收益端点，共 '+middle.length+' 个）实际只用到 '+midUsed.length+' 只基金：'
+      +(midUsed.length?midUsed.join("、"):"无")+'。可以对照上方点任意前沿点看权重，核对构成。</p>';
+  }
+  if(never.length){
+    p3+='<p>以下入选基金在<b>所有</b>前沿点权重始终为 0，没有进入任何一个最优组合：'
+      +never.map(function(r){return esc(r.name)+"（"+esc(r.code)+"）";}).join("、")+'。</p>';
+  }else{
+    p3+='<p>入选的每只基金都至少在一个前沿点权重非零，没有全程为 0 的基金。</p>';
+  }
+  return '<div class="ef-note"><h3>这条前沿怎么读（按本次实算）</h3>'+p1+p2+p3+'</div>';
+}
+/* ---------- 结果渲染 ---------- */
+function renderEfResult(res,isSavedView){
+  var box=$("efResult");if(!box)return;
+  ef.result=res;ef.pointSel=-2;ef._shownKey=null;
+  ef._cloud=efMakeCloud(res);
+  var exclHtml="";
+  if(res.exclusions&&res.exclusions.length){
+    exclHtml='<div class="ef-excl"><p><b>以下基金未参与本次计算：</b></p>'
+      +res.exclusions.map(function(x){return '<p>· '+esc(x.name)+'（'+esc(x.code)+'）：'+esc(x.reason)+'</p>';}).join("")+'</div>';
+  }
+  var fundRows=res.funds.map(function(f){
+    return '<tr><td><b>'+esc(f.name)+'</b><div class="company">'+esc(f.code)+'</div></td>'
+      +'<td class="num '+pctClass(f.mu*100)+'">'+efPct(f.mu)+'</td><td class="num">'+efPctPlain(f.sigma)+'</td><td class="num">'+f.weeks+'</td></tr>';
+  }).join("");
+  var covHead='<tr><th>协方差（%²）</th>'+res.funds.map(function(f){return '<th class="num">'+esc(efShortName(f.code))+'</th>';}).join("")+'</tr>';
+  var covRows=res.funds.map(function(f,i){
+    return '<tr><td style="font-weight:600">'+esc(efShortName(f.code))+'</td>'
+      +res.covariance[i].map(function(v){return '<td class="num">'+(v*10000).toFixed(2)+'</td>';}).join("")+'</tr>';
+  }).join("");
+  box.innerHTML=exclHtml
+    +'<div class="panel" style="margin-top:0"><h3>计算口径与结果概览'+(isSavedView?"（上次保存）":"")+'</h3>'
+    +'<p style="margin:0 0 6px">数据区间：<b>'+esc(res.range.from)+' – '+esc(res.range.to)+'</b>（各基金共同周）。口径：近 1 年累计净值，每周取最后一个净值日，按共同周对齐（QDII 净值日期滞后时以共同可得周为准），共 <b>'+res.range.points+' 个共同周点、'+res.range.returns+' 个周收益样本</b>；年化期望收益 = 周均值 × 52，年化波动与协方差由周收益样本协方差 × 52 得到。无风险利率 rf = <b>'+efPctPlain(res.riskFreeRate)+'</b>（随结果保存，供第 5 步使用）。</p>'
+    +'<div class="uc-stats">'
+    +'<div><div class="k">最小方差组合 E(r)</div><div class="v">'+efPct(res.gmv.ret)+'</div></div>'
+    +'<div><div class="k">最小方差组合 σ</div><div class="v">'+efPctPlain(res.gmv.sigma)+'</div></div>'
+    +'<div><div class="k">参与计算基金</div><div class="v">'+res.funds.length+' 只</div></div>'
+    +'<div><div class="k">前沿点数</div><div class="v">'+res.frontier.length+' 个</div><div class="company">GMV 起，至最高期望收益，逐点最小方差求解</div></div>'
+    +'</div>'
+    +'<p class="company" style="margin:0">结果已保存到这台设备的浏览器本地（'+esc(String(res.savedAt||"").replace("T"," ").slice(0,16))+'），供第 5 步与效用无差异曲线相切时调用，本步只存不用。改选基金或改无风险利率后重新计算会覆盖保存。</p></div>'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px"><button class="btn" type="button" id="efToOptimal">结合我的效用曲线，求最优组合 →</button><span class="company">第 5 步：用第 3 步保存的 A，在这条已保存的前沿上找效用最大的点。</span></div>'
+    +'<div class="uc-chart-wrap"><h3 style="margin:0 0 4px;font-size:16.5px">有效前沿</h3>'
+    +'<p class="company" style="margin:0">淡色点云为随机权重抽样的可行集组合（示意）；蓝色曲线为逐点最小方差求解出的有效前沿（上沿）；金色点为单只基金；绿色菱形为最小方差组合。点前沿上的圆点可查看该组合的权重。</p>'
+    +'<div class="uc-legend"><span class="bl"><span class="sw" style="background:'+(cssVar("--accent")||"#2563eb")+'"></span>有效前沿</span><span class="bl"><span class="sw" style="background:#b98a1e"></span>单只基金</span><span class="bl"><span class="sw" style="background:#0f766e"></span>最小方差组合</span></div>'
+    +'<div id="efChartBox">'+efChartSvg(res,ef._cloud)+'</div>'
+    +'<div id="efPointDetail" style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px"></div>'
+    +'</div>'
+    +efFrontierNoteHtml(res)
+    +'<div class="panel"><h3>各基金年化期望收益与波动（近 1 年周收益实算）</h3>'
+    +'<div class="tablebox" style="box-shadow:none"><div class="table-scroll"><table><thead><tr><th>基金</th><th class="num">E(r)</th><th class="num">σ</th><th class="num">共同周点</th></tr></thead><tbody>'+fundRows+'</tbody></table></div></div>'
+    +'<h3 style="margin-top:18px">年化协方差矩阵</h3>'
+    +'<div class="tablebox" style="box-shadow:none"><div class="table-scroll"><table><thead>'+covHead+'</thead><tbody>'+covRows+'</tbody></table></div></div>'
+    +'<p class="legend">单位 %²（百分数的平方）：对角线为方差，如 100.00 约对应 σ = 10%。原始小数矩阵已随结果一并保存。</p></div>'
+    +'<p class="uc-note-small">说明：期望收益用近 1 年周收益的算术平均年化，QDII 与高波动基金的这一数值会明显高于其长期可持续水平，前沿右端因此陡峭——这是样本口径的真实结果，不是预测。历史净值不代表未来表现，本页不构成投资建议。</p>';
+  efBindChart(res);
+  efShowPoint(res,"gmv",-1);
+  var tob=$("efToOptimal");if(tob)tob.addEventListener("click",function(){opOpen();});
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+/* ---------- 接线 ---------- */
+$("efCalc").addEventListener("click",efCompute);
+$("efResetDefault").addEventListener("click",function(){
+  ef.selected=EF_DEFAULT.map(function(f){return f.code;});
+  renderEf();renderEfSearch();
+});
+$("efSearchInput").addEventListener("input",renderEfSearch);
+$("efSearchInput").addEventListener("focus",function(){loadFundsIndex();});
+var efEntryBtn=$("efEntryBtn");if(efEntryBtn)efEntryBtn.addEventListener("click",function(){showView("frontier");renderEf();loadFundsIndex();});
+document.querySelectorAll(".tab").forEach(function(t){
+  if(t.getAttribute("data-view")==="frontier")t.addEventListener("click",function(){renderEf();loadFundsIndex();});
+});
+renderEf();
+</script>
+<script>
+/* ==================== 第 5 步：最优组合（效用曲线 × 有效前沿相切） ====================
+   读第 3 步保存的 A（jj-utility-curve-v1）与第 4 步保存的前沿
+   （jj-efficient-frontier-v1：frontier、gmv、covariance、funds、riskFreeRate），
+   在已计算的前沿点中取 U = E(r) − ½Aσ² 最大的点为最优点，如实标注
+   这是「已计算前沿点中的最优点」，不在点与点之间插值凑切点。
+   A 不一致（存的是区间）时用区间两端各算一个；A ≤ 0 与落在 GMV 的
+   情形按边界 / 角点解如实说明。不改第 3、4 步的任何存储格式与计算。
+===================================================================== */
+function opReadUc(){
+  try{
+    var raw=window.localStorage.getItem("jj-utility-curve-v1");
+    if(!raw)return null;
+    var u=JSON.parse(raw);
+    if(!u)return null;
+    var hasA=(u.A!==null&&u.A!==undefined&&isFinite(u.A));
+    var hasPair=isFinite(u.A1)&&isFinite(u.A2);
+    if(!hasA&&!hasPair)return null;
+    return u;
+  }catch(e){return null;}
+}
+function opReadEf(){
+  try{
+    var raw=window.localStorage.getItem("jj-efficient-frontier-v1");
+    if(!raw)return null;
+    var f=JSON.parse(raw);
+    if(!f||!f.frontier||!f.frontier.length||!f.funds||!f.funds.length||!f.gmv)return null;
+    return f;
+  }catch(e){return null;}
+}
+function opBestPoint(res,A){
+  var best=null;
+  res.frontier.forEach(function(p,i){
+    var U=p.ret-0.5*A*p.sigma*p.sigma;
+    if(best===null||U>best.U+1e-12)best={pt:p,idx:i,U:U};
+  });
+  return best;
+}
+function opU(v){return (v===null||v===undefined||!isFinite(v))?"—":Number(v).toFixed(4);}
+/* ---------- 相切图：前沿 + 无差异曲线族 + 最优点 ---------- */
+function opChartSvg(res,A,best){
+  var W=720,H=400,L=58,R=14,T=16,B=38,PW=W-L-R,PH=H-T-B;
+  var sigVals=res.funds.map(function(f){return f.sigma;}).concat(res.frontier.map(function(p){return p.sigma;}));
+  var retVals=res.funds.map(function(f){return f.mu;}).concat(res.frontier.map(function(p){return p.ret;}));
+  var sigMax=(Math.max.apply(null,sigVals)*1.12)||0.1;
+  var retMax=Math.max.apply(null,retVals),retMin=Math.min(0,Math.min.apply(null,retVals));
+  var pad=(retMax-retMin)*0.14||0.02;retMax+=pad;retMin-=pad*0.7;
+  function X(s){return L+s/sigMax*PW;}
+  function Y(e){return T+(retMax-e)/(retMax-retMin)*PH;}
+  var dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var grid=dark?"#2a3b4b":"#e3e9ef",axisTxt=dark?"#9db0c0":"#5c6b7a",ink=dark?"#e8eef3":"#14202b";
+  var accent=cssVar("--accent")||"#2563eb";
+  var optColor=dark?"#f08a7d":"#c0392b";
+  function tickPct(v){var p=v*100;return (p>0?"+":"")+(Math.abs(p)>=10?p.toFixed(0):p.toFixed(1))+"%";}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="有效前沿与无差异曲线相切图：横轴年化波动，纵轴年化期望收益">';
+  for(var gi=0;gi<=4;gi++){
+    var sv=sigMax*gi/4;s+='<line x1="'+X(sv)+'" y1="'+T+'" x2="'+X(sv)+'" y2="'+(T+PH)+'" stroke="'+grid+'"/><text x="'+X(sv)+'" y="'+(H-20)+'" font-size="11" fill="'+axisTxt+'" text-anchor="middle">'+(sv*100).toFixed(sv*100>=10?0:1)+'%</text>';
+    var ev=retMin+(retMax-retMin)*gi/4;s+='<line x1="'+L+'" y1="'+Y(ev)+'" x2="'+(L+PW)+'" y2="'+Y(ev)+'" stroke="'+grid+'"/><text x="'+(L-6)+'" y="'+(Y(ev)+4)+'" font-size="11" fill="'+axisTxt+'" text-anchor="end">'+tickPct(ev)+'</text>';
+  }
+  s+='<text x="'+(L+PW/2)+'" y="'+(H-4)+'" font-size="12" fill="'+axisTxt+'" text-anchor="middle">年化波动 σ</text>';
+  s+='<text x="14" y="'+(T+PH/2)+'" font-size="12" fill="'+axisTxt+'" text-anchor="middle" transform="rotate(-90 14 '+(T+PH/2)+')">年化期望收益 E(r)</text>';
+  /* 无差异曲线族：E(r) = U + ½Aσ²，画 U 最优值及其上下各一条 */
+  function indiffPath(U,color,width,dash){
+    var d="",pen=false;
+    for(var i=0;i<=80;i++){
+      var sg=sigMax*i/80, e=U+0.5*A*sg*sg;
+      if(e<retMin||e>retMax){pen=false;continue;}
+      d+=(pen?"L":"M")+X(sg).toFixed(1)+" "+Y(e).toFixed(1)+" ";pen=true;
+    }
+    if(d.indexOf("L")<0)return "";
+    return '<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+width+'"'+(dash?' stroke-dasharray="5 4" opacity="0.75"':"")+'/>';
+  }
+  var step=Math.max(0.004,(retMax-retMin)*0.16);
+  s+=indiffPath(best.U-step,axisTxt,1.6,true);
+  s+=indiffPath(best.U+step,axisTxt,1.6,true);
+  s+=indiffPath(best.U,accent,2.6,false);
+  /* 单只基金点（淡） */
+  res.funds.forEach(function(f){
+    s+='<circle cx="'+X(f.sigma)+'" cy="'+Y(f.mu)+'" r="4" fill="#b98a1e" opacity="0.65" stroke="#fff" stroke-width="1.2"><title>'+esc(f.name)+'（'+esc(f.code)+'）</title></circle>';
+  });
+  /* 有效前沿 */
+  var path=res.frontier.map(function(p,i){return (i?"L":"M")+X(p.sigma).toFixed(1)+" "+Y(p.ret).toFixed(1);}).join(" ");
+  s+='<path d="'+path+'" fill="none" stroke="'+ink+'" stroke-width="2.4"/>';
+  res.frontier.forEach(function(p,i){
+    s+='<circle cx="'+X(p.sigma)+'" cy="'+Y(p.ret)+'" r="3.2" fill="#fff" stroke="'+ink+'" stroke-width="1.4"/>';
+  });
+  /* GMV */
+  var g=res.gmv;
+  s+='<path d="M'+X(g.sigma)+' '+(Y(g.ret)-7)+' L'+(X(g.sigma)+7)+' '+Y(g.ret)+' L'+X(g.sigma)+' '+(Y(g.ret)+7)+' L'+(X(g.sigma)-7)+' '+Y(g.ret)+' Z" fill="#0f766e" stroke="#fff" stroke-width="1.3"><title>最小方差组合</title></path>';
+  /* 最优点 */
+  var o=best.pt;
+  s+='<circle cx="'+X(o.sigma)+'" cy="'+Y(o.ret)+'" r="8" fill="none" stroke="'+optColor+'" stroke-width="2"/>';
+  s+='<circle cx="'+X(o.sigma)+'" cy="'+Y(o.ret)+'" r="4.6" fill="'+optColor+'" stroke="#fff" stroke-width="1.4"><title>最优点：E(r) '+efPct(o.ret)+'，σ '+efPctPlain(o.sigma)+'，U = '+opU(best.U)+'</title></circle>';
+  var oAnchor=X(o.sigma)>L+PW*0.66?"end":"start",otx=X(o.sigma)+(oAnchor==="end"?-13:13);
+  s+='<text x="'+otx+'" y="'+(Y(o.ret)-10)+'" font-size="12.5" font-weight="800" fill="'+optColor+'" text-anchor="'+oAnchor+'">最优点（U 最大）</text>';
+  s+='</svg>';
+  return s;
+}
+/* ---------- 单个 A 的结果卡 ---------- */
+function opCaseHtml(res,A,caseLabel){
+  var best=opBestPoint(res,A);
+  var pt=best.pt,n=res.frontier.length;
+  var isGMV=best.idx===0, isEnd=(n>1&&best.idx===n-1);
+  var notes=[];
+  if(A<=0)notes.push('<b>边界解：</b>你的 A ≤ 0（风险中性 / 风险偏好），效用不随波动下降，最优点落在前沿的最高收益端点上——<b>按你的答案，最优解在边界上</b>，不是曲线与前沿相切的内点。');
+  if(isGMV&&A>0)notes.push('<b>角点解：</b>最优点落在最小方差组合（GMV）上——这是<b>风险厌恶极强时的角点解</b>：按这个 A，任何一点额外的波动都不值得用收益来换，于是停在前沿风险最低的那一端。');
+  if(isEnd&&A>0)notes.push('<b>边界解：</b>最优点落在前沿的最高收益端点上：按这个 A，在已计算的前沿点中，收益的吸引力一直压过波动的代价，效用最高的点就是收益最高的那一端。');
+  if(!isGMV&&!isEnd&&A>0)notes.push('最优点是前沿的内点：经过该点的那条无差异曲线与有效前沿在此相切（在已计算的前沿点中，该点效用最高）。');
+  var html='<div class="panel op-case" style="margin-top:0"><h3 style="margin-top:0">'+esc(caseLabel)+'</h3>'
+    +'<div class="uc-stats" style="margin-top:0">'
+    +'<div><div class="k">组合期望收益 E(r)</div><div class="v">'+efPct(pt.ret)+'</div></div>'
+    +'<div><div class="k">组合波动 σ</div><div class="v">'+efPctPlain(pt.sigma)+'</div></div>'
+    +'<div><div class="k">效用 U = E(r) − ½Aσ²</div><div class="v">'+opU(best.U)+'</div><div class="company">A = '+fmtA(A)+'</div></div>'
+    +'<div><div class="k">所在前沿点</div><div class="v small">第 '+(best.idx+1)+' / '+n+' 个点</div><div class="company">已计算前沿点中的最优点</div></div>'
+    +'</div>'
+    +notes.map(function(t){return '<p style="margin:0 0 6px">'+t+'</p>';}).join("")
+    +'<h4 style="margin:12px 0 4px;font-size:15px">组合构成（该点的基金权重）</h4>'
+    +efWeightsHtml(res,pt)
+    +'<div class="uc-chart-wrap"><h3 style="margin:0 0 4px;font-size:16px">有效前沿 × 你的无差异曲线（A = '+fmtA(A)+'）</h3>'
+    +'<p class="company" style="margin:0">黑线为第 4 步保存的有效前沿（圆点为已计算的前沿点），彩色粗线是恰好经过最优点的那条无差异曲线，灰色虚线是同一 A 下效用更高 / 更低的另两条曲线；红点为最优点，绿色菱形为最小方差组合，金色点为单只基金。</p>'
+    +'<div class="uc-legend"><span class="bl"><span class="sw" style="background:'+(cssVar("--accent")||"#2563eb")+'"></span>过最优点的无差异曲线（U = '+opU(best.U)+'）</span><span class="bl"><span class="sw" style="background:#14202b"></span>有效前沿</span><span class="bl"><span class="sw" style="background:#c0392b"></span>最优点</span></div>'
+    +opChartSvg(res,A,best)
+    +'</div></div>';
+  return html;
+}
+/* ---------- 主渲染 ---------- */
+function renderOp(){
+  var area=$("opArea");if(!area)return;
+  var u=opReadUc(), f=opReadEf();
+  var prompts="";
+  if(!u){
+    prompts+='<div class="uc-warn"><h3 style="margin:0 0 6px">还没测过你的效用曲线</h3>'
+      +'<p style="margin:0 0 10px">第 5 步需要第 3 步测得的风险厌恶系数 A，本机浏览器里还没有这份结果，我不会替你假装一个 A。先去做完 10 道题，A 会自动保存，再回来求最优组合。</p>'
+      +'<button class="btn" type="button" id="opGoUc">先去做第 3 步效用曲线测评 →</button></div>';
+  }
+  if(!f){
+    prompts+='<div class="uc-warn"><h3 style="margin:0 0 6px">还没有保存的有效前沿</h3>'
+      +'<p style="margin:0 0 10px">第 5 步要在第 4 步算出的有效前沿上找最优点，本机浏览器里还没有保存的前沿结果。先去选一组基金算一次前沿，结果会自动保存，再回来相切。</p>'
+      +'<button class="btn" type="button" id="opGoEf">先去第 4 步选基计算前沿 →</button></div>';
+  }
+  if(prompts){
+    area.innerHTML=prompts;
+    var b1=$("opGoUc");if(b1)b1.addEventListener("click",function(){ucOpen();});
+    var b2=$("opGoEf");if(b2)b2.addEventListener("click",function(){showView("frontier");renderEf();loadFundsIndex();});
+    return;
+  }
+  /* 两份结果都在：先标明用的哪条前沿、哪个 A */
+  var fundList=f.funds.map(function(x){return esc(x.name)+"（"+esc(x.code)+"）";}).join("、");
+  var srcHtml='<div class="panel" style="margin-top:0"><h3>本次相切用的两份已保存结果</h3>'
+    +'<p style="margin:0 0 6px"><b>有效前沿（第 4 步保存）：</b>'+fundList+'，共 '+f.frontier.length+' 个前沿点；计算时无风险利率 rf = <b>'+efPctPlain(f.riskFreeRate)+'</b>；数据区间 '+(f.range?esc(f.range.from)+" – "+esc(f.range.to):"—")+'；保存于 '+esc(String(f.savedAt||"").replace("T"," ").slice(0,16))+'。若你后来改过选基意向，请先回第 4 步重算再回来，避免拿旧前沿当新结果。</p>'
+    +'<p style="margin:0 0 6px"><b>效用曲线（第 3 步保存）：</b>A1 = '+fmtA(u.A1)+'，A2 = '+fmtA(u.A2)
+    +(u.consistent&&u.A!==null&&u.A!==undefined?('，交叉验证一致，<b>A = '+fmtA(u.A)+'</b>'):('，两次测得不一致，<b>按区间处理</b>'))
+    +'；CE1 = '+fmtMoney(u.ce1)+'，CE2 = '+fmtMoney(u.ce2)+'；保存于 '+esc(String(u.savedAt||"").replace("T"," ").slice(0,16))+'。</p>'
+    +'<p class="company" style="margin:0">求法：在已计算的 '+f.frontier.length+' 个前沿点中逐点算 U = E(r) − ½Aσ²，取 U 最大的点。下面说的「最优点」始终是<b>已计算前沿点中的最优点</b>，不是在点之间插值凑出的切点。</p>'
+    +'<div style="margin-top:10px"><button class="btn ghost small" type="button" id="opRefresh">重新读取已保存的 A 与前沿</button></div></div>';
+  var bodyHtml="";
+  if(u.consistent&&u.A!==null&&u.A!==undefined&&isFinite(u.A)){
+    bodyHtml=opCaseHtml(f,u.A,"最优组合 · A = "+fmtA(u.A));
+  }else{
+    var lo=Math.min(u.A1,u.A2), hi=Math.max(u.A1,u.A2);
+    bodyHtml='<div class="uc-warn"><h3 style="margin:0 0 6px">A 是区间：两次测得的风险态度不一致</h3>'
+      +'<p style="margin:0">第 3 步里 A1 = '+fmtA(u.A1)+' 与 A2 = '+fmtA(u.A2)+' 相差 '+fmtA(Math.abs(u.A1-u.A2))+'，没有合并成一个数'+(u.doubtful?'（且标了「区间存疑」）':'')+'。下面分别用区间两端各算一个最优组合并排展示：<b>两次测得的风险态度不一致，组合在两者之间</b>——你的真实偏好对应的组合应介于这两个组合之间。</p></div>'
+      +'<div class="op-grid">'
+      +opCaseHtml(f,lo,"区间下端 · A = "+fmtA(lo)+"（更能承受波动）")
+      +opCaseHtml(f,hi,"区间上端 · A = "+fmtA(hi)+"（更厌恶风险）")
+      +'</div>';
+  }
+  area.innerHTML=srcHtml+bodyHtml
+    +'<p class="uc-note-small">说明：组合由过去 1 年周净值与均值-方差假设算出；A 来自假设性题目的自测（本金 ¥20,000、持有 1 年的假想情境，真实下单时态度可能不同）；这里的「相切」是在第 4 步已计算的前沿点中取效用最大点。结果是模型输出，不构成投资建议。</p>';
+  var rf=$("opRefresh");if(rf)rf.addEventListener("click",renderOp);
+}
+function opOpen(){showView("optimal");renderOp();}
+var opEntryBtn=$("opEntryBtn");if(opEntryBtn)opEntryBtn.addEventListener("click",opOpen);
+document.querySelectorAll(".tab").forEach(function(t){
+  if(t.getAttribute("data-view")==="optimal")t.addEventListener("click",function(){renderOp();});
+});
+renderOp();
 </script>
 </body>
 </html>
