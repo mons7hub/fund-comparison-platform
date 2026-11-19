@@ -280,6 +280,35 @@ header.site .head-note{margin-left:0}
 .uc-stats .v.small{font-size:15px;padding-top:3px}
 .uc-note-small{font-size:12px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:12px;margin-top:18px}
 .uc-warn{background:var(--gold-bg);border:1px solid var(--warn-line);border-radius:12px;padding:16px 18px;margin:0 0 14px}
+
+/* ---------- 排雷层（第 7 步） ---------- */
+.mine-item{display:flex;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.mine-item:first-of-type{border-top:none;padding-top:2px}
+.mine-dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:6px}
+.mine-dot.ok{background:var(--green)}
+.mine-dot.warn{background:var(--gold)}
+.mine-dot.bad{background:var(--red)}
+.mine-dot.na{background:var(--muted);opacity:.55}
+.mine-main{flex:1;min-width:0}
+.mine-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mine-title{font-weight:700;font-size:15px}
+.mine-badge{font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.mine-badge.ok{color:var(--warn-ink);border-color:var(--warn-line);background:var(--warn-bg)}
+.mine-badge.warn{color:var(--gold);border-color:var(--gold);background:var(--gold-bg)}
+.mine-badge.bad{color:var(--red);border-color:var(--red)}
+.mine-text{margin:3px 0 0;font-size:14px}
+.mine-basis{margin:3px 0 0;font-size:12.5px;color:var(--muted);line-height:1.65}
+.mine-pair{padding:9px 0;border-top:1px solid var(--line)}
+.mine-pair:first-of-type{border-top:none;padding-top:2px}
+#efMineModal{position:fixed;inset:0;z-index:90;background:rgba(8,20,32,.55);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:18px 10px}
+#efMineModal[hidden]{display:none}
+#welcomeModal{position:fixed;inset:0;z-index:100;background:rgba(8,20,32,.55);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:18px 10px}
+#welcomeModal[hidden]{display:none}
+.welcome-card{max-width:560px}
+.welcome-card p{line-height:1.65;margin:0 0 10px}
+.welcome-card ul{margin:0 0 12px;padding-left:20px}
+.welcome-card li{margin:0 0 7px;line-height:1.6}
+.welcome-card .btn{width:100%;margin-top:6px;padding:12px;font-size:15.5px}
 .uc-chart-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:14px;overflow:hidden}
 .uc-chart-wrap svg{width:100%;height:auto;display:block}
 .uc-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:8px 0 4px}
@@ -365,9 +394,9 @@ footer.site p{margin:0 0 6px}
     <button class="tab" role="tab" data-view="category" aria-selected="false">基金分类</button>
     <button class="tab" role="tab" data-view="compare" aria-selected="false">基金对比<span class="badge" id="cmpBadge" hidden>0</span></button>
     <button class="tab" role="tab" data-view="mgrcompare" aria-selected="false">基金经理对比<span class="badge" id="mcmpBadge" hidden>0</span></button>
-    <button class="tab" role="tab" data-view="utility" aria-selected="false">我的效用曲线</button>
-    <button class="tab" role="tab" data-view="frontier" aria-selected="false">构建有效前沿</button>
-    <button class="tab" role="tab" data-view="optimal" aria-selected="false">最优组合</button>
+    <button class="tab" role="tab" data-view="utility" aria-selected="false">测测你能承受多大风险</button>
+    <button class="tab" role="tab" data-view="frontier" aria-selected="false">看看组合的风险收益边界</button>
+    <button class="tab" role="tab" data-view="optimal" aria-selected="false">算出适合你的组合配比</button>
   </div>
 </nav>
 
@@ -378,22 +407,22 @@ footer.site p{margin:0 0 6px}
     <div id="mgrListWrap">
       <div class="uc-entry">
         <div class="uc-entry-main">
-          <h3>第 3 步 · 我的效用曲线</h3>
-          <p>做 10 道二选一（约 2–3 分钟），用两个不同波动的赌局互相交叉验证，测出你的确定性等价与风险厌恶系数 A，画出专属于你的无差异曲线。结果会保存下来，供第 5 步与有效前沿相切时调用。</p>
+          <h3>测测你能承受多大风险</h3>
+          <p>做 10 道二选一（约 2–3 分钟），用两个不同波动的赌局互相交叉验证，测出你的确定性等价与风险厌恶系数 A，画出专属于你的无差异曲线。结果会保存下来，供后面算最优组合时调用。</p>
         </div>
         <button class="btn" type="button" id="ucEntryBtn">开始测评 →</button>
       </div>
       <div class="uc-entry">
         <div class="uc-entry-main">
-          <h3>第 4 步 · 构建有效前沿</h3>
-          <p>自己选 2–10 只基金：波动率与协方差矩阵用近 1 年周净值实算，期望收益改用近 1 / 2 / 3 年多窗口收缩估计（避免把单年涨幅当长期期望），在只做多、权重和为 1 的约束下逐点求最小方差，画出这组基金的有效前沿与最小方差组合。结果会保存下来，供第 5 步与效用曲线相切时调用。</p>
+          <h3>看看组合的风险收益边界</h3>
+          <p>自己选 2–10 只基金：波动率与协方差矩阵用近 1 年周净值实算，期望收益改用近 1 / 2 / 3 年多窗口收缩估计（避免把单年涨幅当长期期望），在只做多、权重和为 1 的约束下逐点求最小方差，画出这组基金的有效前沿与最小方差组合。结果会保存下来，供后面算最优组合时调用。</p>
         </div>
         <button class="btn" type="button" id="efEntryBtn">去选基金 →</button>
       </div>
       <div class="uc-entry">
         <div class="uc-entry-main">
-          <h3>第 5 步 · 最优组合（效用曲线 × 有效前沿）</h3>
-          <p>把第 3 步的 A 和第 4 步保存的前沿放在同一张图上，用保存的 μ 与协方差以 240 步加密重解前沿，在加密点中找效用 U = E(r) − ½Aσ² 最大的组合权重；A 还可以在结果页手动校准试算。需要先完成第 3 步测评并在第 4 步算过一次前沿。</p>
+          <h3>算出适合你的组合配比</h3>
+          <p>把测评得到的 A 和已保存的有效前沿放在同一张图上，用保存的 μ 与协方差以 240 步加密重解前沿，在加密点中找效用 U = E(r) − ½Aσ² 最大的组合权重；A 还可以在结果页手动校准试算。需要先完成风险承受力测评、并算过一次有效前沿。</p>
         </div>
         <button class="btn" type="button" id="opEntryBtn">求最优组合 →</button>
       </div>
@@ -539,7 +568,7 @@ footer.site p{margin:0 0 6px}
 
   <!-- ============ 我的效用曲线（第 3 步） ============ -->
   <section class="view" id="view-utility">
-    <h2 class="sec">我的效用曲线</h2>
+    <h2 class="sec">测测你能承受多大风险</h2>
     <p class="sec-sub">均值-方差效用 U = E(r) − ½Aσ²。先测出你对两个赌局的确定性等价（CE），反推风险厌恶系数 A，再画出你的无差异曲线族。</p>
     <div class="uc-context" role="note">
       <span>固定情境：<b>本金 ¥20,000</b></span><span><b>持有 1 年</b></span><span>只看 <b>1 年后到手金额</b></span><span><b>不计手续费与税</b></span>
@@ -549,8 +578,8 @@ footer.site p{margin:0 0 6px}
 
   <!-- ============ 构建有效前沿（第 4 步） ============ -->
   <section class="view" id="view-frontier">
-    <h2 class="sec">构建有效前沿</h2>
-    <p class="sec-sub">选一组基金：年化波动 σ 与两两协方差用近 1 年真实周净值（共同周对齐）算出；年化期望收益 E(r) 用多窗口收缩估计——每只基金分别用近 1 年、近 2 年、近 3 年窗口算周收益均值年化，再对可得窗口取平均，单年涨幅会被更长窗口拉回，不再直接当长期期望（原始近 1 年 μ 在结果表中并列保留供对照）。再在「只做多（权重 ≥ 0）、权重和 = 1」的约束下，对每个目标收益逐点求最小方差，得到这组基金的有效前沿。本步只算前沿并保存结果；与效用曲线相切定最优组合是第 5 步，本页不做。</p>
+    <h2 class="sec">看看组合的风险收益边界</h2>
+    <p class="sec-sub">选一组基金：年化波动 σ 与两两协方差用近 1 年真实周净值（共同周对齐）算出；年化期望收益 E(r) 用多窗口收缩估计——每只基金分别用近 1 年、近 2 年、近 3 年窗口算周收益均值年化，再对可得窗口取平均，单年涨幅会被更长窗口拉回，不再直接当长期期望（原始近 1 年 μ 在结果表中并列保留供对照）。再在「只做多（权重 ≥ 0）、权重和 = 1」的约束下，对每个目标收益逐点求最小方差，得到这组基金的有效前沿。这里只算前沿并保存结果；与效用曲线相切定最优组合在「算出适合你的组合配比」里做，本页不做。</p>
 
     <div class="panel" style="margin-top:0">
       <h3>1 · 选择基金（2–10 只）</h3>
@@ -572,21 +601,23 @@ footer.site p{margin:0 0 6px}
         <label for="efRf" style="font-weight:700">无风险利率 rf</label>
         <input id="efRf" type="number" step="0.01" min="-1" max="10" value="1.17" aria-label="无风险利率（百分数）"/>
         <span style="font-weight:700">%</span>
-        <span class="company">默认 1.17% 是 2026-11-17 建页时的参考值，<b>不是实时行情</b>；如已变化，改成最新公布值再计算。rf 本身不改变前沿形状，会随结果一并保存，供第 5 步相切时使用。</span>
+        <span class="company">默认 1.17% 是 2026-11-17 建页时的参考值，<b>不是实时行情</b>；如已变化，改成最新公布值再计算。rf 本身不改变前沿形状，会随结果一并保存，供算最优组合相切时使用。</span>
       </div>
     </div>
 
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:16px 0">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:16px 0 6px">
       <button class="btn" type="button" id="efCalc">计算有效前沿</button>
       <span id="efStatus" class="company" role="status"></span>
     </div>
+    <p class="company" style="margin:0 0 12px">点「计算有效前沿」前，会先跑一遍<b>排雷检查</b>：逐只查规模、经理稳定性、净值分位，再查整组的持仓 / 赛道重叠，清单列在下方；若检出赛道或类型高度重叠，会先弹出警告说明哪几只重叠，你确认后才继续计算。</p>
+    <div id="efMineGate"></div>
     <div id="efResult"></div>
   </section>
 
   <!-- ============ 最优组合（第 5 步） ============ -->
   <section class="view" id="view-optimal">
-    <h2 class="sec">最优组合 · 效用曲线与有效前沿相切</h2>
-    <p class="sec-sub">第 5 步（最后一步）：读取第 3 步保存的风险厌恶系数 A 与第 4 步保存的有效前沿，在同一张（σ, E(r)）图上叠画前沿与你的无差异曲线族 U = E(r) − ½Aσ²；最优点不用保存的 26 个离散点凑，而是用保存的协方差矩阵与各基金 μ、σ 在本页内以 240 步目标收益加密重跑同一个约束最小方差求解，在加密点中取效用最大者。A 可在结果区手动校准试算，手动值只影响本次计算，不覆盖第 3 步保存的测得 A。</p>
+    <h2 class="sec">算出适合你的组合配比</h2>
+    <p class="sec-sub">读取效用曲线测评保存的风险厌恶系数 A 与已保存的有效前沿，在同一张（σ, E(r)）图上叠画前沿与你的无差异曲线族 U = E(r) − ½Aσ²；最优点不用保存的 26 个离散点凑，而是用保存的协方差矩阵与各基金 μ、σ 在本页内以 240 步目标收益加密重跑同一个约束最小方差求解，在加密点中取效用最大者。A 可在结果区手动校准试算，手动值只影响本次计算，不覆盖测评保存的测得 A。</p>
     <div id="opArea"></div>
   </section>
 
@@ -606,6 +637,47 @@ footer.site p{margin:0 0 6px}
     </div>
   </div>
 </div>
+
+<!-- 第 7 步排雷：重叠警告弹窗（第 4 步计算前确认） -->
+<div id="efMineModal" hidden role="alertdialog" aria-modal="true" aria-labelledby="efMineModalTitle">
+  <div class="pf-card">
+    <h3 id="efMineModalTitle" style="margin:0 0 4px;font-size:19px;color:var(--red)">先停一下：这组基金重叠太高</h3>
+    <div id="efMineModalBody"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn" type="button" id="efMineBack">返回调整选基</button>
+      <button class="btn ghost" type="button" id="efMineGo">我了解风险，继续计算</button>
+    </div>
+  </div>
+</div>
+
+<!-- 首次访问欢迎弹窗：点「我知道了」后记在浏览器本地，之后不再弹 -->
+<div id="welcomeModal" hidden role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="pf-card welcome-card">
+    <h3 id="welcomeTitle" style="margin:0 0 10px;font-size:20px">欢迎来到基金对比平台</h3>
+    <p>这里可以查全市场 <b>2.8 万多只基金、4,400 多位基金经理</b>的真实数据（来自天天基金公开接口，每晚更新）。第一次来，可以这样用：</p>
+    <ul>
+      <li><b>不知道买什么：</b>先看「基金排行」和「基金经理排行榜」，按收益、回撤和经理履历挑出候选；</li>
+      <li><b>横向比较：</b>把看中的基金放进底部对比栏，并排比收益、回撤和基金经理；</li>
+      <li><b>买之前先排雷：</b>在基金详情页检查它的规模、经理稳不稳定、净值在什么位置、持仓有没有重叠；</li>
+      <li><b>搭组合：</b>用「看看组合的风险收益边界」和「算出适合你的组合配比」，看几只基金配在一起的风险和建议配比。</li>
+    </ul>
+    <p class="company" style="margin:0 0 6px">本站只提供数据和分析工具，不构成投资建议，买不买请自己判断。</p>
+    <button class="btn" type="button" id="welcomeOk">我知道了</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY="jj-welcome-seen-v1",modal=document.getElementById("welcomeModal");
+  if(!modal)return;
+  var seen=false;
+  try{seen=!!localStorage.getItem(KEY);}catch(e){}
+  if(!seen)modal.hidden=false;
+  document.getElementById("welcomeOk").addEventListener("click",function(){
+    modal.hidden=true;
+    try{localStorage.setItem(KEY,"1");}catch(e){}
+  });
+})();
+</script>
 
 <!-- 对比栏 -->
 <div id="tray" hidden>
@@ -770,6 +842,14 @@ function detailFromPingzhong(code){
       if(Array.isArray(fs.categories))scaleDate=fs.categories[li2]||null;
     }
   }
+  /* 规模历史序列（同一接口 Data_fluctuationScale 的完整序列，供排雷层算「规模短期暴增」） */
+  var scaleSeries=[];
+  if(fs&&Array.isArray(fs.categories)&&Array.isArray(fs.series)&&fs.series.length&&Array.isArray(fs.series[0].data)){
+    fs.series[0].data.forEach(function(v,i){
+      var y=numOrNull(v);
+      if(y!==null&&fs.categories[i])scaleSeries.push({date:String(fs.categories[i]),yi:y});
+    });
+  }
   var managers=[];
   if(Array.isArray(g.Data_currentFundManager)){
     g.Data_currentFundManager.forEach(function(mg){
@@ -793,7 +873,7 @@ function detailFromPingzhong(code){
     rate:numOrNull(g.fund_Rate),sourceRate:numOrNull(g.fund_sourceRate),
     syl1m:numOrNull(g.syl_1y),syl3m:numOrNull(g.syl_3y),syl6m:numOrNull(g.syl_6y),syl1y:numOrNull(g.syl_1n),
     maxDrawdown:stats.maxDrawdown,volatility:stats.volatility,stockPosition:stockPos,
-    scaleYi:scaleYi,scaleDate:scaleDate,
+    scaleYi:scaleYi,scaleDate:scaleDate,scaleSeries:scaleSeries,
     latestNav:lastPt?lastPt.y:null,latestNavDate:lastPt?cstDateStr(lastPt.x):null,
     ac:ac.map(function(p){return [p.x,p.y];}),
     holdings:null,holdingsDate:null,holdingsKind:"stock",concentration:null,
@@ -1299,6 +1379,7 @@ function renderFundDetail(code,resetKline){
     +'<div><div class="k">加入对比</div><div style="padding-top:4px">'+fundRowCmp(code)+'</div></div>'
     +'</div>'
     +'<p class="legend">昨日 / 近 3 日 / 近 1 周 / 近 1 月由累计净值序列实算（复权口径，分红日不假摔）；阶段涨幅为东方财富官方口径；最大回撤与年化波动由单位净值历史实算。'+(isStub?' 详情数据正在直连拉取，稍候自动刷新本页。':"")+'</p>'
+    +'<div id="minePanel"></div>'
     +'<div id="klinePanel"></div>'
     +'<div id="holdPanel"></div>'
     +'<div id="benchPanel"></div>'
@@ -1307,6 +1388,7 @@ function renderFundDetail(code,resetKline){
   $("fundBack").addEventListener("click",goBack);
   wrap.querySelectorAll("[data-gomgr]").forEach(function(b){b.addEventListener("click",function(){openManager(b.getAttribute("data-gomgr"));});});
   bindCmpChecks(wrap);
+  renderMinePanel(d);
   renderKlinePanel(d,resetKline);
   renderHoldingsPanel(d);
   renderBenchPanel(d);
@@ -1807,6 +1889,345 @@ function drawBenchChart(comp){
   ctx.fillStyle=dark?"#9db0c0":"#5c6b7a";
   ctx.fillText(inRange[0].date,2,H-6);
   var lt=lastDate;ctx.fillText(lt,W-ctx.measureText(lt).width-2,H-6);
+}
+</script>
+
+<script>
+/* ==================== 第 7 步：排雷层 ====================
+   只用现有管线已有字段实算或读取，做不到的如实标「数据不足，暂无法判断」：
+   1) 持仓 / 赛道重叠：两只基金前十大重仓的共同股票 / 行业按较小权重加总实算；
+      重仓未同时载入时退到基金类型 + 名称主题口径，依据逐行注明。
+   2) 规模：最新规模（亿元）对 0.5 亿清盘线 / 2 亿偏小线；规模历史序列可得时
+      再算约 1 年内是否增至 3 倍（暴增），序列缺失时该子项标数据不足。
+   3) 经理稳定性：现任经理从业年限（详情 workTime / 经理档案 tenureDays）+
+      东方财富稳定性评分 + 共管人数；「任本基金时长 / 近期变更」无字段，如实标注。
+   4) 净值分位：当前累计净值在近 3 年净值序列中的分位，实算；页面明确标注
+      这是净值位置分位，不是估值分位。
+   位置：基金详情页逐只展示；第 4 步点「计算」前对整组跑一遍，高度重叠先弹窗确认。 */
+function mineParseWorkTime(s){
+  if(!s)return null;
+  var str=String(s),y=0,d=0,hit=false;
+  var m=str.match(/(\d+(?:\.\d+)?)\s*年/);if(m){y=parseFloat(m[1]);hit=true;}
+  var m2=str.match(/(\d+)\s*天/);if(m2){d=parseInt(m2[1],10);hit=true;}
+  return hit?y+d/365:null;
+}
+function mineNameOf(code){
+  var d=getDetail(code);if(d&&d.name)return d.name;
+  var ix=FUND_BY_CODE_IDX[code];if(ix&&ix.name)return ix.name;
+  return code;
+}
+function mineTypeOf(code){
+  var d=getDetail(code);if(d&&d.type)return d.type;
+  var ix=FUND_BY_CODE_IDX[code];return ix?ix.type:"";
+}
+var MINE_INDEX_KW=["沪深300","中证500","中证1000","中证800","中证A500","上证50","上证180","创业板","科创50","科创创业50","深证100","纳斯达克","标普500","恒生"];
+var MINE_THEMES=[
+  ["医药健康",["医药","医疗","健康","生物","创新药"]],
+  ["消费",["消费","白酒","食品饮料","食品","家电"]],
+  ["科技成长",["科技","半导体","芯片","电子","计算机","互联网","人工智能","信息产业","数字经济","通信","软件"]],
+  ["新能源",["新能源","光伏","锂电","碳中和","电池","环保"]],
+  ["军工",["军工","国防","航空航天"]],
+  ["大金融",["金融","银行","证券","保险","非银"]],
+  ["周期资源",["有色","煤炭","钢铁","化工","资源","周期"]],
+  ["地产基建",["房地产","地产","基建","建筑"]],
+  ["红利价值",["红利","价值"]],
+  ["高端制造",["制造","装备","工业","机器人","汽车"]]
+];
+function mineThemeOf(name){
+  if(!name)return null;
+  for(var i=0;i<MINE_INDEX_KW.length;i++)if(name.indexOf(MINE_INDEX_KW[i])>=0)return "宽基指数·"+MINE_INDEX_KW[i];
+  for(var j=0;j<MINE_THEMES.length;j++){
+    var kws=MINE_THEMES[j][1];
+    for(var k=0;k<kws.length;k++)if(name.indexOf(kws[k])>=0)return MINE_THEMES[j][0];
+  }
+  return null;
+}
+function mineTypeFamily(t){
+  if(!t)return "";
+  if(t.indexOf("债券")===0||t.indexOf("货币")===0)return "固收";
+  if(t.indexOf("股票")===0||t.indexOf("混合")===0||t.indexOf("指数")===0||t.indexOf("QDII")===0||t.indexOf("ETF")===0)return "权益";
+  if(t.indexOf("FOF")===0)return "FOF";
+  return "";
+}
+/* ---------- 单只：规模 ---------- */
+function mineScaleItem(d){
+  var T="规模（清盘 / 暴增）";
+  if(!d||d.scaleYi===null||d.scaleYi===undefined||!isFinite(d.scaleYi)){
+    return {key:"scale",title:T,level:"na",text:"数据不足，暂无法判断：当前数据源没有这只基金的规模字段。",
+      basis:"规模以东方财富披露的最新规模（亿元）为准，本基金该字段缺失，不猜。"};
+  }
+  var s=d.scaleYi,level="ok",text="";
+  if(s<0.5){
+    level="bad";
+    text="迷你基金：最新规模仅 "+fmtNum(s,2)+" 亿元，低于 0.5 亿元（5000 万元）。公募基金合同通行条款：连续 60 个工作日规模低于 5000 万元，基金可以被清盘——规模在这个区间，清盘风险是实打实的，不是吓唬人。";
+  }else if(s<2){
+    level="warn";
+    text="规模偏小：最新规模 "+fmtNum(s,2)+" 亿元。不到 2 亿元的基金，固定运营费用摊到每份上更高，大额赎回也更容易冲击净值。";
+  }else{
+    text="最新规模 "+fmtNum(s,1)+" 亿元，不在迷你区间（清盘警戒线 0.5 亿元，偏小线 2 亿元）。";
+  }
+  var ser=(d.scaleSeries&&d.scaleSeries.length>=2)?d.scaleSeries:null;
+  var surge=null,surgeNote="";
+  if(ser){
+    var lastS=ser[ser.length-1];
+    var target=shiftDate(lastS.date,-365),base=null,i;
+    for(i=0;i<ser.length;i++)if(ser[i].date<=target)base=ser[i];
+    var spanNote="近 1 年";
+    if(!base){
+      var firstS=ser[0],spanDays=dateDiffDays(firstS.date,lastS.date);
+      if(spanDays>=180){base=firstS;spanNote="近 "+Math.round(spanDays/30)+" 个月";}
+    }
+    if(base&&base.yi>0){
+      var ratio=lastS.yi/base.yi;
+      if(ratio>=3&&lastS.yi>=1)surge={from:base.yi,to:lastS.yi,ratio:ratio,span:spanNote,fromDate:base.date,toDate:lastS.date};
+      else surgeNote="规模序列"+spanNote+"由 "+fmtNum(base.yi,1)+" 亿元变为 "+fmtNum(lastS.yi,1)+" 亿元（"+(ratio>=1?("约 "+ratio.toFixed(1)+" 倍"):"有所下降")+"），未达 3 倍暴增线。";
+    }
+  }
+  if(surge){
+    if(level==="ok")level="warn";
+    text+=" 另注意规模短期暴增："+surge.span+"内由 "+fmtNum(surge.from,1)+" 亿元增至 "+fmtNum(surge.to,1)+" 亿元（约 "+surge.ratio.toFixed(1)+" 倍，"+surge.fromDate+" → "+surge.toDate+"）。规模短时间膨胀几倍，原有策略（尤其小盘、打新、行业集中型）的容量会被摊薄，过去的业绩延续性要打折看。";
+  }
+  var basis="规模数据期："+(d.scaleDate||"—")+"。判定线：清盘线 0.5 亿元（基金合同通行的 5000 万元条款）、偏小线 2 亿元、暴增线为约 1 年内增至 3 倍且最新规模不低于 1 亿元。"
+    +(ser?(" 规模历史序列共 "+ser.length+" 个披露点。"+surgeNote):" 本基金未载入规模历史序列，「短期暴增」子项数据不足，暂无法判断（详情直连刷新后若接口给出序列会自动补算）。");
+  return {key:"scale",title:T,level:level,text:text,basis:basis};
+}
+/* ---------- 单只：经理稳定性 ---------- */
+function mineManagerItem(d){
+  var T="经理稳定性";
+  if(!d||!d.managers||!d.managers.length){
+    return {key:"mgr",title:T,level:"na",text:"数据不足，暂无法判断：没有载入现任经理名单。",
+      basis:"经理名单来自基金详情的现任经理数据，本基金未载入。"};
+  }
+  var lead=d.managers[0];
+  var yrs=mineParseWorkTime(lead.workTime);
+  if(yrs===null&&typeof MG_BY_ID!=="undefined"&&lead.id&&MG_BY_ID[lead.id]&&MG_BY_ID[lead.id].tenureDays)yrs=MG_BY_ID[lead.id].tenureDays/365;
+  var level="ok",text="";
+  if(yrs===null){
+    level="na";
+    text="现任经理 "+lead.name+" 的从业年限字段缺失，这一项暂无法判断。";
+  }else if(yrs<1){
+    level="warn";
+    text="现任经理 "+lead.name+" 从业年限不足 1 年（约 "+yrs.toFixed(1)+" 年），是刚开始独立管钱的新手经理——这只基金展示的历史业绩大多不是他做出来的，参考价值有限。";
+  }else if(yrs<3){
+    level="warn";
+    text="现任经理 "+lead.name+" 从业年限较短（约 "+yrs.toFixed(1)+" 年），经历过的完整市场周期有限。";
+  }else{
+    text="现任经理 "+lead.name+" 从业约 "+yrs.toFixed(1)+" 年，经验年限不短。";
+  }
+  var stab=(typeof mgrStability==="function")?mgrStability(lead.id):null;
+  if(stab!==null&&stab!==undefined&&isFinite(stab)&&stab<40){
+    if(level==="ok")level="warn";
+    text+=" 东方财富给这位经理的「稳定性」评分为 "+Math.round(stab)+" / 100，偏低。";
+  }
+  var basis="口径：从业年限 = 现任第一位经理自担任基金经理以来的总年限（详情字段或经理档案）"
+    +(stab!==null&&stab!==undefined&&isFinite(stab)?("；稳定性评分 "+Math.round(stab)+" / 100 为东方财富经理档案公开评分"):"")
+    +"。"
+    +(d.managers.length>1
+      ?(" 本基金现由 "+d.managers.length+" 位经理共管（"+d.managers.map(function(m){return m.name;}).join("、")+"），共管本身不算风险，但换人时不易察觉，需留意公告。")
+      :" 本基金现由 1 位经理管理。")
+    +" 「这位经理任本基金多久、近期是否刚变更」不在现有数据字段内（管线只有现任名单与从业年限，没有任职起始日与变更历史），该子项数据不足，暂无法判断，不据此下结论。";
+  return {key:"mgr",title:T,level:level,text:text,basis:basis};
+}
+/* ---------- 单只：净值分位 ---------- */
+function mineNavItem(d){
+  var T="净值分位（近 3 年）";
+  var pts=(d&&d.ac)?acToPoints(d.ac):[];
+  if(pts.length<60){
+    return {key:"nav",title:T,level:"na",text:"数据不足，暂无法判断：净值历史点数不足（仅 "+pts.length+" 个）。",
+      basis:"净值分位需用累计净值序列实算，点数太少时分位没有统计意义。"};
+  }
+  var last=pts[pts.length-1];
+  var cutoff=last.x-3*365*86400000;
+  var win=pts.filter(function(p){return p.x>=cutoff;});
+  if(win.length<60)win=pts;
+  var below=0;
+  win.forEach(function(p){if(p.y<=last.y)below++;});
+  var pctv=below/win.length*100;
+  var spanY=(win[win.length-1].x-win[0].x)/86400000/365;
+  var level="ok",text="";
+  if(pctv>=90){
+    level="warn";
+    text="当前累计净值 "+fmtNum(last.y,4)+"，处于近 3 年区间的第 "+pctv.toFixed(0)+" 分位——近 3 年九成以上的净值日都比现在低，也就是刚走完一段强势期、位置在历史高位。位置高不等于马上跌，但此时买入要接受更大的波动与回撤可能，别把近一段的涨幅当常态。";
+  }else if(pctv>=75){
+    text="当前累计净值 "+fmtNum(last.y,4)+"，处于近 3 年区间的第 "+pctv.toFixed(0)+" 分位，位置偏高（近 3 年四分之三以上的净值日低于现值），但还没到最高一成区间。";
+  }else{
+    text="当前累计净值 "+fmtNum(last.y,4)+"，处于近 3 年区间的第 "+pctv.toFixed(0)+" 分位（"+win.length+" 个净值日中 "+below+" 个不高于现值），不在高位区间。";
+  }
+  var basis="口径：用累计净值序列实算——当前值在窗口内全部净值日中所处的分位。窗口实际覆盖约 "+spanY.toFixed(1)+" 年"
+    +(spanY<2.9?"（该基金净值历史不足 3 年，按可得区间计算）":"")+"。"
+    +"注意：这是净值位置分位，不是估值分位——净值站在高位只说明涨过一段，不代表底层资产估值贵；判断贵不贵要看持仓估值，本平台没有该字段，不据此下结论。";
+  return {key:"nav",title:T,level:level,text:text,basis:basis};
+}
+/* ---------- 两只：重叠 ---------- */
+function mineHoldMap(d){
+  if(!d||!Array.isArray(d.holdings)||!d.holdings.length)return null;
+  var byCode={},byInd={};
+  d.holdings.forEach(function(h){
+    if(!h||h.weight===null||h.weight===undefined)return;
+    var w=Number(h.weight);if(!isFinite(w))return;
+    if(h.code)byCode[h.code]=(byCode[h.code]||0)+w;
+    if(h.industry)byInd[h.industry]=(byInd[h.industry]||0)+w;
+  });
+  if(!Object.keys(byCode).length)return null;
+  return {byCode:byCode,byInd:byInd,kind:d.holdingsKind||"stock",date:d.holdingsDate||null};
+}
+function mineSumMin(a,b){var s=0;for(var k in a)if(b[k]!==undefined)s+=Math.min(a[k],b[k]);return s;}
+function mineOverlapPair(codeA,codeB){
+  var dA=getDetail(codeA),dB=getDetail(codeB);
+  var typeA=(dA&&dA.type)||mineTypeOf(codeA),typeB=(dB&&dB.type)||mineTypeOf(codeB);
+  var themeA=mineThemeOf(mineNameOf(codeA)),themeB=mineThemeOf(mineNameOf(codeB));
+  var hA=mineHoldMap(dA),hB=mineHoldMap(dB);
+  if(hA&&hB&&hA.kind===hB.kind){
+    var stock=mineSumMin(hA.byCode,hB.byCode);
+    var ind=(Object.keys(hA.byInd).length&&Object.keys(hB.byInd).length)?mineSumMin(hA.byInd,hB.byInd):null;
+    var level=(stock>=25||(ind!==null&&ind>=50))?"high":((stock>=12||(ind!==null&&ind>=35))?"mid":"low");
+    return {a:codeA,b:codeB,level:level,basis:"holdings",stock:stock,ind:ind,dateA:hA.date,dateB:hB.date,typeA:typeA,typeB:typeB,themeA:themeA,themeB:themeB};
+  }
+  var sameType=!!typeA&&typeA===typeB;
+  var sameTheme=!!themeA&&themeA===themeB;
+  var famA=mineTypeFamily(typeA),famB=mineTypeFamily(typeB);
+  var sameFam=!!famA&&famA===famB;
+  var level2;
+  if(sameTheme&&(sameType||sameFam))level2="high";
+  else if(sameType||sameTheme)level2="mid";
+  else if(sameFam||typeA||typeB||themeA||themeB)level2="low";
+  else level2="na";
+  return {a:codeA,b:codeB,level:level2,basis:"typetheme",stock:null,ind:null,dateA:null,dateB:null,typeA:typeA,typeB:typeB,themeA:themeA,themeB:themeB,sameFam:sameFam};
+}
+function minePairText(p){
+  if(p.basis==="holdings"){
+    return "重仓重合（实算）：两只前十大重仓里共同持有的标的、按较小权重加总 = "+p.stock.toFixed(1)+"%"
+      +(p.ind!==null?("；行业分布重合 = "+p.ind.toFixed(1)+"%"):"（债券等持仓无行业字段，行业重合未算）")
+      +"。持仓披露期："+(p.dateA||"—")+" / "+(p.dateB||"—")+"。";
+  }
+  return "重仓数据未同时载入，退到类型 / 主题口径：类型 "+(p.typeA||"未知")+" / "+(p.typeB||"未知")
+    +(p.typeA&&p.typeA===p.typeB?"（完全相同）":"")
+    +"；主题（按基金名称关键词识别）"+(p.themeA||"未识别")+" / "+(p.themeB||"未识别")
+    +(p.themeA&&p.themeA===p.themeB?"（相同）":"")+"。";
+}
+function minePairVerdict(level){
+  return level==="high"?"高度重叠":level==="mid"?"有一定重叠":level==="low"?"重叠低":"数据不足";
+}
+/* ---------- 详情页：重叠项（对对比栏） ---------- */
+function mineOverlapItem(code){
+  var T="持仓 / 赛道重叠（对对比栏）";
+  var others=(typeof compareSet!=="undefined"&&Array.isArray(compareSet))?compareSet.filter(function(c){return c!==code;}):[];
+  if(!others.length){
+    return {key:"overlap",title:T,level:"na",
+      text:"暂无对比对象，这一项还测不了——重叠是两只基金之间的事，单只基金无从谈起。",
+      basis:"把其它基金加入底部对比栏后，这里会逐只测它与本基金的重仓 / 行业重合度（重仓未同时载入时退到类型与主题口径）。在有效前沿页选基点「计算」前，也会对整组基金跑同一项检查。"};
+  }
+  var rank={bad:3,warn:2,ok:1,na:0},worst="ok";
+  var lines=others.map(function(o){
+    var p=mineOverlapPair(code,o);
+    var lv=p.level==="high"?"bad":p.level==="mid"?"warn":p.level==="low"?"ok":"na";
+    if(rank[lv]>rank[worst])worst=lv;
+    return "与 "+mineNameOf(o)+"（"+o+"）："+minePairVerdict(p.level)+"。"+minePairText(p);
+  });
+  return {key:"overlap",title:T,level:worst,text:"与对比栏中其它基金逐只比对（最差一对决定本项等级）：",lines:lines,
+    basis:"重合度口径：两只基金前十大重仓中共同标的的权重取较小值加总（行业同理）；重仓未同时载入时退到基金类型与名称主题口径，依据已在每行注明。同时持有高度重叠的两只，涨跌基本同向，不构成分散。"};
+}
+/* ---------- 汇总与渲染 ---------- */
+function mineForFund(code,withOverlap){
+  var d=getDetail(code)||fundStub(code);
+  var items=[];
+  if(withOverlap)items.push(mineOverlapItem(code));
+  items.push(mineScaleItem(d));
+  items.push(mineManagerItem(d));
+  items.push(mineNavItem(d));
+  return items;
+}
+var MINE_BADGE={ok:"已检查 · 通过",warn:"注意",bad:"风险",na:"数据不足"};
+function mineItemsHtml(items){
+  return items.map(function(it){
+    return '<div class="mine-item"><span class="mine-dot '+it.level+'"></span><div class="mine-main">'
+      +'<div class="mine-head"><span class="mine-title">'+esc(it.title)+'</span><span class="mine-badge '+it.level+'">'+MINE_BADGE[it.level]+'</span></div>'
+      +'<p class="mine-text">'+esc(it.text)+'</p>'
+      +(it.lines?it.lines.map(function(l){return '<p class="mine-text">'+esc(l)+'</p>';}).join(""):"")
+      +'<p class="mine-basis">依据：'+esc(it.basis)+'</p></div></div>';
+  }).join("");
+}
+function renderMinePanel(d){
+  var el=$("minePanel");if(!el||!d)return;
+  var items=mineForFund(d.code,true);
+  el.innerHTML='<div class="panel"><h3>买之前先排雷</h3>'
+    +'<p class="company" style="margin:0 0 6px">平台不只帮你算「怎么买更优」，也逐项查这只基金有没有该避开的硬伤。四项全部列出：没问题的标「通过」，数据不够的如实标「数据不足，暂无法判断」，不猜、不编。全部结论按下方写明的口径，对现有数据实算或读取得出，是规则检查，不是 AI 判断。</p>'
+    +mineItemsHtml(items)+'</div>';
+}
+/* ---------- 第 4 步：计算前排雷 ---------- */
+function efMineBuildReport(codes){
+  var funds=codes.map(function(code){return {code:code,name:mineNameOf(code),items:mineForFund(code,false)};});
+  var pairs=[];
+  for(var i=0;i<codes.length;i++)for(var j=i+1;j<codes.length;j++)pairs.push(mineOverlapPair(codes[i],codes[j]));
+  return {funds:funds,pairs:pairs,blocking:pairs.filter(function(p){return p.level==="high";})};
+}
+function efMinePairLine(p){
+  var dot=p.level==="high"?"bad":p.level==="mid"?"warn":p.level==="low"?"ok":"na";
+  return {dot:dot,text:mineNameOf(p.a)+"（"+p.a+"） × "+mineNameOf(p.b)+"（"+p.b+"）："+minePairVerdict(p.level)+"。"+minePairText(p)};
+}
+function efMineRenderGate(rep){
+  var box=$("efMineGate");if(!box)return;
+  var pairHtml=rep.pairs.map(function(p){
+    var l=efMinePairLine(p);
+    return '<div class="mine-pair"><span class="mine-dot '+l.dot+'" style="display:inline-block;margin:0 6px 0 0"></span>'+esc(l.text)+'</div>';
+  }).join("");
+  var fundHtml=rep.funds.map(function(f){
+    return '<h4 style="margin:16px 0 2px;font-size:15px">'+esc(f.name)+'（'+esc(f.code)+'）</h4>'+mineItemsHtml(f.items);
+  }).join("");
+  box.innerHTML='<div class="panel" style="margin-top:0"><h3>计算前先排雷</h3>'
+    +'<p class="company" style="margin:0 0 8px">先查雷再算前沿：整组先查持仓 / 赛道重叠，逐只再查规模、经理稳定性、净值分位。排雷只提示风险，不替你做决定；每项的口径与依据都写在条目下方。'
+    +(rep.blocking.length?'<b style="color:var(--red)">已检出 '+rep.blocking.length+' 对高度重叠，计算已被拦下，先在弹窗里确认。</b>':'未检出高度重叠，已继续计算。')+'</p>'
+    +'<h4 style="margin:10px 0 2px;font-size:15px">整组重叠（两两比对）</h4>'+pairHtml+fundHtml+'</div>';
+}
+function efMineOpenModal(rep){
+  var body=$("efMineModalBody");if(!body)return;
+  var list=rep.blocking.map(function(p){return '<p style="margin:0 0 8px">· '+esc(efMinePairLine(p).text)+'</p>';}).join("");
+  body.innerHTML='<p style="margin:0 0 10px">你选的这组基金里，有 '+rep.blocking.length+' 对被检出<b>赛道 / 类型高度重叠</b>：</p>'+list
+    +'<p style="margin:0 0 8px"><b>为什么这不叫分散：</b>重叠高的两只基金，涨的时候一起涨、跌的时候一起跌，组合波动不会因为多买一只而明显降下来——等于同一份风险买了两次。真正起分散作用的，是把其中一只换成不同赛道、不同类型的基金。</p>'
+    +'<p class="company" style="margin:0">其余排雷项（规模、经理稳定性、净值分位与全部两两重叠）已列在下方「计算前排雷检查」清单里。确认继续后照常计算，排雷不会替你改选基。</p>';
+  $("efMineModal").hidden=false;
+  $("efMineBack").onclick=function(){
+    $("efMineModal").hidden=true;
+    var st=$("efStatus");if(st)st.textContent="已取消计算：先调整选基（把重叠的那只换成不同赛道 / 类型），再点计算。";
+  };
+  $("efMineGo").onclick=function(){$("efMineModal").hidden=true;efCompute();};
+}
+var efMineBusy=false;
+function mineWaitHoldings(codes,timeoutMs){
+  if(!codes.length)return Promise.resolve();
+  return new Promise(function(resolve){
+    var t0=Date.now();
+    var iv=setInterval(function(){
+      var pending=codes.some(function(c){var d=getDetail(c);return d&&d.holdings===null;});
+      if(!pending||Date.now()-t0>timeoutMs){clearInterval(iv);resolve();}
+    },300);
+  });
+}
+function efMineGateRun(){
+  if(ef.computing||efMineBusy)return;
+  var codes=ef.selected.slice();
+  var status=$("efStatus");
+  if(codes.length<2){if(status)status.textContent="至少选 2 只基金才能计算。";return;}
+  efMineBusy=true;
+  if(status)status.textContent="正在载入所选基金数据，先跑一遍计算前排雷检查…";
+  Promise.all(codes.map(efEnsureDetail)).then(function(){
+    var kicked=codes.filter(function(c){var d=getDetail(c);return d&&d.holdings===null;});
+    kicked.forEach(function(c){liveLoadDetail(c);});
+    return mineWaitHoldings(kicked,3500);
+  }).then(function(){
+    efMineBusy=false;
+    var rep=efMineBuildReport(codes);
+    efMineRenderGate(rep);
+    if(rep.blocking.length){
+      if(status)status.textContent="排雷检出高度重叠，计算已暂停，等你确认。";
+      efMineOpenModal(rep);
+    }else{
+      efCompute();
+    }
+  }).catch(function(){
+    efMineBusy=false;
+    efCompute();
+  });
 }
 </script>
 
@@ -2917,7 +3338,7 @@ function renderUc(){
       +'（A1 = '+fmtA(s.A1)+'，A2 = '+fmtA(s.A2)+'；CE1 = '+fmtMoney(s.ce1)+'，CE2 = '+fmtMoney(s.ce2)+')'
       +(s.doubtful?' · <b>区间存疑</b>（第 10 题与前 9 题不一致）':"")
       +(s.consistent?"":' · 两次测得不太一致')+'</p>'
-      +'<p class="company" style="margin:0 0 12px">保存时间：'+esc(String(s.savedAt||"").replace("T"," ").slice(0,16))+'。这份 A 与曲线已保存，供第 5 步与有效前沿相切时调用（本步只存不用）。</p>'
+      +'<p class="company" style="margin:0 0 12px">保存时间：'+esc(String(s.savedAt||"").replace("T"," ").slice(0,16))+'。这份 A 与曲线已保存，供后面算最优组合时调用（这里只存不用）。</p>'
       +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="ucViewSaved">查看我的曲线</button><button class="btn ghost" type="button" id="ucRestart2">重新测评</button></div></div>';
   }
   area.innerHTML='<div class="panel" style="margin-top:0"><h3>怎么测：10 道题，两个赌局交叉验证</h3>'
@@ -3101,8 +3522,8 @@ function renderUcResult(area,res){
     html+='<p style="margin:0 0 6px"><b>两次测得的风险态度不太一致</b>：|A1 − A2| = '+fmtA(res.diff)+' &gt; 1.0，不强行合并成一个数——<b>A 在 '+fmtA(Math.min(res.A1,res.A2))+' – '+fmtA(Math.max(res.A1,res.A2))+' 之间</b>，下方曲线因此画成带状（两条边界）。基于这份结果的组合建议仅供参考。</p>';
   }
   if(uc.doubtful)html+='<p style="margin:0 0 6px"><b>区间存疑：</b>第 10 题的选择与前 9 题算出的 A &gt; 0 不一致（已按你的最终答案如实保留），A1、A2 如上同时展示，请谨慎使用这份结果，或重新测评。</p>';
-  if(Aeff<=0)html+='<p style="margin:0 0 6px"><b>关于 A ≤ 0：</b>你在这组题里表现为风险中性或风险偏好，无差异曲线向下倾斜。第 5 步求最优组合时，最优解可能落在有效前沿的边界上（例如最高收益端点），而不是曲线与前沿相切的内点，本页不硬凑一个内点切点。</p>';
-  html+='<p class="company" style="margin:0">公式：U = E(r) − ½Aσ²；A1 = 2×(5% − CE1 收益率) / 0.0225；A2 = 2×(10% − CE2 收益率) / 0.09。这份 A 与曲线已保存到这台设备的浏览器本地，供第 5 步与有效前沿相切时调用（本步只存不用）。</p></div>';
+  if(Aeff<=0)html+='<p style="margin:0 0 6px"><b>关于 A ≤ 0：</b>你在这组题里表现为风险中性或风险偏好，无差异曲线向下倾斜。算最优组合时，最优解可能落在有效前沿的边界上（例如最高收益端点），而不是曲线与前沿相切的内点，本页不硬凑一个内点切点。</p>';
+  html+='<p class="company" style="margin:0">公式：U = E(r) − ½Aσ²；A1 = 2×(5% − CE1 收益率) / 0.0225；A2 = 2×(10% − CE2 收益率) / 0.09。这份 A 与曲线已保存到这台设备的浏览器本地，供后面算最优组合时调用（这里只存不用）。</p></div>';
   html+='<div class="uc-chart-wrap"><h3 style="margin:0 0 4px;font-size:16.5px">你的无差异曲线族</h3>'
     +'<p class="company" style="margin:0">按 E(r) = U + ½Aσ² 绘制：曲线越靠左上，效用越高；同一条曲线上，波动每增大一点，你要求更高的期望收益作补偿。</p>'
     +'<div class="uc-legend">'
@@ -3183,7 +3604,7 @@ function renderEf(){
   var res=$("efResult");
   if(res&&!ef.result&&ef.saved&&!res.innerHTML){
     res.innerHTML='<div class="panel"><h3>已保存的上次计算结果</h3>'
-      +'<p style="margin:0 0 10px">保存时间：'+esc(String(ef.saved.savedAt||"").replace("T"," ").slice(0,16))+' · '+(ef.saved.funds?ef.saved.funds.length:0)+' 只基金参与计算 · 无风险利率 '+(ef.saved.riskFreeRate!==undefined?efPctPlain(ef.saved.riskFreeRate):"—")+'。这份结果已存好，供第 5 步与效用无差异曲线相切时调用。</p>'
+      +'<p style="margin:0 0 10px">保存时间：'+esc(String(ef.saved.savedAt||"").replace("T"," ").slice(0,16))+' · '+(ef.saved.funds?ef.saved.funds.length:0)+' 只基金参与计算 · 无风险利率 '+(ef.saved.riskFreeRate!==undefined?efPctPlain(ef.saved.riskFreeRate):"—")+'。这份结果已存好，供后面算最优组合时调用。</p>'
       +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="efViewSaved">查看上次结果</button><button class="btn ghost" type="button" id="efClearSaved">清除保存</button></div></div>';
     $("efViewSaved").addEventListener("click",function(){renderEfResult(ef.saved,true);});
     $("efClearSaved").addEventListener("click",function(){try{window.localStorage.removeItem(EF_KEY);}catch(e){}ef.saved=null;ef.result=null;$("efResult").innerHTML="";renderEf();});
@@ -3699,16 +4120,16 @@ function renderEfResult(res,isSavedView){
   box.innerHTML=exclHtml
     +'<div class="panel" style="margin-top:0"><h3>计算口径与结果概览'+(isSavedView?"（上次保存）":"")+'</h3>'
     +(isShrink
-      ? '<p style="margin:0 0 6px">数据区间：<b>'+esc(res.range.from)+' – '+esc(res.range.to)+'</b>（各基金共同周）。口径：σ 与协方差仍用近 1 年共同周样本——近 1 年累计净值，每周取最后一个净值日，按共同周对齐（QDII 净值日期滞后时以共同可得周为准），共 <b>'+res.range.points+' 个共同周点、'+res.range.returns+' 个周收益样本</b>，年化波动与协方差由周收益样本协方差 × 52 得到；<b>求解用期望收益 E(r) 改为多窗口收缩估计</b>：每只基金分别用近 1 年、近 2 年、近 3 年窗口算周收益均值 × 52，再对可得窗口取平均（历史不足的窗口跳过，下表注明每只用了几个窗口），单年涨幅被更长窗口拉回，不再直接当长期期望。无风险利率 rf = <b>'+efPctPlain(res.riskFreeRate)+'</b>（随结果保存，供第 5 步使用）。</p>'
-      : '<p style="margin:0 0 6px">数据区间：<b>'+esc(res.range.from)+' – '+esc(res.range.to)+'</b>（各基金共同周）。口径（<b>旧口径</b>，这份结果由早期版本保存）：近 1 年累计净值，每周取最后一个净值日，按共同周对齐（QDII 净值日期滞后时以共同可得周为准），共 <b>'+res.range.points+' 个共同周点、'+res.range.returns+' 个周收益样本</b>；年化期望收益 = 近 1 年周均值 × 52，年化波动与协方差由周收益样本协方差 × 52 得到。重新计算一次即可换成多窗口收缩 μ 的新口径（仍按原键保存）。无风险利率 rf = <b>'+efPctPlain(res.riskFreeRate)+'</b>（随结果保存，供第 5 步使用）。</p>')
+      ? '<p style="margin:0 0 6px">数据区间：<b>'+esc(res.range.from)+' – '+esc(res.range.to)+'</b>（各基金共同周）。口径：σ 与协方差仍用近 1 年共同周样本——近 1 年累计净值，每周取最后一个净值日，按共同周对齐（QDII 净值日期滞后时以共同可得周为准），共 <b>'+res.range.points+' 个共同周点、'+res.range.returns+' 个周收益样本</b>，年化波动与协方差由周收益样本协方差 × 52 得到；<b>求解用期望收益 E(r) 改为多窗口收缩估计</b>：每只基金分别用近 1 年、近 2 年、近 3 年窗口算周收益均值 × 52，再对可得窗口取平均（历史不足的窗口跳过，下表注明每只用了几个窗口），单年涨幅被更长窗口拉回，不再直接当长期期望。无风险利率 rf = <b>'+efPctPlain(res.riskFreeRate)+'</b>（随结果保存，供算最优组合时使用）。</p>'
+      : '<p style="margin:0 0 6px">数据区间：<b>'+esc(res.range.from)+' – '+esc(res.range.to)+'</b>（各基金共同周）。口径（<b>旧口径</b>，这份结果由早期版本保存）：近 1 年累计净值，每周取最后一个净值日，按共同周对齐（QDII 净值日期滞后时以共同可得周为准），共 <b>'+res.range.points+' 个共同周点、'+res.range.returns+' 个周收益样本</b>；年化期望收益 = 近 1 年周均值 × 52，年化波动与协方差由周收益样本协方差 × 52 得到。重新计算一次即可换成多窗口收缩 μ 的新口径（仍按原键保存）。无风险利率 rf = <b>'+efPctPlain(res.riskFreeRate)+'</b>（随结果保存，供算最优组合时使用）。</p>')
     +'<div class="uc-stats">'
     +'<div><div class="k">最小方差组合 E(r)</div><div class="v">'+efPct(res.gmv.ret)+'</div></div>'
     +'<div><div class="k">最小方差组合 σ</div><div class="v">'+efPctPlain(res.gmv.sigma)+'</div></div>'
     +'<div><div class="k">参与计算基金</div><div class="v">'+res.funds.length+' 只</div></div>'
     +'<div><div class="k">前沿点数</div><div class="v">'+res.frontier.length+' 个</div><div class="company">GMV 起，至最高期望收益，逐点最小方差求解</div></div>'
     +'</div>'
-    +'<p class="company" style="margin:0">结果已保存到这台设备的浏览器本地（'+esc(String(res.savedAt||"").replace("T"," ").slice(0,16))+'），供第 5 步与效用无差异曲线相切时调用，本步只存不用。改选基金或改无风险利率后重新计算会覆盖保存。</p></div>'
-    +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px"><button class="btn" type="button" id="efToOptimal">结合我的效用曲线，求最优组合 →</button><span class="company">第 5 步：用第 3 步保存的 A 与这条前沿的 μ、协方差加密重解，找效用最大的组合。</span></div>'
+    +'<p class="company" style="margin:0">结果已保存到这台设备的浏览器本地（'+esc(String(res.savedAt||"").replace("T"," ").slice(0,16))+'），供后面算最优组合时调用，这里只存不用。改选基金或改无风险利率后重新计算会覆盖保存。</p></div>'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px"><button class="btn" type="button" id="efToOptimal">结合我的效用曲线，求最优组合 →</button><span class="company">接着去「算出适合你的组合配比」：用测评保存的 A 与这条前沿的 μ、协方差加密重解，找效用最大的组合。</span></div>'
     +'<div class="uc-chart-wrap"><h3 style="margin:0 0 4px;font-size:16.5px">有效前沿</h3>'
     +'<p class="company" style="margin:0">淡色点云为随机权重抽样的可行集组合（示意）；蓝色曲线为逐点最小方差求解出的有效前沿（上沿）；金色点为单只基金；绿色菱形为最小方差组合。点前沿上的圆点可查看该组合的权重。</p>'
     +'<div class="uc-legend"><span class="bl"><span class="sw" style="background:'+(cssVar("--accent")||"#2563eb")+'"></span>有效前沿</span><span class="bl"><span class="sw" style="background:#b98a1e"></span>单只基金</span><span class="bl"><span class="sw" style="background:#0f766e"></span>最小方差组合</span></div>'
@@ -3719,7 +4140,7 @@ function renderEfResult(res,isSavedView){
     +(isShrink
       ? '<div class="panel"><h3>各基金年化期望收益与波动（μ 为多窗口收缩估计）</h3>'
         +'<div class="tablebox" style="box-shadow:none"><div class="table-scroll"><table><thead><tr><th>基金</th><th class="num">原始近 1 年 μ</th><th class="num">收缩 μ（求解用）</th><th class="num">σ</th><th class="num">收缩 μ 使用窗口</th><th class="num">共同周点</th></tr></thead><tbody>'+fundRows+'</tbody></table></div></div>'
-        +'<p class="legend">「原始近 1 年 μ」是旧口径（共同周样本的周均值 × 52），保留供对照；「收缩 μ」是近 1 / 2 / 3 年三个窗口各自年化后、对可得窗口取的平均，前沿与第 5 步求解实际用的是它。σ 仍由近 1 年共同周样本实算。</p>'
+        +'<p class="legend">「原始近 1 年 μ」是旧口径（共同周样本的周均值 × 52），保留供对照；「收缩 μ」是近 1 / 2 / 3 年三个窗口各自年化后、对可得窗口取的平均，前沿与最优组合求解实际用的是它。σ 仍由近 1 年共同周样本实算。</p>'
       : '<div class="panel"><h3>各基金年化期望收益与波动（近 1 年周收益实算 · 旧口径）</h3>'
         +'<div class="tablebox" style="box-shadow:none"><div class="table-scroll"><table><thead><tr><th>基金</th><th class="num">E(r)</th><th class="num">σ</th><th class="num">共同周点</th></tr></thead><tbody>'+fundRows+'</tbody></table></div></div>')
     +'<h3 style="margin-top:18px">年化协方差矩阵</h3>'
@@ -3734,7 +4155,7 @@ function renderEfResult(res,isSavedView){
   box.scrollIntoView({behavior:"smooth",block:"start"});
 }
 /* ---------- 接线 ---------- */
-$("efCalc").addEventListener("click",efCompute);
+$("efCalc").addEventListener("click",efMineGateRun);
 $("efSearchInput").addEventListener("input",renderEfSearch);
 $("efSearchInput").addEventListener("focus",function(){loadFundsIndex();});
 var efEntryBtn=$("efEntryBtn");if(efEntryBtn)efEntryBtn.addEventListener("click",function(){showView("frontier");renderEf();loadFundsIndex();});
@@ -3751,7 +4172,7 @@ renderEf();
    在本步内以 240 步目标收益重跑与第 4 步同一求解器（efPrepare / efMinVarAt：
    子集枚举 + KKT，w≥0、Σw=1），在加密点中取 U = E(r) − ½Aσ² 最大者，
    权重取该加密点的求解权重；图上画的仍是保存的那条前沿，加密最优点标在图上。
-   A 可在结果区手动校准（只影响本次计算，不覆盖第 3 步保存的测得 A）。
+   A 可在结果区手动校准（只影响本次计算，不覆盖测评保存的测得 A）。
    A 不一致（存的是区间）时用区间两端各自加密求解；A ≤ 0 与落在 GMV 的
    情形按边界 / 角点解如实说明。不改第 3、4 步的任何存储格式。
    μ 口径看保存结果的 muBasis：新结果为多窗口收缩估计，旧结果（无此字段）
@@ -3788,7 +4209,7 @@ function opBestPoint(res,A){
 }
 /* ---------- 加密重解（切点求真值） ----------
    用保存结果里的协方差矩阵与各基金 μ，在本步内以 OP_DENSE_STEPS 步目标收益
-   重跑与第 4 步同一个约束最小方差求解器（efPrepare / efMinVarAt），
+   重跑与有效前沿页同一个约束最小方差求解器（efPrepare / efMinVarAt），
    得到加密前沿；最优点在加密点中取 U 最大。结果按 savedAt 缓存，
    同一条保存前沿只重解一次，A 变了只重算 U、不重解前沿。
    协方差缺失或求解失败时退回保存的离散前沿点（ok=false），如实标注。 */
@@ -3843,8 +4264,8 @@ function opRealityHtml(res,pt){
   return '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0 0">'
     +'<h4 style="margin:0 0 6px;font-size:15px">现实校验 · 拿真实回撤对照这个 A</h4>'
     +'<p style="margin:0 0 6px">这个最优组合的年化波动 σ = <b>'+efPctPlain(pt.sigma)+'</b>。组合里权重最大的是 <b>'+esc(f.name)+'（'+esc(f.code)+'）</b>，占 <b>'+(wmax*100).toFixed(1)+'%</b>；'+ddHtml+'组合的实际回撤不会等于单只基金的回撤（其余持仓会缓冲或放大），但量级可以参照。</p>'
-    +'<p style="margin:0 0 8px">若这个量级的回撤你接受不了，说明你的真实 A 高于测得值——可以在上方校准区把 A 调高即时重算，或回第 3 步重测。</p>'
-    +'<button class="btn ghost small" type="button" data-opretest="1">回第 3 步重测效用曲线 →</button></div>';
+    +'<p style="margin:0 0 8px">若这个量级的回撤你接受不了，说明你的真实 A 高于测得值——可以在上方校准区把 A 调高即时重算，或回效用曲线测评重测。</p>'
+    +'<button class="btn ghost small" type="button" data-opretest="1">重新测我的风险承受力 →</button></div>';
 }
 function opU(v){return (v===null||v===undefined||!isFinite(v))?"—":Number(v).toFixed(4);}
 /* ---------- 相切图：前沿 + 无差异曲线族 + 最优点 ---------- */
@@ -3953,10 +4374,10 @@ function opBoundaryNoteHtml(res,A,best,dense){
   }
   var basisNote=opMuBasis(res)==="shrink"
     ? '<p style="margin:0"><b>口径提醒：</b>这里的 E(r) 是多窗口收缩估计（近 1 / 2 / 3 年窗口周收益年化后取平均），单年涨幅已被更长窗口拉回，但仍是历史样本估计，QDII 与高波动基金的数值仍可能高于长期可持续水平。100% 单只是模型在这套口径与你当前 A 下的输出，<b>不是分散化投资建议</b>。</p>'
-    : '<p style="margin:0"><b>口径提醒：</b>这份前沿是旧口径保存的，这里的 E(r) 是近 1 年周收益算术均值年化（周均值 × 52），QDII 与高波动基金的这一数值会显著高于长期可持续水平；回第 4 步重新计算一次即可换成多窗口收缩 μ。100% 单只是模型在这套样本口径与你当前 A 下的输出，<b>不是分散化投资建议</b>。</p>';
+    : '<p style="margin:0"><b>口径提醒：</b>这份前沿是旧口径保存的，这里的 E(r) 是近 1 年周收益算术均值年化（周均值 × 52），QDII 与高波动基金的这一数值会显著高于长期可持续水平；回有效前沿页重新计算一次即可换成多窗口收缩 μ。100% 单只是模型在这套样本口径与你当前 A 下的输出，<b>不是分散化投资建议</b>。</p>';
   return '<div style="background:var(--gold-bg);border:1px solid var(--warn-line);border-radius:12px;padding:14px 16px;margin:0 0 10px">'
     +'<h4 style="margin:0 0 6px;font-size:15px">为什么最优点是这只基金 100%？——这是边界解</h4>'
-    +'<p style="margin:0 0 8px">本次最优点是'+ptWord+'中的<b>第 '+(best.idx+1)+' 个点，也就是最高收益端点</b>。按前沿的构造，最高收益端点就是单只基金 100%：构成它的 '+esc(fund.name)+'（'+esc(fund.code)+'）正是第 4 步「各基金年化期望收益与波动」表中 <b>E(r) 最高的那只</b>（E(r) = '+efPct(fund.mu)+'，σ = '+efPctPlain(fund.sigma)+'），端点按构造就是它单只 100%。'+(dense&&dense.ok?('第 5 步已用 '+dense.steps+' 步目标收益把前沿加密重解过，端点附近不再稀疏，最优点仍然落在端点上——这不是离散点太粗顶出来的，而是这个 A 下效用一路向高收益端递增。'):('第 5 步在这 '+n+' 个点中按 U = E(r) − ½Aσ² 取最大，没有单只权重上限，所以最优点可以直接落在端点上。'))+'</p>'
+    +'<p style="margin:0 0 8px">本次最优点是'+ptWord+'中的<b>第 '+(best.idx+1)+' 个点，也就是最高收益端点</b>。按前沿的构造，最高收益端点就是单只基金 100%：构成它的 '+esc(fund.name)+'（'+esc(fund.code)+'）正是有效前沿结果里「各基金年化期望收益与波动」表中 <b>E(r) 最高的那只</b>（E(r) = '+efPct(fund.mu)+'，σ = '+efPctPlain(fund.sigma)+'），端点按构造就是它单只 100%。'+(dense&&dense.ok?('最优组合已用 '+dense.steps+' 步目标收益把前沿加密重解过，端点附近不再稀疏，最优点仍然落在端点上——这不是离散点太粗顶出来的，而是这个 A 下效用一路向高收益端递增。'):('最优组合在这 '+n+' 个点中按 U = E(r) − ½Aσ² 取最大，没有单只权重上限，所以最优点可以直接落在端点上。'))+'</p>'
     +'<p style="margin:0 0 6px"><b>数字核对</b>（同一 A = '+fmtA(A)+' 下实算，可以自己按 U = E(r) − ½Aσ² 验算）：端点靠 E(r) 的领先胜出——它的波动惩罚 ½Aσ² 更大，但 E(r) 高出次优点与 GMV 的幅度更大，扣完惩罚后 U 仍最高。</p>'
     +tbl
     +starHtml
@@ -3974,10 +4395,10 @@ function opCaseHtml(res,A,caseLabel,dense,manualFlag){
   if(isEnd&&A>0)notes.push('<b>边界解：</b>最优点落在前沿的最高收益端点上：按这个 A，在加密求解的点中，收益的吸引力一直压过波动的代价，效用最高的点就是收益最高的那一端。');
   if(!isGMV&&!isEnd&&A>0)notes.push('最优点是前沿的内点：经过该点的那条无差异曲线与有效前沿在此相切（在加密求解的点中，该点效用最高）。');
   var posHtml=dense.ok
-    ? '<div><div class="k">加密求解定位</div><div class="v small">第 '+(best.idx+1)+' / '+n+' 个加密点</div><div class="company">在 '+dense.steps+' 步加密求解中找到；图上曲线仍是第 4 步保存的前沿</div></div>'
+    ? '<div><div class="k">加密求解定位</div><div class="v small">第 '+(best.idx+1)+' / '+n+' 个加密点</div><div class="company">在 '+dense.steps+' 步加密求解中找到；图上曲线仍是已保存的有效前沿</div></div>'
     : '<div><div class="k">所在前沿点</div><div class="v small">第 '+(best.idx+1)+' / '+n+' 个点</div><div class="company">加密重解不可用（保存结果缺协方差），退回保存的前沿点取最优</div></div>';
   var html='<div class="panel op-case" style="margin-top:0"><h3 style="margin-top:0">'+esc(caseLabel)+'</h3>'
-    +'<p class="company" style="margin:0 0 10px">当前使用：<b>'+(manualFlag?("手动 A = "+fmtA(A)+"（只影响本次计算，不覆盖第 3 步保存的测得 A）"):("测得 A = "+fmtA(A)+"（第 3 步保存）"))+'</b></p>'
+    +'<p class="company" style="margin:0 0 10px">当前使用：<b>'+(manualFlag?("手动 A = "+fmtA(A)+"（只影响本次计算，不覆盖测评保存的测得 A）"):("测得 A = "+fmtA(A)+"（效用曲线测评保存）"))+'</b></p>'
     +'<div class="uc-stats" style="margin-top:0">'
     +'<div><div class="k">组合期望收益 E(r)</div><div class="v">'+efPct(pt.ret)+'</div></div>'
     +'<div><div class="k">组合波动 σ</div><div class="v">'+efPctPlain(pt.sigma)+'</div></div>'
@@ -3990,7 +4411,7 @@ function opCaseHtml(res,A,caseLabel,dense,manualFlag){
     +efWeightsHtml(res,pt)
     +opRealityHtml(res,pt)
     +'<div class="uc-chart-wrap"><h3 style="margin:0 0 4px;font-size:16px">有效前沿 × 你的无差异曲线（A = '+fmtA(A)+'）</h3>'
-    +'<p class="company" style="margin:0">黑线为第 4 步保存的有效前沿（圆点为保存的前沿点），彩色粗线是恰好经过最优点的那条无差异曲线，灰色虚线是同一 A 下效用更高 / 更低的另两条曲线；红点为加密求解得到的最优点（可能落在两个保存点之间），绿色菱形为最小方差组合，金色点为单只基金。</p>'
+    +'<p class="company" style="margin:0">黑线为已保存的有效前沿（圆点为保存的前沿点），彩色粗线是恰好经过最优点的那条无差异曲线，灰色虚线是同一 A 下效用更高 / 更低的另两条曲线；红点为加密求解得到的最优点（可能落在两个保存点之间），绿色菱形为最小方差组合，金色点为单只基金。</p>'
     +'<div class="uc-legend"><span class="bl"><span class="sw" style="background:'+(cssVar("--accent")||"#2563eb")+'"></span>过最优点的无差异曲线（U = '+opU(best.U)+'）</span><span class="bl"><span class="sw" style="background:#14202b"></span>有效前沿</span><span class="bl"><span class="sw" style="background:#c0392b"></span>最优点</span></div>'
     +opChartSvg(res,A,best)
     +'</div></div>';
@@ -4003,13 +4424,13 @@ function renderOp(){
   var prompts="";
   if(!u){
     prompts+='<div class="uc-warn"><h3 style="margin:0 0 6px">还没测过你的效用曲线</h3>'
-      +'<p style="margin:0 0 10px">第 5 步需要第 3 步测得的风险厌恶系数 A，本机浏览器里还没有这份结果，我不会替你假装一个 A。先去做完 10 道题，A 会自动保存，再回来求最优组合。</p>'
-      +'<button class="btn" type="button" id="opGoUc">先去做第 3 步效用曲线测评 →</button></div>';
+      +'<p style="margin:0 0 10px">算最优组合需要先测得风险厌恶系数 A，本机浏览器里还没有这份测评结果，我不会替你假装一个 A。先去做完 10 道题，A 会自动保存，再回来求最优组合。</p>'
+      +'<button class="btn" type="button" id="opGoUc">先去测测你能承受多大风险 →</button></div>';
   }
   if(!f){
     prompts+='<div class="uc-warn"><h3 style="margin:0 0 6px">还没有保存的有效前沿</h3>'
-      +'<p style="margin:0 0 10px">第 5 步要在第 4 步算出的有效前沿上找最优点，本机浏览器里还没有保存的前沿结果。先去选一组基金算一次前沿，结果会自动保存，再回来相切。</p>'
-      +'<button class="btn" type="button" id="opGoEf">先去第 4 步选基计算前沿 →</button></div>';
+      +'<p style="margin:0 0 10px">最优组合要在已算出的有效前沿上找最优点，本机浏览器里还没有保存的前沿结果。先去选一组基金算一次前沿，结果会自动保存，再回来相切。</p>'
+      +'<button class="btn" type="button" id="opGoEf">先去选基计算有效前沿 →</button></div>';
   }
   if(prompts){
     area.innerHTML=prompts;
@@ -4022,17 +4443,17 @@ function renderOp(){
   opCtx={f:f,u:u,dense:dense};
   var fundList=f.funds.map(function(x){return esc(x.name)+"（"+esc(x.code)+"）";}).join("、");
   var basisLine=opMuBasis(f)==="shrink"
-    ? '<p style="margin:0 0 6px"><b>μ 口径：多窗口收缩估计</b>——这条前沿的 E(r) 是近 1 / 2 / 3 年窗口周收益年化后取平均（每只基金用了几个窗口见第 4 步结果表），σ 与协方差仍为近 1 年共同周样本口径。本页加密重解用的就是这套 μ。</p>'
-    : '<p style="margin:0 0 6px"><b>μ 口径：旧口径</b>——这条前沿是早期版本保存的，E(r) 只用近 1 年周收益均值年化，单年涨幅会直接被当成长期期望。本页照常按它加密求解并展示；想换成多窗口收缩 μ，回第 4 步重新计算一次即可（仍按原键保存）。</p>';
+    ? '<p style="margin:0 0 6px"><b>μ 口径：多窗口收缩估计</b>——这条前沿的 E(r) 是近 1 / 2 / 3 年窗口周收益年化后取平均（每只基金用了几个窗口见有效前沿结果表），σ 与协方差仍为近 1 年共同周样本口径。本页加密重解用的就是这套 μ。</p>'
+    : '<p style="margin:0 0 6px"><b>μ 口径：旧口径</b>——这条前沿是早期版本保存的，E(r) 只用近 1 年周收益均值年化，单年涨幅会直接被当成长期期望。本页照常按它加密求解并展示；想换成多窗口收缩 μ，回有效前沿页重新计算一次即可（仍按原键保存）。</p>';
   var srcHtml='<div class="panel" style="margin-top:0"><h3>本次相切用的两份已保存结果</h3>'
-    +'<p style="margin:0 0 6px"><b>有效前沿（第 4 步保存）：</b>'+fundList+'，共 '+f.frontier.length+' 个前沿点；计算时无风险利率 rf = <b>'+efPctPlain(f.riskFreeRate)+'</b>；数据区间 '+(f.range?esc(f.range.from)+" – "+esc(f.range.to):"—")+'；保存于 '+esc(String(f.savedAt||"").replace("T"," ").slice(0,16))+'。若你后来改过选基意向，请先回第 4 步重算再回来，避免拿旧前沿当新结果。</p>'
+    +'<p style="margin:0 0 6px"><b>有效前沿（已保存）：</b>'+fundList+'，共 '+f.frontier.length+' 个前沿点；计算时无风险利率 rf = <b>'+efPctPlain(f.riskFreeRate)+'</b>；数据区间 '+(f.range?esc(f.range.from)+" – "+esc(f.range.to):"—")+'；保存于 '+esc(String(f.savedAt||"").replace("T"," ").slice(0,16))+'。若你后来改过选基意向，请先回有效前沿页重算再回来，避免拿旧前沿当新结果。</p>'
     +basisLine
-    +'<p style="margin:0 0 6px"><b>效用曲线（第 3 步保存）：</b>A1 = '+fmtA(u.A1)+'，A2 = '+fmtA(u.A2)
+    +'<p style="margin:0 0 6px"><b>效用曲线（测评保存）：</b>A1 = '+fmtA(u.A1)+'，A2 = '+fmtA(u.A2)
     +(u.consistent&&u.A!==null&&u.A!==undefined?('，交叉验证一致，<b>A = '+fmtA(u.A)+'</b>'):('，两次测得不一致，<b>按区间处理</b>'))
     +'；CE1 = '+fmtMoney(u.ce1)+'，CE2 = '+fmtMoney(u.ce2)+'；保存于 '+esc(String(u.savedAt||"").replace("T"," ").slice(0,16))+'。</p>'
     +(dense.ok
-      ? '<p class="company" style="margin:0">求法：不用保存的 '+f.frontier.length+' 个离散点凑切点——本页用保存的协方差矩阵与各基金 μ、σ，以 <b>'+dense.steps+' 步</b>目标收益重跑与第 4 步同一个约束最小方差求解（w ≥ 0、Σw = 1），在加密点中逐点算 U = E(r) − ½Aσ² 取最大，权重取该加密点的求解权重。图上画的仍是保存的那条前沿曲线，加密最优点标在图上。</p>'
-      : '<p class="company" style="margin:0">求法：这份保存结果缺协方差矩阵，无法加密重解，只能在已计算的 '+f.frontier.length+' 个前沿点中逐点算 U = E(r) − ½Aσ² 取最大。回第 4 步重新计算一次即可启用加密求解。</p>')
+      ? '<p class="company" style="margin:0">求法：不用保存的 '+f.frontier.length+' 个离散点凑切点——本页用保存的协方差矩阵与各基金 μ、σ，以 <b>'+dense.steps+' 步</b>目标收益重跑与有效前沿页同一个约束最小方差求解（w ≥ 0、Σw = 1），在加密点中逐点算 U = E(r) − ½Aσ² 取最大，权重取该加密点的求解权重。图上画的仍是保存的那条前沿曲线，加密最优点标在图上。</p>'
+      : '<p class="company" style="margin:0">求法：这份保存结果缺协方差矩阵，无法加密重解，只能在已计算的 '+f.frontier.length+' 个前沿点中逐点算 U = E(r) − ½Aσ² 取最大。回有效前沿页重新计算一次即可启用加密求解。</p>')
     +'<div style="margin-top:10px"><button class="btn ghost small" type="button" id="opRefresh">重新读取已保存的 A 与前沿</button></div></div>';
   /* A 校准：默认填测得 A（区间时填区间中点），改动即按手动 A 加密重算 */
   var defA=null;
@@ -4042,7 +4463,7 @@ function renderOp(){
   var calHtml="";
   if(defA!==null&&isFinite(defA)){
     calHtml='<div class="panel"><h3 style="margin-top:0">A 校准 · 手动调整</h3>'
-      +'<p style="margin:0 0 10px">A 是假想题测出来的，决定切点落在哪里。输入框默认填测得的 A；拖动滑杆或直接填任意正数，下方立即按新 A 在加密前沿上重算最优组合。手动值<b>只影响本次计算，不会覆盖</b>第 3 步保存的测得 A。</p>'
+      +'<p style="margin:0 0 10px">A 是假想题测出来的，决定切点落在哪里。输入框默认填测得的 A；拖动滑杆或直接填任意正数，下方立即按新 A 在加密前沿上重算最优组合。手动值<b>只影响本次计算，不会覆盖</b>测评保存的测得 A。</p>'
       +'<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">'
       +'<input type="range" id="opASlider" min="0" max="30" step="0.05" value="'+curA+'" aria-label="手动调整 A（滑杆）" style="flex:1;min-width:170px">'
       +'<label style="font-weight:700">A = <input type="number" id="opAInput" step="0.05" min="0" value="'+Number(curA).toFixed(2)+'" aria-label="手动调整 A（输入框）" style="width:92px"></label>'
@@ -4083,7 +4504,7 @@ function opRenderBody(){
   }else{
     var lo=Math.min(u.A1,u.A2), hi=Math.max(u.A1,u.A2);
     html='<div class="uc-warn"><h3 style="margin:0 0 6px">A 是区间：两次测得的风险态度不一致</h3>'
-      +'<p style="margin:0">第 3 步里 A1 = '+fmtA(u.A1)+' 与 A2 = '+fmtA(u.A2)+' 相差 '+fmtA(Math.abs(u.A1-u.A2))+'，没有合并成一个数'+(u.doubtful?'（且标了「区间存疑」）':'')+'。下面分别用区间两端各自加密求解、各给一个最优组合并排展示：<b>两次测得的风险态度不一致，组合在两者之间</b>——你的真实偏好对应的组合应介于这两个组合之间。也可以在上方校准区填一个你认可的 A，只看一个组合。</p></div>'
+      +'<p style="margin:0">测评里 A1 = '+fmtA(u.A1)+' 与 A2 = '+fmtA(u.A2)+' 相差 '+fmtA(Math.abs(u.A1-u.A2))+'，没有合并成一个数'+(u.doubtful?'（且标了「区间存疑」）':'')+'。下面分别用区间两端各自加密求解、各给一个最优组合并排展示：<b>两次测得的风险态度不一致，组合在两者之间</b>——你的真实偏好对应的组合应介于这两个组合之间。也可以在上方校准区填一个你认可的 A，只看一个组合。</p></div>'
       +'<div class="op-grid">'
       +opCaseHtml(f,lo,"区间下端 · A = "+fmtA(lo)+"（更能承受波动）",dense,false)
       +opCaseHtml(f,hi,"区间上端 · A = "+fmtA(hi)+"（更厌恶风险）",dense,false)
