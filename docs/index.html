@@ -650,7 +650,7 @@ footer.site p{margin:0 0 6px}
   </div>
 </div>
 
-<!-- 首次访问欢迎弹窗：点「我知道了」后记在浏览器本地，之后不再弹 -->
+<!-- 欢迎弹窗：每次进入页面都弹出，点「我知道了」只关闭本次 -->
 <div id="welcomeModal" hidden role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
   <div class="pf-card welcome-card">
     <h3 id="welcomeTitle" style="margin:0 0 10px;font-size:20px">欢迎来到基金对比平台</h3>
@@ -668,14 +668,11 @@ footer.site p{margin:0 0 6px}
 </div>
 <script>
 (function(){
-  var KEY="jj-welcome-seen-v1",modal=document.getElementById("welcomeModal");
+  var modal=document.getElementById("welcomeModal");
   if(!modal)return;
-  var seen=false;
-  try{seen=!!localStorage.getItem(KEY);}catch(e){}
-  if(!seen)modal.hidden=false;
+  modal.hidden=false;
   document.getElementById("welcomeOk").addEventListener("click",function(){
     modal.hidden=true;
-    try{localStorage.setItem(KEY,"1");}catch(e){}
   });
 })();
 </script>
