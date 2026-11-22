@@ -1073,6 +1073,7 @@ function showView(name){
   $("view-"+name).classList.add("active");
   if(name==="compare")renderCompare();
   if(name==="mgrcompare")renderMgrCompare();
+  if(typeof updateTrayVisibility==="function")updateTrayVisibility();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 tabs.forEach(function(t){t.addEventListener("click",function(){
@@ -2232,6 +2233,17 @@ function efMineGateRun(){
 <script>
 /* ==================== 对比栏 ==================== */
 var compareSet=[];
+function isInCompareView(){
+  var c=document.getElementById("view-compare");
+  var m=document.getElementById("view-mgrcompare");
+  return !!((c&&c.classList.contains("active"))||(m&&m.classList.contains("active")));
+}
+function updateTrayVisibility(){
+  var tray=document.getElementById("tray");
+  if(!tray)return;
+  var hasSel=(typeof compareSet!=="undefined"&&compareSet.length>0)||(typeof mgrCompareSet!=="undefined"&&mgrCompareSet.length>0);
+  tray.hidden=!hasSel||isInCompareView();
+}
 function fundNameOf(code){
   var d=getDetail(code);if(d)return d.name;
   var ix=FUND_BY_CODE_IDX[code];if(ix)return ix.name;
@@ -2268,8 +2280,7 @@ function syncCompareUI(){
   document.querySelectorAll("input[data-cmp]").forEach(function(inp){
     inp.checked=compareSet.indexOf(inp.getAttribute("data-cmp"))>=0;
   });
-  var tray=$("tray");
-  tray.hidden=compareSet.length===0&&(typeof mgrCompareSet==="undefined"||mgrCompareSet.length===0);
+  updateTrayVisibility();
   $("trayChips").innerHTML=compareSet.map(function(code){
     return '<span class="tray-chip">'+esc(fundNameOf(code))+'<button type="button" data-rm="'+code+'" aria-label="移除">×</button></span>';
   }).join("");
@@ -2322,8 +2333,7 @@ function syncMgrCompareUI(){
     tg.textContent=ton?"✓ 已加入经理对比（点击移除）":"加入经理对比";
     tg.classList.toggle("ghost",ton);
   }
-  var tray=$("tray");
-  tray.hidden=compareSet.length===0&&mgrCompareSet.length===0;
+  updateTrayVisibility();
   $("mtrayRow").hidden=mgrCompareSet.length===0;
   $("mtrayChips").innerHTML=mgrCompareSet.map(function(id){
     return '<span class="tray-chip">'+esc(mgrNameOfId(id))+'<button type="button" data-mrm="'+id+'" aria-label="移除'+esc(mgrNameOfId(id))+'">×</button></span>';
