@@ -1066,21 +1066,67 @@ function snapshotBanner(){
 var tabs=document.querySelectorAll(".tab");
 var lastTab="managers";
 var currentFundCode=null;
-function showView(name){
+var currentViewName="managers";
+var viewScrollY={};
+/* 即时定位：临时关掉 html 的 smooth 平滑滚动，避免被「弹回顶部」的动画感 */
+function instantScrollTo(y){
+  var h=document.documentElement,prev=h.style.scrollBehavior;
+  h.style.scrollBehavior="auto";
+  window.scrollTo(0,Math.max(0,y||0));
+  h.style.scrollBehavior=prev;
+}
+/* 原地重渲染时保住滚动位置：记录 → 执行 → 同帧与下一帧各恢复一次。
+   不少按钮就活在被 innerHTML 重渲染的容器里（K 线/指数对比/完整排名筛选/测评选项等），
+   按钮被替换、页面高度变化时浏览器会把 scrollY 钳走，看起来像「一点按钮就弹回顶部」。 */
+function preserveScroll(fn,scroller){
+  if(scroller){
+    var st=scroller.scrollTop;
+    fn();
+    scroller.scrollTop=st;
+    requestAnimationFrame(function(){scroller.scrollTop=st;});
+    return;
+  }
+  var y=window.pageYOffset||document.documentElement.scrollTop||0;
+  fn();
+  instantScrollTo(y);
+  requestAnimationFrame(function(){instantScrollTo(y);});
+}
+/* 把区块锚到吸顶导航下方（分页、出结果时用）：区块已在视口内就不动，绝不回页面顶部 */
+function anchorUnderNav(el){
+  if(!el)return;
+  var nav=document.querySelector("nav.tabs");
+  var navH=nav?nav.offsetHeight:0;
+  var rect=el.getBoundingClientRect();
+  if(rect.top>=navH-2&&rect.top<window.innerHeight)return;
+  instantScrollTo(window.pageYOffset+rect.top-navH-8);
+}
+function showView(name,opts){
+  opts=opts||{};
   if(name!=="fund")lastTab=name;
+  /* 离开当前视图前记下它的滚动位置，供从详情页「返回」时恢复到原来浏览的地方 */
+  if(currentViewName&&currentViewName!==name)viewScrollY[currentViewName]=window.pageYOffset||0;
+  var changed=name!==currentViewName;
   tabs.forEach(function(t){t.setAttribute("aria-selected",t.getAttribute("data-view")===name?"true":"false");});
   document.querySelectorAll("section.view").forEach(function(s){s.classList.remove("active");});
   $("view-"+name).classList.add("active");
   if(name==="compare")renderCompare();
   if(name==="mgrcompare")renderMgrCompare();
   if(typeof updateTrayVisibility==="function")updateTrayVisibility();
-  window.scrollTo({top:0,behavior:"smooth"});
+  currentViewName=name;
+  if(!changed)return; /* 已在该视图内切换内容（如排行榜 ↔ 经理主页同属 managers）：不许动滚动位置 */
+  if(opts.restore&&viewScrollY[name]!=null){
+    var ry=viewScrollY[name];
+    instantScrollTo(ry);
+    requestAnimationFrame(function(){instantScrollTo(ry);});
+  }else{
+    instantScrollTo(0);
+  }
 }
 tabs.forEach(function(t){t.addEventListener("click",function(){
   if(t.getAttribute("data-view")==="managers"){$("mgrDetailWrap").hidden=true;$("mgrListWrap").hidden=false;}
   showView(t.getAttribute("data-view"));
 });});
-function goBack(){showView(lastTab==="fund"?"managers":lastTab);}
+function goBack(){showView(lastTab==="fund"?"managers":lastTab,{restore:true});}
 
 /* ==================== 经理排行榜 ==================== */
 var leaderPeriod="1n";
@@ -1088,7 +1134,7 @@ document.querySelectorAll("#leaderPills .pill").forEach(function(b){
   b.addEventListener("click",function(){
     leaderPeriod=b.getAttribute("data-period");
     document.querySelectorAll("#leaderPills .pill").forEach(function(p){p.setAttribute("aria-pressed",p===b?"true":"false");});
-    renderMgrRank();
+    preserveScroll(renderMgrRank);
   });
 });
 function tenureYears(days){if(!days)return "—";return (days/365).toFixed(1)+" 年";}
@@ -1139,11 +1185,15 @@ function findManagerPower(mgrId,repCode){
   }
   return null;
 }
+var mgrListScrollY=null;
 function openManager(mgrId){
+  /* 从排行榜点进经理主页前，记下列表的滚动位置，返回时恢复，不再从头看起 */
+  if(!$("mgrListWrap").hidden)mgrListScrollY=window.pageYOffset||0;
   var m=MG_BY_ID[mgrId];
   if(!m){ /* managers.json not loaded yet */
     $("mgrDetailWrap").innerHTML='<button class="backbtn" id="mgrBack" type="button">← 返回排行榜</button><p class="loading-note">经理索引载入中，请稍候再点一次。</p>';
     $("mgrListWrap").hidden=true;$("mgrDetailWrap").hidden=false;showView("managers");
+    instantScrollTo(0);
     $("mgrBack").addEventListener("click",backToMgrList);
     loadManagersJson().then(function(){if(MG_BY_ID[mgrId])openManager(mgrId);});
     return;
@@ -1196,13 +1246,18 @@ function openManager(mgrId){
   $("mgrDetailWrap").querySelectorAll("[data-gofund]").forEach(function(b){
     b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});
   });
-  window.scrollTo({top:0,behavior:"smooth"});
+  instantScrollTo(0);
   /* if power missing, live-load rep fund detail then refresh this page once */
   if(!power&&m.repCode&&!getDetail(m.repCode)){
     liveLoadDetail(m.repCode).then(function(){if(!$("mgrDetailWrap").hidden)openManager(mgrId);});
   }
 }
-function backToMgrList(){$("mgrDetailWrap").hidden=true;$("mgrListWrap").hidden=false;window.scrollTo({top:0,behavior:"smooth"});}
+function backToMgrList(){
+  $("mgrDetailWrap").hidden=true;$("mgrListWrap").hidden=false;
+  /* 回到离开列表时的位置，而不是弹回页面顶部 */
+  if(mgrListScrollY!=null){var y=mgrListScrollY;instantScrollTo(y);requestAnimationFrame(function(){instantScrollTo(y);});}
+  else instantScrollTo(0);
+}
 
 /* ==================== 基金排行 ==================== */
 var RANK_CATS=[
@@ -1220,14 +1275,14 @@ var rankFt="all",rankSc="1nzf";
   RANK_CATS.forEach(function(c){
     var b=document.createElement("button");b.className="pill";b.type="button";b.textContent=c.label;
     b.setAttribute("aria-pressed",c.ft==="all"?"true":"false");
-    b.addEventListener("click",function(){rankFt=c.ft;rp.querySelectorAll(".pill").forEach(function(p){p.setAttribute("aria-pressed","false");});b.setAttribute("aria-pressed","true");ensureRank();renderFundRank();});
+    b.addEventListener("click",function(){rankFt=c.ft;rp.querySelectorAll(".pill").forEach(function(p){p.setAttribute("aria-pressed","false");});b.setAttribute("aria-pressed","true");ensureRank();preserveScroll(renderFundRank);});
     rp.appendChild(b);
   });
   var sp=$("rankScPills");
   RANK_SCS.forEach(function(s){
     var b=document.createElement("button");b.className="pill";b.type="button";b.textContent=s.label;
     b.setAttribute("aria-pressed",s.sc==="1nzf"?"true":"false");
-    b.addEventListener("click",function(){rankSc=s.sc;sp.querySelectorAll(".pill").forEach(function(p){p.setAttribute("aria-pressed","false");});b.setAttribute("aria-pressed","true");ensureRank();renderFundRank();});
+    b.addEventListener("click",function(){rankSc=s.sc;sp.querySelectorAll(".pill").forEach(function(p){p.setAttribute("aria-pressed","false");});b.setAttribute("aria-pressed","true");ensureRank();preserveScroll(renderFundRank);});
     sp.appendChild(b);
   });
 })();
@@ -1285,7 +1340,7 @@ var curCat="all";
   RANK_CATS.forEach(function(c){
     var b=document.createElement("button");b.className="pill";b.type="button";b.textContent=CAT_INFO[c.ft].label;
     b.setAttribute("aria-pressed",c.ft==="all"?"true":"false");
-    b.addEventListener("click",function(){curCat=c.ft;cp.querySelectorAll(".pill").forEach(function(p){p.setAttribute("aria-pressed","false");});b.setAttribute("aria-pressed","true");renderCat();});
+    b.addEventListener("click",function(){curCat=c.ft;cp.querySelectorAll(".pill").forEach(function(p){p.setAttribute("aria-pressed","false");});b.setAttribute("aria-pressed","true");preserveScroll(renderCat);});
     cp.appendChild(b);
   });
 })();
@@ -1334,6 +1389,7 @@ function fundStub(code){
 function openFund(code){
   currentFundCode=code;
   showView("fund");
+  instantScrollTo(0); /* 换一只基金看详情属于换页：从详情顶部开始（同视图内切换时 showView 不动滚动，这里补齐） */
   renderFundDetail(code,true);
   if(!LIVE.detail[code])liveLoadDetail(code);
   liveLoadIndices();
@@ -1445,11 +1501,11 @@ function renderKlinePanel(d,reset){
     +'<canvas id="klineCanvas" height="300" aria-label="基金净值K线图"></canvas>'
     +'<canvas id="klineAxis" height="58" aria-label="K线时间轴，可拖动窗口"></canvas>'
     +'<p class="legend">操作：在图上拖动只移动选中的点，快慢都跟手；把点推到左右边缘继续往外推，窗口自动平移，可一路拖到任意历史日期；松手后读数停在最后触碰的点。底部时间轴可拖动平移、拖两端把手拉伸区间。口径：基金每日只公布一个净值，无盘中价与成交量，K 线由累计净值序列合成（日K 开=上一净值日、收=当日；周/月K 为期内首末与最高最低），不冒充交易所行情。</p></div>';
-  el.querySelectorAll("[data-klmode]").forEach(function(b){b.addEventListener("click",function(){KL.mode=b.getAttribute("data-klmode");renderKlinePanel(d,false);});});
+  el.querySelectorAll("[data-klmode]").forEach(function(b){b.addEventListener("click",function(){KL.mode=b.getAttribute("data-klmode");preserveScroll(function(){renderKlinePanel(d,false);});});});
   el.querySelectorAll("[data-klperiod]").forEach(function(b){b.addEventListener("click",function(){
     KL.period=b.getAttribute("data-klperiod");rebuildCandles(d);
     var cnt=Math.min(klRangeCount("1y"),KL.candles.length);KL.winCount=cnt;KL.winStart=KL.candles.length-cnt;KL.pin=KL.candles.length-1;
-    renderKlinePanel(d,false);
+    preserveScroll(function(){renderKlinePanel(d,false);});
   });});
   el.querySelectorAll("[data-klrange]").forEach(function(b){b.addEventListener("click",function(){
     var cnt=Math.min(klRangeCount(b.getAttribute("data-klrange")),KL.candles.length);
@@ -1846,8 +1902,8 @@ function renderBenchPanel(d){
     +'<h3 style="margin-top:16px;font-size:15px">分析结论（由上述实算数字生成）</h3>'
     +'<ul class="insight-list">'+insights.map(function(s){return '<li>'+esc(s)+'</li>';}).join("")+'</ul>'
     +'<p class="legend">口径：指数为价格指数点位涨跌（不含分红、美元指数不折汇率），基金为累计净值涨跌（含分红再投资）；「纳指」为纳斯达克 100。成立来一行以当前选中指数的对齐口径展示本基金累计涨幅。</p></div>';
-  el.querySelectorAll("[data-benchrange]").forEach(function(b){b.addEventListener("click",function(){BENCH_RANGE=b.getAttribute("data-benchrange");renderBenchPanel(d);});});
-  el.querySelectorAll("[data-benchsel]").forEach(function(b){b.addEventListener("click",function(){benchSelKey=b.getAttribute("data-benchsel");renderBenchPanel(d);});});
+  el.querySelectorAll("[data-benchrange]").forEach(function(b){b.addEventListener("click",function(){BENCH_RANGE=b.getAttribute("data-benchrange");preserveScroll(function(){renderBenchPanel(d);});});});
+  el.querySelectorAll("[data-benchsel]").forEach(function(b){b.addEventListener("click",function(){benchSelKey=b.getAttribute("data-benchsel");preserveScroll(function(){renderBenchPanel(d);});});});
   drawBenchChart(comp);
 }
 function drawBenchChart(comp){
@@ -2441,7 +2497,7 @@ function renderMgrCompare(){
     +'<p class="legend">金色底 = 该行最优值。从业年限、任期最佳回报、在管规模与在管基金数来自东方财富 / 天天基金经理档案；在管基金的近 1 年 / 近 3 年收益取已载入的基金详情（净值实算）或排行口径，未载入详情的基金显示「暂无数据」，点基金名进详情页可直连查看。风格标签由代表基金的实算指标生成（年化波动 / 股票仓位 / 前十大重仓集中度），代表基金详情载入后自动补齐。过往收益不代表未来表现。</p>';
   area.querySelectorAll("[data-gofund]").forEach(function(b){b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});});
   area.querySelectorAll("[data-gomgr]").forEach(function(b){b.addEventListener("click",function(){openManager(b.getAttribute("data-gomgr"));});});
-  area.querySelectorAll("[data-mgrrm]").forEach(function(b){b.addEventListener("click",function(){toggleMgrCompare(b.getAttribute("data-mgrrm"));});});
+  area.querySelectorAll("[data-mgrrm]").forEach(function(b){b.addEventListener("click",function(){var id=b.getAttribute("data-mgrrm");preserveScroll(function(){toggleMgrCompare(id);});});});
 }
 
 /* ==================== 搜索（全市场） ==================== */
@@ -2842,7 +2898,8 @@ function renderPfForm(){
     b.addEventListener("click",function(){
       pfDraft[b.getAttribute("data-pfkey")]=parseInt(b.getAttribute("data-pfv"),10);
       $("pfErr").hidden=true;
-      renderPfForm();
+      /* 表单在弹窗内重渲染：保住弹窗自己的滚动位置，别跳回弹窗顶部 */
+      preserveScroll(renderPfForm,$("profileModal"));
     });
   });
 }
@@ -2899,7 +2956,7 @@ $("pfClear").addEventListener("click",function(){
 $("matchSortBtn").addEventListener("click",function(){
   rankSortMode=rankSortMode==="match"?"return":"match";
   this.setAttribute("aria-pressed",rankSortMode==="match"?"true":"false");
-  renderFundRank();
+  preserveScroll(renderFundRank);
 });
 loadProfile();
 updateProfileEntry();
@@ -3022,15 +3079,15 @@ function renderMgrFull(){
     +'<span class="pager-info">第 '+mgrFull.page+" / "+totalPages+" 页 · 共 "+list.length+" 位经理（每页 "+mgrFull.pageSize+" 位）</span>"
     +'<button class="btn ghost" type="button" id="mgrFullNext" '+(mgrFull.page>=totalPages?"disabled":"")+'>下一页 →</button>';
   var pv=$("mgrFullPrev"),nx=$("mgrFullNext");
-  if(pv)pv.addEventListener("click",function(){mgrFull.page--;renderMgrFull();window.scrollTo({top:0,behavior:"smooth"});});
-  if(nx)nx.addEventListener("click",function(){mgrFull.page++;renderMgrFull();window.scrollTo({top:0,behavior:"smooth"});});
+  if(pv)pv.addEventListener("click",function(){mgrFull.page--;renderMgrFull();anchorUnderNav(document.querySelector("#view-mgrfull .tablebox"));});
+  if(nx)nx.addEventListener("click",function(){mgrFull.page++;renderMgrFull();anchorUnderNav(document.querySelector("#view-mgrfull .tablebox"));});
   $("mgrFullNote").textContent="数据口径：完整排名基于东方财富 / 天天基金基金经理全量档案（共 "+MG_LIST.length+" 位在册经理），任期最佳回报、从业年限、在管规模、在管基金数均为档案公开字段，本页按所选指标实排，未收录或指标缺失者不做估算填充。与排行榜页的精选榜区别：精选榜（近 1 年 / 近 3 年）是按「全市场收益前 100 只基金归因到现任经理」的口径聚合的前 30 名，任期最佳口径与此处完整排名的默认排序一致。过往收益不代表未来表现。";
 }
 document.querySelectorAll("#mgrFullPills .pill").forEach(function(b){
   b.addEventListener("click",function(){
     mgrFull.metric=b.getAttribute("data-mmetric");mgrFull.page=1;
     document.querySelectorAll("#mgrFullPills .pill").forEach(function(p){p.setAttribute("aria-pressed",p===b?"true":"false");});
-    renderMgrFull();
+    preserveScroll(renderMgrFull);
   });
 });
 $("mgrFullSearch").addEventListener("input",function(){
@@ -3038,7 +3095,7 @@ $("mgrFullSearch").addEventListener("input",function(){
 });
 $("mgrFullBtn").addEventListener("click",openMgrFull);
 $("mgrFullBack").addEventListener("click",function(){
-  $("mgrDetailWrap").hidden=true;$("mgrListWrap").hidden=false;showView("managers");
+  $("mgrDetailWrap").hidden=true;$("mgrListWrap").hidden=false;showView("managers",{restore:true});
 });
 
 /* ---------- 基金完整排名（按分类 + 区间逐页直连加载全部名次） ---------- */
@@ -3089,14 +3146,14 @@ function renderFundFull(){
   RANK_CATS.forEach(function(c){
     var b=document.createElement("button");b.className="pill";b.type="button";b.textContent=c.label;
     b.setAttribute("aria-pressed",c.ft===fundFull.ft?"true":"false");
-    b.addEventListener("click",function(){fundFull.ft=c.ft;resetFundFull();});
+    b.addEventListener("click",function(){fundFull.ft=c.ft;preserveScroll(resetFundFull);});
     cp.appendChild(b);
   });
   var sp=$("fundFullScPills");sp.innerHTML='<span class="pills-label">区间</span>';
   RANK_SCS.forEach(function(s){
     var b=document.createElement("button");b.className="pill";b.type="button";b.textContent=s.label;
     b.setAttribute("aria-pressed",s.sc===fundFull.sc?"true":"false");
-    b.addEventListener("click",function(){fundFull.sc=s.sc;resetFundFull();});
+    b.addEventListener("click",function(){fundFull.sc=s.sc;preserveScroll(resetFundFull);});
     sp.appendChild(b);
   });
   var body=$("fundFullBody");
@@ -3131,7 +3188,7 @@ function renderFundFull(){
 }
 function rankFieldFor(sc){for(var i=0;i<RANK_SCS.length;i++)if(RANK_SCS[i].sc===sc)return RANK_SCS[i];return RANK_SCS[0];}
 $("fundFullBtn").addEventListener("click",function(){openFundFull(rankFt,rankSc,"fundrank");});
-$("fundFullBack").addEventListener("click",function(){showView(fundFull.from==="category"?"category":"fundrank");});
+$("fundFullBack").addEventListener("click",function(){showView(fundFull.from==="category"?"category":"fundrank",{restore:true});});
 $("fundFullMore").addEventListener("click",function(){loadFundFullPage(fundFull.nextPage);});
 $("fundFullAll").addEventListener("click",function(){
   var guard=0;
@@ -3374,7 +3431,7 @@ function renderUc(){
 }
 function ucStartQuiz(){
   uc.mode="quiz";uc.qIndex=0;uc.answers=[];uc.q10Attempts=0;uc.doubtful=false;uc.result=null;
-  renderUc();window.scrollTo({top:0,behavior:"smooth"});
+  renderUc();anchorUnderNav($("ucArea"));
 }
 function ucGambleInfo(qi){
   if(qi<=4)return {label:"第一组 · 赌局 G1（共 5 题测 CE1）",hi:24000,hiPct:"+20%",lo:18000,loPct:"−10%",ev:"期望 ¥21,000（+5%）· σ = 15%"};
@@ -3434,10 +3491,10 @@ function ucAnswer(choice){
   uc.result=res;
   var aEff=res.consistent?res.A:res.aAvg;
   if(aEff>0&&choice==="gamble"&&!uc.doubtful){
-    if(uc.q10Attempts===0){uc.q10Attempts=1;uc.mode="warn";renderUc();window.scrollTo({top:0,behavior:"smooth"});return;}
+    if(uc.q10Attempts===0){uc.q10Attempts=1;uc.mode="warn";renderUc();anchorUnderNav($("ucArea"));return;}
     uc.doubtful=true;
   }
-  uc.mode="result";ucPersist(res);renderUc();window.scrollTo({top:0,behavior:"smooth"});
+  uc.mode="result";ucPersist(res);renderUc();anchorUnderNav($("ucArea"));
 }
 function renderUcWarn(area){
   area=area||$("ucArea");
@@ -3601,7 +3658,7 @@ function renderEf(){
     list.querySelectorAll("[data-efremove]").forEach(function(b){
       b.addEventListener("click",function(){
         ef.selected=ef.selected.filter(function(c){return c!==b.getAttribute("data-efremove");});
-        renderEf();renderEfSearch();
+        preserveScroll(function(){renderEf();renderEfSearch();});
       });
     });
   }
@@ -3615,7 +3672,7 @@ function renderEf(){
       +'<p style="margin:0 0 10px">保存时间：'+esc(String(ef.saved.savedAt||"").replace("T"," ").slice(0,16))+' · '+(ef.saved.funds?ef.saved.funds.length:0)+' 只基金参与计算 · 无风险利率 '+(ef.saved.riskFreeRate!==undefined?efPctPlain(ef.saved.riskFreeRate):"—")+'。这份结果已存好，供后面算最优组合时调用。</p>'
       +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="efViewSaved">查看上次结果</button><button class="btn ghost" type="button" id="efClearSaved">清除保存</button></div></div>';
     $("efViewSaved").addEventListener("click",function(){renderEfResult(ef.saved,true);});
-    $("efClearSaved").addEventListener("click",function(){try{window.localStorage.removeItem(EF_KEY);}catch(e){}ef.saved=null;ef.result=null;$("efResult").innerHTML="";renderEf();});
+    $("efClearSaved").addEventListener("click",function(){try{window.localStorage.removeItem(EF_KEY);}catch(e){}ef.saved=null;ef.result=null;$("efResult").innerHTML="";preserveScroll(renderEf);});
   }
 }
 function renderEfSearch(){
@@ -3643,7 +3700,7 @@ function renderEfSearch(){
     b.addEventListener("click",function(){
       var code=b.getAttribute("data-efadd");
       if(ef.selected.indexOf(code)<0&&ef.selected.length<EF_MAX)ef.selected.push(code);
-      renderEf();renderEfSearch();
+      preserveScroll(function(){renderEf();renderEfSearch();});
     });
   });
 }
@@ -4160,7 +4217,8 @@ function renderEfResult(res,isSavedView){
   efBindChart(res);
   efShowPoint(res,"gmv",-1);
   var tob=$("efToOptimal");if(tob)tob.addEventListener("click",function(){opOpen();});
-  box.scrollIntoView({behavior:"smooth",block:"start"});
+  /* 结果已在视口里就不动；不在才把结果区锚到导航下方，不回页面顶部 */
+  anchorUnderNav(box);
 }
 /* ---------- 接线 ---------- */
 $("efCalc").addEventListener("click",efMineGateRun);
@@ -4481,7 +4539,7 @@ function renderOp(){
   }
   area.innerHTML=srcHtml+calHtml+'<div id="opBody"></div>'
     +'<p class="uc-note-small">说明：组合由历史周净值与均值-方差假设算出（μ 口径见上方来源面板）；A 来自假设性题目的自测（本金 ¥20,000、持有 1 年的假想情境，真实下单时态度可能不同），可在上方校准区手动试算；最优点由保存的协方差与 μ 加密重解得到，不是离散点的近似。结果是模型输出，不构成投资建议。</p>';
-  var rf=$("opRefresh");if(rf)rf.addEventListener("click",renderOp);
+  var rf=$("opRefresh");if(rf)rf.addEventListener("click",function(){preserveScroll(renderOp);});
   opRenderBody();
   var slider=$("opASlider"),aInput=$("opAInput");
   function opSetManual(v,fromSlider){
