@@ -23,7 +23,7 @@
   }
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:auto}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--accent-ink)}
 button{font:inherit;cursor:pointer}
@@ -892,8 +892,8 @@ function liveLoadDetail(code){
     LIVE.detail[code]=d;detailState[code]={status:"live"};
     setLiveStatus("基金 "+code+" 已直连更新（"+nowTimeStr()+"）");
     if(currentFundCode===code&&$("view-fund").classList.contains("active"))renderFundDetail(code,false);
-    if($("view-compare").classList.contains("active"))renderCompare();
-    if($("view-mgrcompare").classList.contains("active"))renderMgrCompare();
+    if($("view-compare").classList.contains("active"))preserveScroll(renderCompare);
+    if($("view-mgrcompare").classList.contains("active"))preserveScroll(renderMgrCompare);
     liveLoadHoldings(code);
   }).catch(function(){
     detailState[code]={status:"snap",err:true};
@@ -995,7 +995,7 @@ function liveLoadRank(ft,sc){
   if(LIVE.rank[key])return Promise.resolve();
   return loadScript("https://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft="+ft+"&sc="+sc+"&st=desc&sd=&ed=&pi=1&pn=50&dx=1",20000).then(function(){
     var parsed=parseRankData();
-    if(parsed&&parsed.rows.length){LIVE.rank[key]=parsed;setLiveStatus("排行榜已直连更新（"+nowTimeStr()+"，净值日期 "+(parsed.rows[0].date||"")+"）");renderFundRank();renderCat();}
+    if(parsed&&parsed.rows.length){LIVE.rank[key]=parsed;setLiveStatus("排行榜已直连更新（"+nowTimeStr()+"，净值日期 "+(parsed.rows[0].date||"")+"）");preserveScroll(function(){renderFundRank();renderCat();});}
   }).catch(function(){/* snapshot stays */});
 }
 
@@ -1091,6 +1091,16 @@ function preserveScroll(fn,scroller){
   instantScrollTo(y);
   requestAnimationFrame(function(){instantScrollTo(y);});
 }
+/* 切到新视图时的落点：正文区顶部（吸顶导航下方），而不是页面绝对顶部。
+   页首有品牌行 + 搜索框 + 数据横幅近 300px 高，滚到 0 会让用户每次切页都先看到
+   一整屏页首、再手动滑到正文，体感就是「每一步都弹到页面顶部」。 */
+function scrollToContentTop(){
+  var main=document.querySelector("main");
+  if(!main){instantScrollTo(0);return;}
+  var nav=document.querySelector("nav.tabs");
+  var navH=nav?nav.offsetHeight:0;
+  instantScrollTo(window.pageYOffset+main.getBoundingClientRect().top-navH);
+}
 /* 把区块锚到吸顶导航下方（分页、出结果时用）：区块已在视口内就不动，绝不回页面顶部 */
 function anchorUnderNav(el){
   if(!el)return;
@@ -1119,7 +1129,7 @@ function showView(name,opts){
     instantScrollTo(ry);
     requestAnimationFrame(function(){instantScrollTo(ry);});
   }else{
-    instantScrollTo(0);
+    scrollToContentTop();
   }
 }
 tabs.forEach(function(t){t.addEventListener("click",function(){
@@ -1186,14 +1196,17 @@ function findManagerPower(mgrId,repCode){
   return null;
 }
 var mgrListScrollY=null;
-function openManager(mgrId){
+var mgrDetailShownId=null;
+function openManager(mgrId,keepScroll){
+  /* keepScroll：同一位经理主页已在显示、只是后台直连数据到手后的补渲染——原地保位，不许滚走 */
+  var keepY=(keepScroll&&mgrDetailShownId===mgrId&&!$("mgrDetailWrap").hidden)?(window.pageYOffset||0):null;
   /* 从排行榜点进经理主页前，记下列表的滚动位置，返回时恢复，不再从头看起 */
   if(!$("mgrListWrap").hidden)mgrListScrollY=window.pageYOffset||0;
   var m=MG_BY_ID[mgrId];
   if(!m){ /* managers.json not loaded yet */
     $("mgrDetailWrap").innerHTML='<button class="backbtn" id="mgrBack" type="button">← 返回排行榜</button><p class="loading-note">经理索引载入中，请稍候再点一次。</p>';
     $("mgrListWrap").hidden=true;$("mgrDetailWrap").hidden=false;showView("managers");
-    instantScrollTo(0);
+    scrollToContentTop();
     $("mgrBack").addEventListener("click",backToMgrList);
     loadManagersJson().then(function(){if(MG_BY_ID[mgrId])openManager(mgrId);});
     return;
@@ -1246,17 +1259,19 @@ function openManager(mgrId){
   $("mgrDetailWrap").querySelectorAll("[data-gofund]").forEach(function(b){
     b.addEventListener("click",function(){openFund(b.getAttribute("data-gofund"));});
   });
-  instantScrollTo(0);
+  mgrDetailShownId=mgrId;
+  if(keepY!=null){instantScrollTo(keepY);requestAnimationFrame(function(){instantScrollTo(keepY);});}
+  else scrollToContentTop();
   /* if power missing, live-load rep fund detail then refresh this page once */
   if(!power&&m.repCode&&!getDetail(m.repCode)){
-    liveLoadDetail(m.repCode).then(function(){if(!$("mgrDetailWrap").hidden)openManager(mgrId);});
+    liveLoadDetail(m.repCode).then(function(){if(!$("mgrDetailWrap").hidden)openManager(mgrId,true);});
   }
 }
 function backToMgrList(){
   $("mgrDetailWrap").hidden=true;$("mgrListWrap").hidden=false;
   /* 回到离开列表时的位置，而不是弹回页面顶部 */
   if(mgrListScrollY!=null){var y=mgrListScrollY;instantScrollTo(y);requestAnimationFrame(function(){instantScrollTo(y);});}
-  else instantScrollTo(0);
+  else scrollToContentTop();
 }
 
 /* ==================== 基金排行 ==================== */
@@ -1389,7 +1404,7 @@ function fundStub(code){
 function openFund(code){
   currentFundCode=code;
   showView("fund");
-  instantScrollTo(0); /* 换一只基金看详情属于换页：从详情顶部开始（同视图内切换时 showView 不动滚动，这里补齐） */
+  scrollToContentTop(); /* 换一只基金看详情属于换页：落到正文顶部（导航下方），不回页面绝对顶部 */
   renderFundDetail(code,true);
   if(!LIVE.detail[code])liveLoadDetail(code);
   liveLoadIndices();
@@ -1402,7 +1417,12 @@ function detailSourceLine(code){
   var t=SNAP.meta?SNAP.meta.snapshotAt.replace("T"," ").slice(0,16):"";
   return '<span class="snap-dot"></span>当前显示内置快照（打包于 '+t+'，与完整版同源）'+(st&&st.err?'；本次直连刷新未成功，下拉刷新页面可重试':"")+' · 最新净值日期 '+((d&&d.latestNavDate)||"—");
 }
+var fundDetailShownCode=null;
 function renderFundDetail(code,resetKline){
+  /* 同一只基金的后台刷新重渲染（直连详情/持仓/指数/快照分片到手都会再渲染一次）：
+     整页 innerHTML 被替换时页面高度先塌缩，浏览器会把滚动钳回顶部——用户点进详情
+     刚滑下去看 K 线/持仓，就被弹回顶部。此处记下重渲染前的位置，渲染完原样恢复。 */
+  var keepY=(fundDetailShownCode===code&&$("view-fund").classList.contains("active"))?(window.pageYOffset||0):null;
   var wrap=$("fundDetailWrap");
   var d=getDetail(code)||fundStub(code);
   var isStub=!getDetail(code);
@@ -1448,6 +1468,8 @@ function renderFundDetail(code,resetKline){
   renderHoldingsPanel(d);
   renderBenchPanel(d);
   renderFundMgrPanel(d);
+  fundDetailShownCode=code;
+  if(keepY!=null){instantScrollTo(keepY);requestAnimationFrame(function(){instantScrollTo(keepY);});}
 }
 function renderFundMgrPanel(d){
   var el=$("fundMgrPanel");if(!el)return;
@@ -2344,14 +2366,14 @@ function syncCompareUI(){
     b.addEventListener("click",function(){
       compareSet=compareSet.filter(function(c){return c!==b.getAttribute("data-rm");});
       syncCompareUI();
-      if($("view-compare").classList.contains("active"))renderCompare();
+      if($("view-compare").classList.contains("active"))preserveScroll(renderCompare);
     });
   });
   var badge=$("cmpBadge");
   badge.hidden=compareSet.length===0;badge.textContent=compareSet.length;
   syncTrayText();
   if(typeof refreshSearchStates==="function")refreshSearchStates();
-  if($("view-compare").classList.contains("active"))renderCompare();
+  if($("view-compare").classList.contains("active"))preserveScroll(renderCompare);
 }
 $("trayClear").addEventListener("click",function(){compareSet=[];syncCompareUI();});
 $("trayGo").addEventListener("click",function(){showView("compare");});
@@ -2404,7 +2426,7 @@ function syncMgrCompareUI(){
   badge.hidden=mgrCompareSet.length===0;badge.textContent=mgrCompareSet.length;
   syncMgrTrayText();
   if(typeof refreshSearchStates==="function")refreshSearchStates();
-  if($("view-mgrcompare").classList.contains("active"))renderMgrCompare();
+  if($("view-mgrcompare").classList.contains("active"))preserveScroll(renderMgrCompare);
 }
 function toggleMgrCompare(id){
   if(mgrCompareSet.indexOf(id)>=0){mgrCompareSet=mgrCompareSet.filter(function(x){return x!==id;});}
@@ -2434,7 +2456,7 @@ function renderMgrCompare(){
   if(!MG_LIST.length){
     area.innerHTML='<div class="compare-empty"><p style="font-size:16px;margin:0 0 6px"><b>经理档案载入中</b></p>'
       +'<p style="margin:0">全部基金经理档案正在后台载入，载入完成后这里会自动显示已选经理的对比。</p></div>';
-    loadManagersJson().then(function(){if($("view-mgrcompare").classList.contains("active"))renderMgrCompare();});
+    loadManagersJson().then(function(){if($("view-mgrcompare").classList.contains("active"))preserveScroll(renderMgrCompare);});
     return;
   }
   var list=mgrCompareSet.map(function(id){return MG_BY_ID[id];}).filter(Boolean);
@@ -2926,10 +2948,12 @@ function refreshProfileEffects(){
   var msb=$("matchSortBtn");
   if(msb)msb.setAttribute("aria-pressed",rankSortMode==="match"?"true":"false");
   updateProfileEntry();
-  renderFundRank();
-  renderCat();
-  if($("view-compare").classList.contains("active"))renderCompare();
-  if(!$("searchResults").hidden)renderSearch();
+  preserveScroll(function(){
+    renderFundRank();
+    renderCat();
+    if($("view-compare").classList.contains("active"))renderCompare();
+    if(!$("searchResults").hidden)renderSearch();
+  });
 }
 $("profileEntry").addEventListener("click",openProfile);
 $("pfCancel").addEventListener("click",closeProfile);
@@ -3258,11 +3282,13 @@ function loadManagersJson(){
       m.fundCodes.forEach(function(c){if(!FUND_MGR[c])FUND_MGR[c]={id:m.id,name:m.name};});
     });
     LIVE.managersLoaded=true;
-    renderFundRank();
-    renderCatRank();
-    if($("view-mgrfull").classList.contains("active"))renderMgrFull();
-    if($("view-fundfull").classList.contains("active"))renderFundFull();
-    refreshSearchIfOpen();
+    preserveScroll(function(){
+      renderFundRank();
+      renderCatRank();
+      if($("view-mgrfull").classList.contains("active"))renderMgrFull();
+      if($("view-fundfull").classList.contains("active"))renderFundFull();
+      refreshSearchIfOpen();
+    });
   }).catch(function(){managersJsonPromise=null;});
   return managersJsonPromise;
 }
@@ -3300,10 +3326,12 @@ function boot(){
     loadManagersJson();
     loadJsonAsset("details.json").then(function(d){
       SNAP.details=d||{};
-      renderFundRank();
-      renderCat();
-      if(currentFundCode)renderFundDetail(currentFundCode,false);
-      refreshSearchIfOpen();
+      preserveScroll(function(){
+        renderFundRank();
+        renderCat();
+        if(currentFundCode)renderFundDetail(currentFundCode,false);
+        refreshSearchIfOpen();
+      });
     }).catch(function(){/* 详情缺失时各页有直连兜底 */});
     loadJsonAsset("indices.json").then(function(ix){
       SNAP.indices=ix||{};
