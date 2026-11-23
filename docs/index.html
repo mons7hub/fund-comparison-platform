@@ -1116,11 +1116,9 @@ function showView(name,opts){
   /* 离开当前视图前记下它的滚动位置，供从详情页「返回」时恢复到原来浏览的地方 */
   if(currentViewName&&currentViewName!==name)viewScrollY[currentViewName]=window.pageYOffset||0;
   var changed=name!==currentViewName;
-  /* 切换前的位置：视图切换只换内容，滚动位置原样保留——点进详情、点「开始对比」、
-     经理对比的每一步都不许再把用户送回页面顶部（前两版把落点设在正文顶部，
-     用户实测每一步仍被重置到页首，故本次彻底取消切视图时的主动滚动）。
-     新视图比旧位置短时，浏览器会自动钳到可滚动范围，不需要代码干预。 */
-  var keepY=window.pageYOffset||0;
+  /* 切换前的位置：切到新视图时落到该页正文顶部（吸顶导航下方，scrollToContentTop 已算好），
+     不再保留旧滚动深度——保留旧深度会让新页面落在底部/中段，基金名与对比表（一）
+     都在视野上面，体感就是「每一步都弹走」。返回列表仍走 opts.restore 分支恢复原位置。 */
   tabs.forEach(function(t){t.setAttribute("aria-selected",t.getAttribute("data-view")===name?"true":"false");});
   document.querySelectorAll("section.view").forEach(function(s){s.classList.remove("active");});
   $("view-"+name).classList.add("active");
@@ -1134,8 +1132,8 @@ function showView(name,opts){
     instantScrollTo(ry);
     requestAnimationFrame(function(){instantScrollTo(ry);});
   }else{
-    instantScrollTo(keepY);
-    requestAnimationFrame(function(){instantScrollTo(keepY);});
+    scrollToContentTop();
+    requestAnimationFrame(function(){scrollToContentTop();});
   }
 }
 tabs.forEach(function(t){t.addEventListener("click",function(){
@@ -1206,15 +1204,14 @@ var mgrDetailShownId=null;
 function openManager(mgrId,keepScroll){
   /* keepScroll：同一位经理主页已在显示、只是后台直连数据到手后的补渲染——原地保位，不许滚走 */
   var keepY=(keepScroll&&mgrDetailShownId===mgrId&&!$("mgrDetailWrap").hidden)?(window.pageYOffset||0):null;
-  /* 进入经理主页时的位置：与切视图同一规则，保持当前滚动位置，不送回顶部 */
-  var entryY=window.pageYOffset||0;
+  /* 进入经理主页：落到正文顶部（与切视图同一规则），不再保留排行榜上的旧滚动深度 */
   /* 从排行榜点进经理主页前，记下列表的滚动位置，返回时恢复，不再从头看起 */
   if(!$("mgrListWrap").hidden)mgrListScrollY=window.pageYOffset||0;
   var m=MG_BY_ID[mgrId];
   if(!m){ /* managers.json not loaded yet */
     $("mgrDetailWrap").innerHTML='<button class="backbtn" id="mgrBack" type="button">← 返回排行榜</button><p class="loading-note">经理索引载入中，请稍候再点一次。</p>';
     $("mgrListWrap").hidden=true;$("mgrDetailWrap").hidden=false;showView("managers");
-    instantScrollTo(entryY);requestAnimationFrame(function(){instantScrollTo(entryY);});
+    scrollToContentTop();requestAnimationFrame(function(){scrollToContentTop();});
     $("mgrBack").addEventListener("click",backToMgrList);
     loadManagersJson().then(function(){if(MG_BY_ID[mgrId])openManager(mgrId);});
     return;
@@ -1269,7 +1266,7 @@ function openManager(mgrId,keepScroll){
   });
   mgrDetailShownId=mgrId;
   if(keepY!=null){instantScrollTo(keepY);requestAnimationFrame(function(){instantScrollTo(keepY);});}
-  else{instantScrollTo(entryY);requestAnimationFrame(function(){instantScrollTo(entryY);});}
+  else{scrollToContentTop();requestAnimationFrame(function(){scrollToContentTop();});}
   /* if power missing, live-load rep fund detail then refresh this page once.
      守卫：用户可能已经切去别的视图（如刚点进「基金经理对比」）——此时绝不许
      再把视图抢回经理页，否则用户在经理对比里会被迟到的补渲染拽走、位置全乱。 */
@@ -1412,7 +1409,7 @@ function fundStub(code){
 }
 function openFund(code){
   currentFundCode=code;
-  showView("fund"); /* 落点：保持用户当前滚动位置，不再送回顶部（showView 已统一处理） */
+  showView("fund"); /* 落点：正文顶部（showView 已统一处理） */
   renderFundDetail(code,true);
   if(!LIVE.detail[code])liveLoadDetail(code);
   liveLoadIndices();
